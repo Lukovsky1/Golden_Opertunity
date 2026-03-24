@@ -68,6 +68,7 @@ public class RoomService {
             }
         }
         return validRooms;
+
     }
 
     void createRoom(int rmNo, int b, boolean sm, String qlty, String rmType, double r){

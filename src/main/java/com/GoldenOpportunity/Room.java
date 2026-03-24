@@ -1,7 +1,6 @@
 package com.GoldenOpportunity;
 
 
-
 public class Room {
     int roomNo;
     int beds;
