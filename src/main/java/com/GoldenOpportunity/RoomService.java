@@ -17,6 +17,7 @@ public class RoomService {
         // Skip header
         if (fileScanner.hasNextLine()) {
             fileScanner.nextLine();
+
         }
 
         while (fileScanner.hasNextLine()) {
