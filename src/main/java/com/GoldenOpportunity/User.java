@@ -22,7 +22,7 @@ public abstract class User {
         this.failedLoginCount = 0;
     }
 
-    public int getId() {
+    public int getUserId() {
         return id;
     }
 
