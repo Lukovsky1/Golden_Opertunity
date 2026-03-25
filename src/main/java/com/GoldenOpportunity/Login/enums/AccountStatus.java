@@ -1,4 +1,4 @@
-package com.GoldenOpportunity.enums;
+package com.GoldenOpportunity.Login.enums;
 
 public enum AccountStatus {
     ACTIVE,
