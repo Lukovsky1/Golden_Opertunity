@@ -1,16 +1,16 @@
-﻿Floor #,Room Number,Room Type,Number of Beds,Type of Beds,Smoking Status
-1,101,Single,1,1 King,FALSE
-1,102,Double,2,2 Twin,FALSE
-1,103,Double,2,2 Twin,FALSE
-1,104,Single,1,1 Full,FALSE
-1,105,Family,3,"1 Full, 2 Twin",FALSE
-2,201,Suite,2,"1 Full, 1 Twin",TRUE
-2,202,Deluxe,1,1 King,TRUE
-2,203,Suite,3,"2 Queen, 1 King",TRUE
-2,204,Suite,4,4 Queen,TRUE
-2,205,Deluxe,2,2 Queen,TRUE
-3,301,Standard,1,1 King,TRUE
-3,302,Standard,1,1 King,TRUE
-3,303,Deluxe,1,1 King,TRUE
-3,304,Deluxe,2,2 Queen,TRUE
-3,305,Deluxe,2,2 Queen,TRUE
+﻿Floor #,Room Number,Room Type,Quality,Number of Beds,Type of Beds,Smoking Status,Rate/per Night
+1,101,Single,Economic,1,1 King,FALSE,100
+1,102,Double,Economic,2,2 Twin,FALSE,125
+1,103,Double,Economic,2,2 Twin,FALSE,125
+1,104,Single,Business,1,1 Full,FALSE,120
+1,105,Family,Comfort,3,"1 Full, 2 Twin",FALSE,150
+2,201,Suite,Economic,2,"1 Full, 1 Twin",TRUE,120
+2,202,Deluxe,Business,1,1 King,TRUE,120
+2,203,Suite,Comfort,3,"2 Queen, 1 King",TRUE,150
+2,204,Suite,Comfort,4,4 Queen,TRUE,165
+2,205,Deluxe,Executive,2,2 Queen,TRUE,180
+3,301,Standard,Executive,1,1 King,TRUE,170
+3,302,Standard,Economic,1,1 King,TRUE,160
+3,303,Deluxe,Executive,1,1 King,TRUE,180
+3,304,Deluxe,Business,2,2 Queen,TRUE,190
+3,305,Deluxe,Executive,2,2 Queen,TRUE,200
