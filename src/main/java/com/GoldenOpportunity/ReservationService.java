@@ -9,6 +9,7 @@ public class ReservationService {
     private List<Reservation> reserveList = new ArrayList<>();
     //ReservationId mapped to its reservation object
     private Map<String, Reservation> reservationMap = new HashMap<>();
+    //Set of ID numbers in use. Used to find the smallest unused ID value
     private final Set<Integer> ValidIDNums = new HashSet<>();
 
     //Used to read CSV files of the form of the Reservation file
@@ -100,7 +101,7 @@ public class ReservationService {
      * TODO: Must test if there are over 999 reservations
      * @return The new reservationID with the smallest value of the
      * reservation. If there are no valid numbers left, the function will
-     * return null.
+     * return null. The bounds of the valid numbers are [1, 999].
      */
     private String createResId() {
         int num = -1;
