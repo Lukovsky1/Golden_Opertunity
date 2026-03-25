@@ -1,6 +1,10 @@
 package com.GoldenOpportunity;
 
+/**
+ * Edits: Added floorNum to the class
+ */
 public class Room {
+    int floorNum;
     int roomNo;
     int beds;
     boolean smoking;
@@ -8,7 +12,8 @@ public class Room {
     String roomType;
     double rate;
 
-    Room(int rmNo, int b, boolean sm, String qlty, String rmType, double r){
+    Room(int floorNum, int rmNo, int b, boolean sm, String qlty, String rmType, double r){
+        this.floorNum = floorNum;
         roomNo = rmNo;
         beds = b;
         smoking = sm;
@@ -17,6 +22,7 @@ public class Room {
         rate = r;
     }
 
+    public int getFloorNum() {return floorNum;}
     public int getRoomNo() { return roomNo; }
     public int getBeds() { return beds; }
     public boolean isSmoking() { return smoking; }
@@ -30,11 +36,16 @@ public class Room {
     public void setRoomType(String roomType) { this.roomType = roomType; }
     public void setRate(double rate) { this.rate = rate; }
 
-    String [] bedTypes = {"King", "Queen", "Twin", "Full"};
+    //String [] bedTypes = {"King", "Queen", "Twin", "Full"};
 
 
-    public enum QualityLevel{
+    /*public enum QualityLevel{
         Economy, Comfort, Business, Executive;
+    } */
+
+    @Override
+    public String toString(){
+        return roomNo + " NumBeds: " + beds + " Quality: " + qLevel + " Type: " + roomType + " Rate: " + rate;
     }
 }
 

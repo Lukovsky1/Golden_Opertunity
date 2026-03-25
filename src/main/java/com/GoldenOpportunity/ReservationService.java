@@ -1,76 +1,162 @@
 package com.GoldenOpportunity;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 
 public class ReservationService {
     private List<Reservation> reserveList = new ArrayList<>();
+    //ReservationId mapped to its reservation object
+    private Map<String, Reservation> reservationMap = new HashMap<>();
     private final ReservationLoader loader = new ReservationLoader();
+    private final Set<Integer> ValidIDNums = new HashSet<>();
 
     //Used to read CSV files of the form of the Reservation file
 
 
+    public ReservationService(Path filePath) {
+        loadData(filePath);
+    }
     public void loadData(Path filePath) {
         reserveList.clear(); //May need to be edited, currently assigned for testing
         try {
             reserveList = loader.loadReservations(filePath);
+            for (Reservation r : reserveList) {
+                reservationMap.put(r.getId().toUpperCase(), r);
+            }
+            fillValidIDNums();
         }
         catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading reservations from file: " + e.getMessage());
         }
+
     }
 
-    public void createReservation(int roomNumber, LocalDate start, LocalDate end, double bill) {
-        String newResId = "R-0" + (reserveList.size() + 1);
-        Reservation newRes = new Reservation(newResId, roomNumber, new DateRange(start, end), bill);
+    /**
+     * //TODO: IF there are more than 999 reservations, how do we handle that edge case
+     * createReservation: Will create a new reservation and place it in both reserveList
+     * and reservationMap.
+     * @param rooms
+     * @param start
+     * @param end
+     * @param bill
+     */
+    public void createReservation(List<Room> rooms , LocalDate start, LocalDate end, double bill) {
+        //Creates a new reservation ID from the set of all valid reservation ids
+        String newResId = createResId();
+        //Confirms that the two given dates are within a valid range
+        if (!DateRange.validateRange(start, end)) {
+            System.out.println("Invalid date range");
+            return;
+        }
+        Reservation newRes = new Reservation(newResId, rooms, new DateRange(start, end), bill);
         reserveList.add(newRes);
+        try {
+            assert newResId != null;
+            reservationMap.put(newResId.toUpperCase(), newRes);
+        }
+        catch (NullPointerException e) {
+            System.err.println("Can not put reservation into map: " + e.getMessage());
+        }
     }
 
     //TODO: Must be able to write to the database/file and remove/add reservations
+    //TODO: Possibly remove try/catch statement
     public void deleteReservation(String reservationId) {
-        Optional<Reservation> reservation = findReservation(reservationId);
         try {
-            reserveList.remove((findReservation(reservationId)));
+            if (findReservationByID(reservationId) != null) {
+                reserveList.remove((findReservationByID(reservationId)));
+                reservationMap.remove(reservationId);
+                ValidIDNums.remove(Integer.parseInt(reservationId.substring( 2)));
+            }
+            else {
+                System.out.println("Reservation ID not found: " + reservationId);
+            }
         }
         catch (NoSuchElementException e) {
             e.printStackTrace();
-            System.err.println("Delete: Reservation not found: " + e.getMessage());
+            System.out.println("Delete: Reservation not found: " + e.getMessage());
         }
-
     }
 
-    /** Ability to book multiple rooms in a reservation
-     * Busca una reservación por su ID.
-     * @param reservationId ID de la reservación a buscar
-     * @return Optional<Reservation> si existe, vacío si no
+    /**
+     * TODO: Must test if there are over 999 reservations
+     * @return The new reservationID with the smallest value of the
+     * reservation. If there are no valid numbers left, the function will
+     * return null.
      */
-    public Optional<Reservation> findReservation(String reservationId) {
-        return reserveList.stream()
-                .filter(r -> r.getId().equalsIgnoreCase(reservationId))
-                .findFirst();
+    private String createResId() {
+        int num = -1;
+        int start = 1;
+        int end = 999;
+
+        for (int i = start; i <= end && num == -1; i++) {
+            if (!ValidIDNums.contains(i)) {
+                num = i;
+                ValidIDNums.add(i);
+            }
+        }
+        if (num == -1) {
+            return null;
+        }
+        return String.format("R-%03d", num);
+    }
+
+    /**
+     * fillValidIDNums: Will do a preliminary fill of the set of all valid ID numbers.
+     */
+    private void fillValidIDNums() {
+        ValidIDNums.clear();
+        for (int i = 0; i < reserveList.size(); i++) {
+            Integer num = Integer.parseInt(reserveList.get(i).getId().substring(2));
+            ValidIDNums.add(num);
+        }
+    }
+
+
+
+    /**
+     * findReservationByID: Searches for a reservation via it's ID
+     * @param reservationId ID of the sought after reservation
+     * @return the Reservation object if it exists, null if otherwise
+     */
+    public Reservation findReservationByID(String reservationId) {
+        if (reservationMap.containsKey(reservationId)) {
+            return reservationMap.get(reservationId.toUpperCase());
+        }
+        return null;
     }
 
     public List<Reservation> getReservations() {
         return reserveList;
     }
 
-    public static void main (String[] args) {
-        ReservationService reservationService = new ReservationService();
-        reservationService.loadData(Path.of("src/main/resources/testReservationData1.csv"));
-
-
-
-        reservationService.createReservation(3, LocalDate.now(), LocalDate.now(), 0.5);
-        reservationService.getReservations().forEach(System.out::println);
-        reservationService.deleteReservation("R-001");
-        reservationService.getReservations().forEach(System.out::println);
+    public Map<String, Reservation> getReservationMap() {
+        return reservationMap;
     }
 
+    //TODO: Delete test
+    /*public static void main (String[] args) {
+        ReservationService reservationService =
+        reservationService.loadData(Path.of("src/main/resources/testReservationData1.csv"));
+
+        Room [] testRooms = {new Room(101, 2, false, "Executive", "Double", 100),
+        new Room(102, 1, false, "Comfort", "Single", 150),
+        new  Room(103, 4, false, "Economic", "Family", 150)};
+        List<Room> newRooms= Arrays.asList(testRooms);
 
 
+
+
+
+        reservationService.deleteReservation("R-001");
+        reservationService.createReservation(newRooms, LocalDate.now(), LocalDate.now(), 0.5);
+        reservationService.getReservations().forEach(System.out::println);
+        Scanner scanner = new Scanner(System.in);
+        String id =  scanner.nextLine();
+        System.out.println("Reservation ID: " + id);
+        System.out.println("Reservation: " + reservationService.findReservationByID(id));
+    } */
 }

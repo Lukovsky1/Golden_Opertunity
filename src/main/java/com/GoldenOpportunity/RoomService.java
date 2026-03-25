@@ -3,12 +3,12 @@ package com.GoldenOpportunity;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class RoomService {
-    static List<Room> roomList = new ArrayList<>();
+    private List<Room> roomList = new ArrayList<>();
+    //Holds room number and binds it to its room object
+    static Map<Integer, Room> roomMap = new HashMap<>();
 
     RoomService(String filename) throws FileNotFoundException {
         File file = new File(filename);
@@ -24,17 +24,19 @@ public class RoomService {
             String line = fileScanner.nextLine();
             String[] parts = parseCSVLine(line);
 
+            int floorNum = Integer.parseInt(parts[0]);
             int roomNo = Integer.parseInt(parts[1]);
             String roomType = parts[2];
-            int beds = Integer.parseInt(parts[3]);
-            String qLevel = parts[4];
-            boolean smoking = Boolean.parseBoolean(parts[5]);
+            String qLevel = parts[3];
+            int beds = Integer.parseInt(parts[4]);
+            boolean smoking = Boolean.parseBoolean(parts[6]);
 
             // No rate in CSV → default to 0.0
             double rate = 0.0;
 
-            Room r = new Room(roomNo, beds, smoking, qLevel, roomType, rate);
+            Room r = new Room(floorNum, roomNo, beds, smoking, qLevel, roomType, rate);
             roomList.add(r);
+            roomMap.put(roomNo, r);
         }
 
         fileScanner.close();
@@ -71,13 +73,13 @@ public class RoomService {
 
     }
 
-    void createRoom(int rmNo, int b, boolean sm, String qlty, String rmType, double r){
-        Room a = new Room(rmNo, b, sm, qlty, rmType, r);
+    void createRoom(int floorNum, int rmNo, int b, boolean sm, String qlty, String rmType, double r){
+        Room a = new Room(floorNum, rmNo, b, sm, qlty, rmType, r);
         roomList.add(a);
         //write to file
     }
 
-    void modifyRoom(int rmNo, int b, boolean sm, String qlty, String rmType, double r){
+    void modifyRoom(int rmNo, int b, boolean sm, String qlty, String rmType, double r) {
         for (Room room : roomList) {
             if (room.getRoomNo() == rmNo) {
                 room.setBeds(b);
@@ -90,6 +92,13 @@ public class RoomService {
                 return;
             }
         }
+    }
+    public void findRoom(int rmNo) {
+        Room room = roomMap.get(rmNo);
+    }
+
+    List<Room> getRoomList() {
+        return  roomList;
     }
 
 }

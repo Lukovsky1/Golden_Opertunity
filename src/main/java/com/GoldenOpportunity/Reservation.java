@@ -1,22 +1,19 @@
 package com.GoldenOpportunity;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.List;
 
 public class Reservation {
     final String resId;
-    final int roomNumber;
+    private List<Room> rooms;
     final DateRange dateRange;
     final double bill;
 
 
     //TODO: Add ID as a field either to the test file or create them manually
-    Reservation(String resId, int roomNumber, DateRange dateRange, double bill) {
+    Reservation(String resId, List<Room> rooms, DateRange dateRange, double bill) {
         this.resId = resId;
-        this.roomNumber = roomNumber;
+        this.rooms = rooms;
         this.dateRange = dateRange;
         this.bill =  bill;
     }
@@ -24,8 +21,8 @@ public class Reservation {
     public String getId() {
         return resId;
     }
-    public int getRoomNumber() {
-        return roomNumber;
+    public List<Room> getRooms() {
+        return rooms;
     }
     public DateRange getDateRange() {
         return dateRange;
@@ -38,7 +35,7 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation: " + resId + " " +  roomNumber + ", " + dateRange + ", " + bill;
+        return "Reservation: " + resId + " " +  rooms + ", " + dateRange + ", " + bill;
     }
 
 }
