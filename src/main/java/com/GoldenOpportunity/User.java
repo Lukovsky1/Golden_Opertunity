@@ -1,7 +1,6 @@
 package com.GoldenOpportunity;
 
-import com.GoldenOpportunity.enums.AccountStatus;
-import com.GoldenOpportunity.enums.Role;
+import com.GoldenOpportunity.Login.enums.*;
 
 public abstract class User {
     private final int id;
