@@ -9,18 +9,33 @@ public class ReservationService {
     private List<Reservation> reserveList = new ArrayList<>();
     //ReservationId mapped to its reservation object
     private Map<String, Reservation> reservationMap = new HashMap<>();
-    private final ReservationLoader loader = new ReservationLoader();
     private final Set<Integer> ValidIDNums = new HashSet<>();
 
     //Used to read CSV files of the form of the Reservation file
 
-
+    /**
+     * ReservationService constructor: Calls loadData which will fill reserveList
+     * reservationMap, and ValidIDNums. Takes the file path to a relevant data file
+     * as an argument.
+     *
+     * @param filePath
+     */
     public ReservationService(Path filePath) {
         loadData(filePath);
     }
+
+    /**
+     * loadData:
+     * Given a filepath, will load all relevant data into reserveList,
+     * and reservationMap. Calls the ReservationLoader.loadReservations
+     * method to achieve this. Also will fill all validIDNums for use
+     * in creating and deleting future reservations.
+     * @param filePath
+     */
     public void loadData(Path filePath) {
         reserveList.clear(); //May need to be edited, currently assigned for testing
         try {
+            ReservationLoader loader = new ReservationLoader();
             reserveList = loader.loadReservations(filePath);
             for (Reservation r : reserveList) {
                 reservationMap.put(r.getId().toUpperCase(), r);
@@ -35,7 +50,7 @@ public class ReservationService {
     }
 
     /**
-     * //TODO: IF there are more than 999 reservations, how do we handle that edge case
+     * //TODO: IF there are more than 999 reservations, how do we handle that edge case.
      * createReservation: Will create a new reservation and place it in both reserveList
      * and reservationMap.
      * @param rooms

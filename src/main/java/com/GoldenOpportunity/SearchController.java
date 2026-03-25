@@ -8,7 +8,6 @@ import java.util.List;
 
 //TODO: Rooms must be loaded first before the reservations
 public class SearchController {
-    //TODO: Edit, should be private
     private final RoomService roomService;
     private final ReservationService resService;
     public SearchController(RoomService roomService, ReservationService reservationService) {
@@ -42,13 +41,13 @@ public class SearchController {
                     new ReservationService
                             (Path.of("src/main/resources/testReservationData1.csv")));
 
-            //Creating a new room for reservation for testing createReservation
+            //Creating a new List<Room> for object for reservation for testing createReservation
             Room [] testRooms = {searchController.roomService.getRoomList().get(0),
                     searchController.roomService.getRoomList().get(1),
             searchController.roomService.getRoomList().get(4)};
             List<Room> newRooms = Arrays.asList(testRooms);
 
-            //TODO: Create Reservation Use Case
+            //TODO: reserveRoom Use Case
             searchController.resService.createReservation(newRooms, LocalDate.now(), LocalDate.now(), 0.0);
             searchController.resService.deleteReservation("R-019");
 
