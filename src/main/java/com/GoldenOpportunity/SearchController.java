@@ -16,7 +16,11 @@ public class SearchController {
     }
 
 
-    //Will print all rooms and any reservations (ids) assigned to those rooms
+    /**
+     * printRoomsAndReservations: Prints all rooms and any reservations assigned
+     * to that room. Will print the reservation ids as a proxy for the
+     * reservation object.
+     */
     public void printRoomsAndReservations() {
         for (int i = 0; i < roomService.getRoomList().size(); i++) {
             int num = roomService.getRoomList().get(i).getRoomNo();
@@ -48,7 +52,8 @@ public class SearchController {
             List<Room> newRooms = Arrays.asList(testRooms);
 
             //TODO: reserveRoom Use Case
-            searchController.resService.createReservation(newRooms, LocalDate.now(), LocalDate.now(), 0.0);
+            searchController.resService.createReservation(newRooms, LocalDate.now(),
+                    LocalDate.parse("2026-11-20"), 0.0);
             searchController.resService.deleteReservation("R-019");
 
             searchController.printRoomsAndReservations();
