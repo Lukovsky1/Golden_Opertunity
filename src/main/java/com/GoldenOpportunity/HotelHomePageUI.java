@@ -1,14 +1,17 @@
 package com.GoldenOpportunity;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HotelHomePageUI extends JFrame {
 
-    public HotelHomePageUI() {
+    public HotelHomePageUI() throws IOException {
         setTitle("Hotel Home Page");
         setSize(1200, 850);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -20,13 +23,22 @@ public class HotelHomePageUI extends JFrame {
         add(createFooter(), BorderLayout.SOUTH);
     }
 
-    private JPanel createHeader() {
+    private JPanel createHeader() throws IOException {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        JLabel logo = new JLabel("Logo");
-        logo.setFont(new Font("SansSerif", Font.BOLD, 24));
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/logo.png"));
+
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
+
+        int newHeight = 70;
+        int newWidth = (originalWidth * newHeight) / originalHeight;
+
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
+        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
@@ -42,7 +54,7 @@ public class HotelHomePageUI extends JFrame {
             nav.add(buttonMap.get(item));
         }
 
-        header.add(logo, BorderLayout.WEST);
+        header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
         return header;
     }
@@ -198,6 +210,12 @@ public class HotelHomePageUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new HotelHomePageUI().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new HotelHomePageUI().setVisible(true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
