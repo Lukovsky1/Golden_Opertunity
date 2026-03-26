@@ -81,3 +81,4 @@ public class Room {
     public void setRate(double rate) { this.rate = rate; }
 
 }
+*/
