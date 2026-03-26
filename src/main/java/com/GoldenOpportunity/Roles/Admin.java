@@ -1,7 +1,7 @@
 package com.GoldenOpportunity.Roles;
 
 import com.GoldenOpportunity.User;
-import com.GoldenOpportunity.enums.Role;
+import com.GoldenOpportunity.Login.enums.Role;
 
 public class Admin extends User {
 
