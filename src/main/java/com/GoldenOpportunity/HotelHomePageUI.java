@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+// Changed to JPanel instead of JFrame
+
 public class HotelHomePageUI extends JPanel {
 
     private CardLayout cardLayout;

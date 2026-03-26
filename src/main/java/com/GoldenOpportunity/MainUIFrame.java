@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
+// New main frame for all of the UI
+
 public class MainUIFrame extends JFrame {
 
     public MainUIFrame() throws IOException {

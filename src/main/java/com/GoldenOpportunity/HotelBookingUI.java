@@ -11,6 +11,8 @@ import java.util.Map;
 
 import com.GoldenOpportunity.Roles.*;
 
+// Changed to JPanel instead of JFrame
+
 public class HotelBookingUI extends JPanel {
 
     private CardLayout cardLayout;
