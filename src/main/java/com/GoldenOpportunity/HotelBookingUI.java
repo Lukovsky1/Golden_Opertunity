@@ -3,6 +3,9 @@ package com.GoldenOpportunity;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.GoldenOpportunity.Roles.*;
 
 public class HotelBookingUI extends JFrame {
@@ -30,15 +33,15 @@ public class HotelBookingUI extends JFrame {
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
         nav.setBackground(Color.WHITE);
         String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        Map<String,JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
-            JButton btn = new JButton(item);
-            btn.setFocusPainted(false);
-            btn.setBackground(Color.WHITE);
-            btn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            btn.setPreferredSize(new Dimension(90, 35));
-            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            nav.add(btn);
+            buttonMap.put(item,new JButton(item));
+            buttonMap.get(item).setFocusPainted(false);
+            buttonMap.get(item).setBackground(Color.WHITE);
+            buttonMap.get(item).setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
+            nav.add(buttonMap.get(item));
         }
 
         header.add(logo, BorderLayout.WEST);
