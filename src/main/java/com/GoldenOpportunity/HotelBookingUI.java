@@ -11,13 +11,15 @@ import java.util.Map;
 
 import com.GoldenOpportunity.Roles.*;
 
-public class HotelBookingUI extends JFrame {
+public class HotelBookingUI extends JPanel {
 
-    public HotelBookingUI() throws IOException {
-        setTitle("Hotel Booking UI");
-        setSize(1200, 800);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+
+    public HotelBookingUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+        this.cardLayout = cardLayout;
+        this.mainPanel = mainPanel;
+
         setLayout(new BorderLayout(10, 10));
 
         add(createHeader(), BorderLayout.NORTH);
@@ -55,6 +57,13 @@ public class HotelBookingUI extends JFrame {
             buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
             nav.add(buttonMap.get(item));
         }
+
+        buttonMap.get("Home").addActionListener(e -> {
+            cardLayout.show(mainPanel,"Home");
+        });
+        buttonMap.get("Rooms").addActionListener(e -> {
+            cardLayout.show(mainPanel,"Rooms");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -196,15 +205,5 @@ public class HotelBookingUI extends JFrame {
         label.setFont(new Font("SansSerif", Font.BOLD, 18));
         label.setBorder(new EmptyBorder(5, 10, 5, 10));
         return label;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                new HotelBookingUI().setVisible(true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 }

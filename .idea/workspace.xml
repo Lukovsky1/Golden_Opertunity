@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Update to UI pages for connection for actionListener">
+    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Update to UI pages for connection for actionListener and logo">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" afterDir="false" />
@@ -15,6 +16,13 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -66,6 +74,8 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Application.HotelBookingUI.executor": "Run",
     "Application.HotelHomePageUI.executor": "Run",
+    "Application.MainUIFrame.executor": "Run",
+    "Application.RoomDetailsPage.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -83,7 +93,7 @@
       <recent name="C:\Users\andre\OneDrive\Documentos\Baylor_University\Software_Engineering_I\Repo\src\main\resources" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.HotelBookingUI">
+  <component name="RunManager">
     <configuration name="HotelBookingUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.GoldenOpportunity.HotelBookingUI" />
       <module name="Golden_Opertunity" />
@@ -148,12 +158,21 @@
       <option name="project" value="LOCAL" />
       <updated>1774547291810</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Update to UI pages for connection for actionListener and logo">
+      <option name="closed" value="true" />
+      <created>1774548905597</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1774548905597</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="UI Booking and Home class" />
     <MESSAGE value="Update to UI pages for connection for actionListener" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update to UI pages for connection for actionListener" />
+    <MESSAGE value="Update to UI pages for connection for actionListener and logo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update to UI pages for connection for actionListener and logo" />
   </component>
 </project>

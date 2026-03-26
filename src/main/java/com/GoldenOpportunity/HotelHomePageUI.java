@@ -1,3 +1,4 @@
+
 package com.GoldenOpportunity;
 
 import javax.imageio.ImageIO;
@@ -9,13 +10,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HotelHomePageUI extends JFrame {
+public class HotelHomePageUI extends JPanel {
 
-    public HotelHomePageUI() throws IOException {
-        setTitle("Hotel Home Page");
-        setSize(1200, 850);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+
+    public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+        this.cardLayout = cardLayout;
+        this.mainPanel = mainPanel;
+
         setLayout(new BorderLayout(10, 10));
 
         add(createHeader(), BorderLayout.NORTH);
@@ -53,6 +56,13 @@ public class HotelHomePageUI extends JFrame {
             buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
             nav.add(buttonMap.get(item));
         }
+
+        buttonMap.get("Home").addActionListener(e -> {
+            cardLayout.show(mainPanel,"Home");
+        });
+        buttonMap.get("Rooms").addActionListener(e -> {
+            cardLayout.show(mainPanel,"Rooms");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -208,14 +218,5 @@ public class HotelHomePageUI extends JFrame {
         footer.add(new JLabel("Contact Info: 123 Hotel St, City, Country | +123 456 7890 | info@goldenopportunity.com"));
         return footer;
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                new HotelHomePageUI().setVisible(true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
 }
+
