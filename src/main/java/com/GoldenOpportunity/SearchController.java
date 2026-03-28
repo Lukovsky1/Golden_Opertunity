@@ -34,7 +34,15 @@ public class SearchController {
         }
     }
 
-
+    public List<Room> searchAvailableRooms(Criteria criteria) {
+        List<Room> availableRooms = new ArrayList<>();
+        roomService.
+        if (criteria.getDateRange() != null) {
+            //Will return the list with all overlaps removed
+            return resService.findOverlaps(availableRooms, criteria.getDateRange());
+        }
+        return availableRooms;
+    }
 
     /*
     Testing and debug note: DO NOT use "new" when trying to create room objects!
