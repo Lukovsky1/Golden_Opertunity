@@ -34,13 +34,7 @@ public class SearchController {
         }
     }
 
-    public List<Room> searchAvailableRooms(Criteria criteria) {
-        List<Room> availableRooms = new ArrayList<>();
-        roomService.
-        if (criteria.getDateRange() != null) {
-            resService.
-        }
-    }
+
 
     /*
     Testing and debug note: DO NOT use "new" when trying to create room objects!

@@ -1,8 +1,9 @@
 package com.GoldenOpportunity;
 
-/**
- * Edits: Added floorNum to the class
- */
+import java.util.List;
+
+//TODO: Add some form of method for a room to check its availability
+//In the roomTestFile, add new column for each range of dates that a room is reserved
 public class Room {
     int floorNum;
     int roomNo;
@@ -42,6 +43,19 @@ public class Room {
     /*public enum QualityLevel{
         Economy, Comfort, Business, Executive;
     } */
+
+    //TODO: Confirm that this is the best (check the algorithm) and confirm it works
+    /**
+     * isAvailable - Will check all reservations and if any reservation both has this room
+     * and conflicts with the given dateRange, the function will return false meaning
+     * the room is not available for a given date range.
+     * @param range - A given date range that could overlap with all reservations
+     * @param reservations - The list of reservations to be checked against
+     */
+    public boolean isAvailable(DateRange range, List<Reservation> reservations) {
+        return reservations.stream().filter(r -> r.getRooms().contains(this))
+                .noneMatch(r -> r.getDateRange().overlaps(range));
+    }
 
     @Override
     public String toString(){
