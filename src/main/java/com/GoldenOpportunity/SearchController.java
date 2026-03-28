@@ -37,11 +37,10 @@ public class SearchController {
     public List<Room> searchAvailableRooms(Criteria criteria) {
         List<Room> availableRooms = new ArrayList<>();
         List<Room> filteredRooms = roomService.searchRoom(criteria);
-        //if (criteria.getDateRange() != null) {
-          //  resService.
-        //}
-        System.out.println("Filtered Rooms:");
-        filteredRooms.forEach(System.out::println);
+        if (criteria.getDateRange() != null) {
+            //Will return the list with all overlaps removed
+            return resService.findOverlaps(availableRooms, criteria.getDateRange());
+        }
         return availableRooms;
     }
 

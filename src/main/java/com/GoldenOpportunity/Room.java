@@ -6,6 +6,8 @@ import java.util.Map;
 /**
  * Edits: Added floorNum to the class
  */
+//TODO: Add some form of method for a room to check its availability
+//In the roomTestFile, add new column for each range of dates that a room is reserved
 public class Room {
     int floorNum;
     int roomNo;
@@ -16,7 +18,8 @@ public class Room {
     String roomType;
     double rate;
 
-    Room(int floorNum, int rmNo, int b, boolean sm, String qlty, String rmType, double r){
+    Room(int floorNum, int rmNo, int b, boolean sm, String qlty,
+         String rmType, double r, Map<String, Integer> InputBedTypes){
         this.floorNum = floorNum;
         roomNo = rmNo;
         beds = b;
@@ -24,8 +27,8 @@ public class Room {
         qLevel = qlty;
         roomType = rmType;
         rate = r;
+        bedTypes = InputBedTypes;
     }
-
 
     public int getFloorNum() {return floorNum;}
     public int getRoomNo() { return roomNo; }
