@@ -53,7 +53,6 @@ public class SearchController {
         availableRooms.forEach(System.out::println);
 
         return availableRooms;
-
     }
 
     private boolean isRoomAvailable(Room room, DateRange range) {
