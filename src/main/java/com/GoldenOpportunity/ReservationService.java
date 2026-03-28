@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
 
+//TODO: Must edit so reservation objects hold information expert responsibilities
 public class ReservationService {
     private List<Reservation> reserveList = new ArrayList<>();
     //ReservationId mapped to its reservation object
@@ -145,12 +146,30 @@ public class ReservationService {
         return null;
     }
 
+    //Find all rooms in the list that overlap with the given dateRange
+    //In SearchController, find the intersection of those rooms which do not overlap
+    public List<Room> findOverlaps(List<Room> currentAvailableRooms, DateRange possibleOverlap) {
+        Set<Room> overlaps = new HashSet<>();
+        return currentAvailableRooms.stream().filter(r -> !r.isAvailable(possibleOverlap, reserveList))
+                .toList();
+    }
+
     public List<Reservation> getReservations() {
         return reserveList;
     }
 
     public Map<String, Reservation> getReservationMap() {
         return reservationMap;
+    }
+
+    /**
+     * getReservationsForRoom: Will return a list of reservations that a room has
+     * @param room
+     * @return
+     */
+    public List<Reservation> getReservationsForRoom(Room room) {
+        return reserveList.stream().filter(r -> r.getRooms().contains(room))
+                .toList();
     }
 
     //TODO: Delete test
