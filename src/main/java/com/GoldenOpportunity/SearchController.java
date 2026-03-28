@@ -3,6 +3,7 @@ package com.GoldenOpportunity;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,6 +34,14 @@ public class SearchController {
         }
     }
 
+    public List<Room> searchAvailableRooms(Criteria criteria) {
+        List<Room> availableRooms = new ArrayList<>();
+        roomService.
+        if (criteria.getDateRange() != null) {
+            resService.
+        }
+    }
+
     /*
     Testing and debug note: DO NOT use "new" when trying to create room objects!
     They will create new objects in memory that, even if ostensibly identical,
@@ -55,6 +64,15 @@ public class SearchController {
             searchController.resService.createReservation(newRooms, LocalDate.now(),
                     LocalDate.parse("2026-11-20"), 0.0);
             searchController.resService.deleteReservation("R-019");
+
+            Criteria criteria = new Criteria();
+            criteria.setDateRange(null);
+            //criteria.setRoomNum(101);
+            criteria.setFloorNum(3);
+            criteria.setSmoking(true);
+            criteria.setRoomType("Deluxe");
+            criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
+
 
             searchController.printRoomsAndReservations();
         }catch (FileNotFoundException e){
