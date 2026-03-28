@@ -39,6 +39,7 @@ public class Criteria {
     public DateRange getDateRange() {
         return dateRange;
     }
+    public Map<String, Integer> getBeds(){return beds;}
 
     public void setFloorNum(int floorNum) {this.floorNum = floorNum;}
     public void setRoomNum(int roomNum) { this.roomNum = roomNum; }
@@ -48,5 +49,7 @@ public class Criteria {
     public void setRoomType(String roomType) { this.roomType = roomType; }
     public void setRate(double rate) { this.rate = rate; }
     public void setDateRange(DateRange dateRange) { this.dateRange = dateRange; }
+    public void setBeds(Map<String, Integer> beds){this.beds.putAll(beds);}
+
 
 }

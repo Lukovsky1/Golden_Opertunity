@@ -36,10 +36,13 @@ public class SearchController {
 
     public List<Room> searchAvailableRooms(Criteria criteria) {
         List<Room> availableRooms = new ArrayList<>();
-        roomService.
-        if (criteria.getDateRange() != null) {
-            resService.
-        }
+        List<Room> filteredRooms = roomService.searchRoom(criteria);
+        //if (criteria.getDateRange() != null) {
+          //  resService.
+        //}
+        System.out.println("Filtered Rooms:");
+        filteredRooms.forEach(System.out::println);
+        return availableRooms;
     }
 
     /*
@@ -69,12 +72,11 @@ public class SearchController {
             criteria.setDateRange(null);
             //criteria.setRoomNum(101);
             criteria.setFloorNum(3);
-            criteria.setSmoking(true);
             criteria.setRoomType("Deluxe");
-            criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
+            //criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
+            searchController.searchAvailableRooms(criteria);
 
-
-            searchController.printRoomsAndReservations();
+            //searchController.printRoomsAndReservations();
         }catch (FileNotFoundException e){
             System.out.println("Room or Reservation File Not Found");
         }
