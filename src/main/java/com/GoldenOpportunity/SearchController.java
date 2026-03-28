@@ -72,11 +72,12 @@ public class SearchController {
             criteria.setDateRange(null);
             //criteria.setRoomNum(101);
             criteria.setFloorNum(3);
+            criteria.setSmoking(true);
             criteria.setRoomType("Deluxe");
-            //criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
-            searchController.searchAvailableRooms(criteria);
+            criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
 
-            //searchController.printRoomsAndReservations();
+
+            searchController.printRoomsAndReservations();
         }catch (FileNotFoundException e){
             System.out.println("Room or Reservation File Not Found");
         }

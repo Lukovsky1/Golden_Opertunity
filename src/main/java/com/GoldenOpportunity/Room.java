@@ -1,6 +1,6 @@
 package com.GoldenOpportunity;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,19 +16,14 @@ public class Room {
     String roomType;
     double rate;
 
-    public Room(int floorNum, int rmNo, int numBeds, boolean smoke, String qlty,
-                String rmType, double rate, Map<String, Integer> bedTypesInput) {
-
+    Room(int floorNum, int rmNo, int b, boolean sm, String qlty, String rmType, double r){
         this.floorNum = floorNum;
-        this.roomNo = rmNo;
-        this.beds = numBeds;
-        this.smoking = smoke;
-        this.qLevel = qlty;
-        this.roomType = rmType;
-        this.rate = rate;
-
-        this.bedTypes = new HashMap<>();
-        this.bedTypes.putAll(bedTypesInput);
+        roomNo = rmNo;
+        beds = b;
+        smoking = sm;
+        qLevel = qlty;
+        roomType = rmType;
+        rate = r;
     }
 
 
@@ -54,6 +49,19 @@ public class Room {
     /*public enum QualityLevel{
         Economy, Comfort, Business, Executive;
     } */
+
+    //TODO: Confirm that this is the best (check the algorithm) and confirm it works
+    /**
+     * isAvailable - Will check all reservations and if any reservation both has this room
+     * and conflicts with the given dateRange, the function will return false meaning
+     * the room is not available for a given date range.
+     * @param range - A given date range that could overlap with all reservations
+     * @param reservations - The list of reservations to be checked against
+     */
+    public boolean isAvailable(DateRange range, List<Reservation> reservations) {
+        return reservations.stream().filter(r -> r.getRooms().contains(this))
+                .noneMatch(r -> r.getDateRange().overlaps(range));
+    }
 
     @Override
     public String toString(){
