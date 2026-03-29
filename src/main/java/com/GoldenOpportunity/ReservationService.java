@@ -149,8 +149,8 @@ public class ReservationService {
     //Find all rooms in the list that overlap with the given dateRange
     //In SearchController, find the intersection of those rooms which do not overlap
     public List<Room> findOverlaps(List<Room> currentAvailableRooms, DateRange possibleOverlap) {
-        Set<Room> overlaps = new HashSet<>();
-        return currentAvailableRooms.stream().filter(r -> !r.isAvailable(possibleOverlap, reserveList))
+        //Set<Room> overlaps = new HashSet<>();
+        return currentAvailableRooms.stream().filter(r ->  r.isAvailable(possibleOverlap, reserveList))
                 .toList();
     }
 

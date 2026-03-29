@@ -35,13 +35,11 @@ public class SearchController {
     }
 
     public List<Room> searchAvailableRooms(Criteria criteria) {
-        List<Room> availableRooms = new ArrayList<>();
         List<Room> filteredRooms = roomService.searchRoom(criteria);
         if (criteria.getDateRange() != null) {
-            //Will return the list with all overlaps removed
-            return resService.findOverlaps(availableRooms, criteria.getDateRange());
+            return resService.findOverlaps(filteredRooms, criteria.getDateRange());
         }
-        return availableRooms;
+        return filteredRooms;
     }
 
     /*
@@ -75,8 +73,13 @@ public class SearchController {
             criteria.setRoomType("Deluxe");
             criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
 
+            List<Room> availableRooms = searchController.searchAvailableRooms(criteria);
+            availableRooms.forEach(r -> System.out.println(r.getRoomNo()));
 
-            searchController.printRoomsAndReservations();
+
+
+
+            //searchController.printRoomsAndReservations();
         }catch (FileNotFoundException e){
             System.out.println("Room or Reservation File Not Found");
         }
