@@ -65,6 +65,17 @@ public class SearchController {
         return true;
     }
 
+    private boolean isRoomAvailable(Room room, DateRange range) {
+        for (Reservation r : resService.getReservations()) {
+            if (r.getRooms().contains(room) &&
+                    r.getDateRange().overlaps(range)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     /*
     Testing and debug note: DO NOT use "new" when trying to create room objects!
     They will create new objects in memory that, even if ostensibly identical,
@@ -95,6 +106,7 @@ public class SearchController {
             criteria.setSmoking(true);
             criteria.setRoomType("Deluxe");
             criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
+            searchController.searchAvailableRooms(criteria);
 
             List<Room> availableRooms = searchController.searchAvailableRooms(criteria);
             availableRooms.forEach(r -> System.out.println(r.getRoomNo()));
@@ -102,6 +114,7 @@ public class SearchController {
 
 
 
+            //searchController.printRoomsAndReservations();
             //searchController.printRoomsAndReservations();
         }catch (FileNotFoundException e){
             System.out.println("Room or Reservation File Not Found");
