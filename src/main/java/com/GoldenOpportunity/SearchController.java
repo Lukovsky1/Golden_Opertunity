@@ -43,7 +43,7 @@ public class SearchController {
             availableRooms.addAll(filteredRooms);
         } else {
             for (Room room : filteredRooms) {
-                if (isRoomAvailable(room, criteria.getDateRange())) {
+                if (room.isRoomAvailable(criteria.getDateRange())) {
                     availableRooms.add(room);
                 }
             }
@@ -54,17 +54,6 @@ public class SearchController {
 
         return availableRooms;
     }
-
-    private boolean isRoomAvailable(Room room, DateRange range) {
-        for (Reservation r : resService.getReservations()) {
-            if (r.getRooms().contains(room) &&
-                    r.getDateRange().overlaps(range)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     /*
     Testing and debug note: DO NOT use "new" when trying to create room objects!
