@@ -36,10 +36,33 @@ public class SearchController {
 
     public List<Room> searchAvailableRooms(Criteria criteria) {
         List<Room> filteredRooms = roomService.searchRoom(criteria);
-        if (criteria.getDateRange() != null) {
-            return resService.findOverlaps(filteredRooms, criteria.getDateRange());
+        List<Room> availableRooms = new ArrayList<>();
+
+        // If no date range, treat all filtered rooms as available
+        if (criteria.getDateRange() == null) {
+            availableRooms.addAll(filteredRooms);
+        } else {
+            for (Room room : filteredRooms) {
+                if (isRoomAvailable(room, criteria.getDateRange())) {
+                    availableRooms.add(room);
+                }
+            }
         }
-        return filteredRooms;
+
+        System.out.println("Available Rooms:");
+        availableRooms.forEach(System.out::println);
+
+        return availableRooms;
+    }
+
+    private boolean isRoomAvailable(Room room, DateRange range) {
+        for (Reservation r : resService.getReservations()) {
+            if (r.getRooms().contains(room) &&
+                    r.getDateRange().overlaps(range)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /*
