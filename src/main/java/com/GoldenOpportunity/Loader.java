@@ -1,4 +1,6 @@
 package com.GoldenOpportunity;
 
-public class Loader {
+
+public abstract class Loader {
+    //protected List<T>
 }

@@ -55,16 +55,7 @@ public class SearchController {
         return availableRooms;
     }
 
-    private boolean isRoomAvailable(Room room, DateRange range) {
-        for (Reservation r : resService.getReservations()) {
-            if (r.getRooms().contains(room) &&
-                    r.getDateRange().overlaps(range)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
+    //TODO: Move to room class
     private boolean isRoomAvailable(Room room, DateRange range) {
         for (Reservation r : resService.getReservations()) {
             if (r.getRooms().contains(room) &&
