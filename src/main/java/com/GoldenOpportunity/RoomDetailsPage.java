@@ -4,14 +4,26 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+/**
+ * RoomDetailsPage represents the UI page where a guest can:
+ * - View detailed information about a selected room
+ * - Enter booking details (dates, guests)
+ * - Proceed to reservation
+ */
+
 public class RoomDetailsPage extends JFrame {
 
+    // Input fields for booking information
     private JTextField checkInField;
     private JTextField checkOutField;
     private JSpinner guestsSpinner;
+    // Labels used to display booking summary
     private JLabel nightsValueLabel;
     private JLabel totalValueLabel;
 
+    /**
+    * Constructor: initializes the main window and layout
+    */
     public RoomDetailsPage() {
         setTitle("Room Details");
         setSize(1100, 750);
@@ -19,8 +31,10 @@ public class RoomDetailsPage extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Top navigation bar
         add(createHeader(), BorderLayout.NORTH);
 
+        // Scrollable main content (left: room info, right: booking)
         JScrollPane scrollPane = new JScrollPane(createMainContent());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -28,14 +42,20 @@ public class RoomDetailsPage extends JFrame {
         scrollPane.setBorder(null);
 
         add(scrollPane, BorderLayout.CENTER);
+
+        // Footer with contact info
         add(createFooter(), BorderLayout.SOUTH);
     }
 
+    /**
+     * Creates the header with logo and navigation buttons
+     */
     private JPanel createHeader() {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
+        // Load and scale logo while preserving aspect ratio
         java.net.URL logoUrl = getClass().getResource("/com/GoldenOpportunity/logo.png");
         ImageIcon logoIcon = new ImageIcon(logoUrl);
 
@@ -49,6 +69,7 @@ public class RoomDetailsPage extends JFrame {
         JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
         logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
+        // Navigation buttons (simulate navigation for now)
         JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         navPanel.setOpaque(false);
 
@@ -57,6 +78,7 @@ public class RoomDetailsPage extends JFrame {
         JButton shopButton = new JButton("Shop");
         JButton loginButton = new JButton("Log In");
 
+        // Temporary actions (to be replaced by real navigation later)
         homeButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Home page"));
         roomsButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Rooms page"));
         shopButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Shop page"));
@@ -73,6 +95,11 @@ public class RoomDetailsPage extends JFrame {
         return header;
     }
 
+    /**
+     * Creates the main layout with two sections:
+     * - Left: room details
+     * - Right: booking panel
+     */
     private JPanel createMainContent() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -83,13 +110,13 @@ public class RoomDetailsPage extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridy = 0;
 
-        // Left panel
+        // Left panel: room information
         gbc.gridx = 0;
         gbc.weightx = 0.52;
         gbc.weighty = 1.0;
         mainPanel.add(createLeftPanel(), gbc);
 
-        // Right panel
+        // Right panel: booking section
         gbc.gridx = 1;
         gbc.weightx = 0.48;
         gbc.insets = new Insets(0, 0, 0, 0);
@@ -98,6 +125,13 @@ public class RoomDetailsPage extends JFrame {
         return mainPanel;
     }
 
+    /**
+     * Builds the left section displaying:
+     * - Room image
+     * - Description
+     * - Amenities
+     * - Price
+     */
     private JPanel createLeftPanel() {
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
@@ -108,6 +142,7 @@ public class RoomDetailsPage extends JFrame {
         pageTitle.setFont(new Font("SansSerif", Font.BOLD, 28));
         pageTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // Room image
         ImageIcon roomIcon = new ImageIcon(getClass().getResource("/com/GoldenOpportunity/room.png"));
         Image scaledRoom = roomIcon.getImage().getScaledInstance(500, 280, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
@@ -117,6 +152,7 @@ public class RoomDetailsPage extends JFrame {
         roomTitle.setFont(new Font("SansSerif", Font.BOLD, 24));
         roomTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // Room description
         JTextArea description = new JTextArea(
             "Experience luxury in our spacious Deluxe Suite, offering breathtaking ocean views. "
           + "This elegantly designed room features a comfortable king-size bed, a private balcony, "
@@ -133,6 +169,7 @@ public class RoomDetailsPage extends JFrame {
         amenitiesTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
         amenitiesTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // Amenities list
         JTextArea amenities = new JTextArea(
             "- King-size bed\n"
           + "- Private balcony\n"
@@ -149,11 +186,13 @@ public class RoomDetailsPage extends JFrame {
         amenities.setFont(new Font("SansSerif", Font.PLAIN, 15));
         amenities.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // Price display
         JLabel priceLabel = new JLabel("Price: $250 / night");
         priceLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         priceLabel.setForeground(new Color(0, 130, 0));
         priceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // Add all components to layout
         leftPanel.add(pageTitle);
         leftPanel.add(Box.createVerticalStrut(20));
         leftPanel.add(imageLabel);
@@ -171,6 +210,12 @@ public class RoomDetailsPage extends JFrame {
         return leftPanel;
     }
 
+    /**
+     * Builds the booking panel where users:
+     * - Select dates
+     * - Choose number of guests
+     * - View total cost
+     */
     private JPanel createRightPanel() {
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(new Color(245, 245, 245));
@@ -186,6 +231,7 @@ public class RoomDetailsPage extends JFrame {
         JLabel title = new JLabel("Book Your Stay");
         title.setFont(new Font("SansSerif", Font.BOLD, 22));
 
+        // Booking inputs
         JLabel checkInLabel = new JLabel("Check-in Date");
         checkInField = new JTextField("mm/dd/yyyy");
 
@@ -197,6 +243,7 @@ public class RoomDetailsPage extends JFrame {
 
         JSeparator separator = new JSeparator();
 
+        // Cost summary section
         JLabel summaryTitle = new JLabel("Total Cost Summary");
         summaryTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
 
@@ -220,6 +267,7 @@ public class RoomDetailsPage extends JFrame {
         totalRow.add(totalText, BorderLayout.WEST);
         totalRow.add(totalValueLabel, BorderLayout.EAST);
 
+        // Booking button
         JButton proceedButton = new JButton("Proceed to Booking");
         proceedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         proceedButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -227,6 +275,7 @@ public class RoomDetailsPage extends JFrame {
                 JOptionPane.showMessageDialog(this, "Go to Booking / Confirmation page")
         );
 
+        // Add components
         bookingPanel.add(title);
         bookingPanel.add(Box.createVerticalStrut(20));
         bookingPanel.add(checkInLabel);
@@ -257,6 +306,9 @@ public class RoomDetailsPage extends JFrame {
         return wrapper;
     }
 
+    /**
+     * Footer displaying contact information
+     */
     private JPanel createFooter() {
         JPanel footer = new JPanel();
         footer.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -270,6 +322,9 @@ public class RoomDetailsPage extends JFrame {
         return footer;
     }
 
+    /**
+     * Entry point to launch the application
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             RoomDetailsPage page = new RoomDetailsPage();
