@@ -43,7 +43,7 @@ public class SearchController {
             availableRooms.addAll(filteredRooms);
         } else {
             for (Room room : filteredRooms) {
-                if (isRoomAvailable(room, criteria.getDateRange())) {
+                if (room.isRoomAvailable(criteria.getDateRange())) {
                     availableRooms.add(room);
                 }
             }

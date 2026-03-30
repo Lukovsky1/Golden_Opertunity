@@ -1,5 +1,6 @@
 package com.GoldenOpportunity;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,17 @@ public class Room {
     public boolean isAvailable(DateRange range, List<Reservation> reservations) {
         return reservations.stream().filter(r -> r.getRooms().contains(this))
                 .noneMatch(r -> r.getDateRange().overlaps(range));
+    }
+
+    boolean isRoomAvailable(DateRange range) {
+        ReservationService resService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+        for (Reservation r : resService.getReservations()) {
+            if (r.getRooms().contains(this) &&
+                    r.getDateRange().overlaps(range)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
