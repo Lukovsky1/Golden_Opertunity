@@ -5,6 +5,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -60,10 +62,10 @@ public class HotelHomePageUI extends JPanel {
         }
 
         buttonMap.get("Home").addActionListener(e -> {
-            cardLayout.show(mainPanel,"Home");
+            cardLayout.show(mainPanel,"HOME");
         });
         buttonMap.get("Rooms").addActionListener(e -> {
-            cardLayout.show(mainPanel,"Rooms");
+            cardLayout.show(mainPanel,"ROOMS");
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -118,21 +120,33 @@ public class HotelHomePageUI extends JPanel {
         gbc.gridx = 3;
         search.add(new JLabel("Room Type"), gbc);
 
+        JTextField startDate = new JTextField("mm/dd/yyyy", 10);
+        JTextField endDate = new JTextField("mm/dd/yyyy", 10);
+        JTextField numGuests = new JTextField("1", 10);
+        JComboBox<String> roomType = new JComboBox<>(new String[]{"Standard", "Deluxe", "Suite"});
+
         gbc.gridy = 1;
         gbc.gridx = 0;
-        search.add(new JTextField("mm/dd/yyyy", 10), gbc);
+        search.add(startDate, gbc);
         gbc.gridx = 1;
-        search.add(new JTextField("mm/dd/yyyy", 10), gbc);
+        search.add(endDate, gbc);
         gbc.gridx = 2;
-        search.add(new JTextField("1", 10), gbc);
+        search.add(numGuests, gbc);
         gbc.gridx = 3;
-        search.add(new JComboBox<>(new String[]{"Standard", "Deluxe", "Suite"}), gbc);
+        search.add(roomType, gbc);
 
         gbc.gridx = 4;
         JButton searchBtn = new JButton("Search");
         searchBtn.setBackground(new Color(50, 100, 230));
         searchBtn.setForeground(Color.WHITE);
         search.add(searchBtn, gbc);
+
+        searchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel,"ROOMS");
+            }
+        });
 
         return search;
     }
@@ -142,7 +156,7 @@ public class HotelHomePageUI extends JPanel {
         wrapper.setBackground(new Color(245, 245, 245));
 
         JPanel rooms = new JPanel(new GridLayout(1, 3, 15, 15));
-        rooms.setPreferredSize(new Dimension(900, 300));
+        rooms.setPreferredSize(new Dimension(900, 500));
         rooms.setBackground(new Color(245, 245, 245));
 
         rooms.add(createRoomCard("Standard Room", "Comfortable room", "$120 / night"));
@@ -180,6 +194,13 @@ public class HotelHomePageUI extends JPanel {
         details.setBackground(new Color(30, 170, 70));
         details.setForeground(Color.WHITE);
         info.add(details);
+
+        details.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel,"DETAILS");
+            }
+        });
 
         card.add(image, BorderLayout.NORTH);
         card.add(info, BorderLayout.CENTER);

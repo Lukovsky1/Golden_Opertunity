@@ -1,8 +1,11 @@
 package com.GoldenOpportunity;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * RoomDetailsPage represents the UI page where a guest can:
@@ -11,7 +14,7 @@ import java.awt.*;
  * - Proceed to reservation
  */
 
-public class RoomDetailsPage extends JFrame {
+public class RoomDetailsPage extends JPanel {
 
     // Input fields for booking information
     private JTextField checkInField;
@@ -21,20 +24,20 @@ public class RoomDetailsPage extends JFrame {
     private JLabel nightsValueLabel;
     private JLabel totalValueLabel;
 
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+
     /**
     * Constructor: initializes the main window and layout
     */
-    public RoomDetailsPage() {
-        setTitle("Room Details");
-        setSize(1100, 750);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public RoomDetailsPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+        this.cardLayout = cardLayout;
+        this.mainPanel = mainPanel;
+
         setLayout(new BorderLayout());
 
-        // Top navigation bar
         add(createHeader(), BorderLayout.NORTH);
 
-        // Scrollable main content (left: room info, right: booking)
         JScrollPane scrollPane = new JScrollPane(createMainContent());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -42,30 +45,26 @@ public class RoomDetailsPage extends JFrame {
         scrollPane.setBorder(null);
 
         add(scrollPane, BorderLayout.CENTER);
-
-        // Footer with contact info
         add(createFooter(), BorderLayout.SOUTH);
     }
 
     /**
      * Creates the header with logo and navigation buttons
      */
-    private JPanel createHeader() {
+    private JPanel createHeader() throws IOException {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        // Load and scale logo while preserving aspect ratio
-        java.net.URL logoUrl = getClass().getResource("/com/GoldenOpportunity/logo.png");
-        ImageIcon logoIcon = new ImageIcon(logoUrl);
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/logo.png"));
 
-        int originalWidth = logoIcon.getIconWidth();
-        int originalHeight = logoIcon.getIconHeight();
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
 
         int newHeight = 70;
         int newWidth = (originalWidth * newHeight) / originalHeight;
 
-        Image scaledLogo = logoIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
         logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
@@ -79,8 +78,8 @@ public class RoomDetailsPage extends JFrame {
         JButton loginButton = new JButton("Log In");
 
         // Temporary actions (to be replaced by real navigation later)
-        homeButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Home page"));
-        roomsButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Rooms page"));
+        homeButton.addActionListener(e -> cardLayout.show(mainPanel, "HOME"));
+        roomsButton.addActionListener(e -> cardLayout.show(mainPanel, "ROOMS"));
         shopButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Shop page"));
         loginButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Login page"));
 
@@ -100,7 +99,7 @@ public class RoomDetailsPage extends JFrame {
      * - Left: room details
      * - Right: booking panel
      */
-    private JPanel createMainContent() {
+    private JPanel createMainContent() throws IOException {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(new Color(245, 245, 245));
@@ -132,7 +131,7 @@ public class RoomDetailsPage extends JFrame {
      * - Amenities
      * - Price
      */
-    private JPanel createLeftPanel() {
+    private JPanel createLeftPanel() throws IOException {
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBackground(Color.WHITE);
@@ -143,9 +142,12 @@ public class RoomDetailsPage extends JFrame {
         pageTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Room image
-        ImageIcon roomIcon = new ImageIcon(getClass().getResource("/com/GoldenOpportunity/room.png"));
-        Image scaledRoom = roomIcon.getImage().getScaledInstance(500, 280, Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
+        Image roomIcon = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/room.png"));
+        //ImageIcon roomIcon = new ImageIcon(getClass().getResource("/com/GoldenOpportunity/room.png"));
+        Image scaledLogo = roomIcon.getScaledInstance(500, 280, Image.SCALE_SMOOTH);
+        //Image scaledRoom = roomIcon.getImage().getScaledInstance(500, 280, Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(scaledLogo));
+        //JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
         imageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel roomTitle = new JLabel("Deluxe Suite with Ocean View");
@@ -320,15 +322,5 @@ public class RoomDetailsPage extends JFrame {
         footer.add(contactLabel);
 
         return footer;
-    }
-
-    /**
-     * Entry point to launch the application
-     */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            RoomDetailsPage page = new RoomDetailsPage();
-            page.setVisible(true);
-        });
     }
 }
