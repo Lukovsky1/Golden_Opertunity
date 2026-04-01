@@ -39,18 +39,20 @@ public class RoomDetailsPage extends JPanel {
     private LocalDate endDate;
     private int numGuests;
     private double rate;
+    private String imageFile;
 
     /**
      * Constructor: initializes the main window and layout
      */
     public RoomDetailsPage(CardLayout cardLayout,JPanel mainPanel,
-                           LocalDate startDate,LocalDate endDate,int numGuests,double rate) throws IOException {
+                           LocalDate startDate,LocalDate endDate,int numGuests,double rate,String imageFile) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.startDate = startDate;
         this.endDate = endDate;
         this.numGuests = numGuests;
         this.rate = rate;
+        this.imageFile = imageFile;
 
         setLayout(new BorderLayout());
 
@@ -160,7 +162,7 @@ public class RoomDetailsPage extends JPanel {
         pageTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Room image
-        Image roomIcon = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/room.png"));
+        Image roomIcon = ImageIO.read(new File(imageFile));
         //ImageIcon roomIcon = new ImageIcon(getClass().getResource("/com/GoldenOpportunity/room.png"));
         Image scaledRoom = roomIcon.getScaledInstance(500, 280, Image.SCALE_SMOOTH);
         //Image scaledRoom = roomIcon.getImage().getScaledInstance(500, 280, Image.SCALE_SMOOTH);
