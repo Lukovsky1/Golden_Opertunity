@@ -457,3 +457,4 @@ private void updateCostSummary() {
         writer.write(reservation.getId() + "," + roomId + "," + startDate + "," + endDate);
         writer.close();
     }
+}
