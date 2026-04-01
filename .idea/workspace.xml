@@ -8,14 +8,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/LoginPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/LoginPage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/MainUIFrame.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/MainUIFrame.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,6 +84,7 @@
     "Application.AddRoomPage.executor": "Run",
     "Application.HotelBookingUI.executor": "Run",
     "Application.HotelHomePageUI.executor": "Run",
+    "Application.LoginPage.executor": "Run",
     "Application.MainUIFrame.executor": "Run",
     "Application.RoomDetailsPage.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
@@ -138,8 +135,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.HotelHomePageUI" />
         <item itemvalue="Application.HotelBookingUI" />
         <item itemvalue="Application.HotelHomePageUI" />
+        <item itemvalue="Application.HotelBookingUI" />
+        <item itemvalue="Application.HotelBookingUI" />
       </list>
     </recent_temporary>
   </component>

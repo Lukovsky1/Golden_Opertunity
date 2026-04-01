@@ -13,12 +13,14 @@ public class MainUIFrame extends JFrame {
         CardLayout cardLayout = new CardLayout();
         JPanel mainPanel = new JPanel(cardLayout);
 
-        HotelHomePageUI hotelHomePageUI = new HotelHomePageUI(cardLayout, mainPanel);
+        HotelHomePageUI hotelHomePageUI = new HotelHomePageUI(cardLayout,mainPanel);
         HotelBookingUI hotelBookingUI = new HotelBookingUI(cardLayout,mainPanel,
                 hotelHomePageUI.getRoomService(),hotelHomePageUI.getReservationService());
+        LoginPage loginPage = new LoginPage(cardLayout,mainPanel);
 
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
+        mainPanel.add(loginPage,"LOGIN");
 
         add(mainPanel);
 

@@ -80,6 +80,9 @@ public class HotelBookingUI extends JPanel {
         buttonMap.get("Rooms").addActionListener(e -> {
             cardLayout.show(mainPanel,"ROOMS");
         });
+        buttonMap.get("Login").addActionListener(e -> {
+            cardLayout.show(mainPanel,"LOGIN");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
