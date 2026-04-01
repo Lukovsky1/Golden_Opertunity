@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -22,10 +23,17 @@ public class HotelHomePageUI extends JPanel {
     private JTextField startDate;
     private JTextField endDate;
     private JTextField numGuests;
+    private RoomService roomService;
+    private ReservationService reservationService;
+
+    public RoomService getRoomService(){return roomService;}
+    public ReservationService getReservationService(){return reservationService;}
 
     public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+        roomService = new RoomService("src/main/resources/testRoomData1.csv");
 
         setLayout(new BorderLayout(10, 10));
 
@@ -136,9 +144,9 @@ public class HotelHomePageUI extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0; gbc.gridy = 0;
-        search.add(new JLabel("Check-In Date"), gbc);
+        search.add(new JLabel("Check-In Date (yyyy-MM-dd)"), gbc);
         gbc.gridx = 1;
-        search.add(new JLabel("Check-out Date"), gbc);
+        search.add(new JLabel("Check-Out Date (yyyy-MM-dd)"), gbc);
         gbc.gridx = 2;
         search.add(new JLabel("Number of Guests"), gbc);
         gbc.gridx = 3;
@@ -146,10 +154,10 @@ public class HotelHomePageUI extends JPanel {
 
         gbc.gridy = 1;
         gbc.gridx = 0;
-        startDate = new JTextField("yyyy-MM-dd", 10);
+        startDate = new JTextField("", 10);
         search.add(startDate, gbc);
         gbc.gridx = 1;
-        endDate = new JTextField("yyyy-MM-dd", 10);
+        endDate = new JTextField("", 10);
         search.add(endDate, gbc);
         gbc.gridx = 2;
         numGuests = new JTextField("1", 10);
@@ -173,15 +181,15 @@ public class HotelHomePageUI extends JPanel {
         JPanel rooms = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         rooms.setBackground(new Color(245, 245, 245));
 
-        rooms.add(createRoomCard("Standard Room", "Comfortable room", "$120 / night","src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
-        rooms.add(createRoomCard("Deluxe Room", "Spacious deluxe room", "$180 / night","src/main/java/com/GoldenOpportunity/roomDeluxe.png"));
-        rooms.add(createRoomCard("Suite", "Luxury suite", "$250 / night","src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(4),"src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(6),"src/main/java/com/GoldenOpportunity/roomDeluxe.png"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(8),"src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
 
         wrapper.add(rooms);
         return wrapper;
     }
 
-    private JPanel createRoomCard(String name, String desc, String price,String imageFile) throws IOException {
+    private JPanel createRoomCard(Room room,String imageFile) throws IOException {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         card.setPreferredSize(new Dimension(280, 280));
@@ -198,11 +206,17 @@ public class HotelHomePageUI extends JPanel {
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
         info.setBackground(Color.WHITE);
 
-        info.add(new JLabel(name));
+        info.add(new JLabel(room.getRoomType() + "Room"));
         info.add(Box.createVerticalStrut(8));
-        info.add(new JLabel(desc));
+        String desc = "";
+        for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+            desc = desc.concat(entry.getValue() + " ");
+            desc = desc.concat(entry.getKey() + ", ");
+        }
+        String finalDesc = desc.substring(0,desc.length()-2);
+        info.add(new JLabel(finalDesc));
         info.add(Box.createVerticalStrut(10));
-        info.add(new JLabel("Price: " + price));
+        info.add(new JLabel("Price: $" + String.format("%.2f",room.getRate()) + " / night"));
         info.add(Box.createVerticalStrut(10));
 
         JButton details = new JButton("Select / Book");
@@ -216,14 +230,14 @@ public class HotelHomePageUI extends JPanel {
                 try {
                     mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
                             LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
-                            Integer.parseInt(numGuests.getText()),Double.parseDouble(price.replaceAll("\\D","")),
-                                    imageFile),
+                            Integer.parseInt(numGuests.getText()),room,
+                                    imageFile,reservationService),
                             "DETAILS");
                     mainPanel.revalidate();
                     mainPanel.repaint();
                 }
                 catch (DateTimeParseException ex){
-                    JOptionPane.showMessageDialog(null, "Invalid Date");
+                    JOptionPane.showMessageDialog(null, "Invalid Dates");
                 }
                 catch (IOException ex) {
                     throw new RuntimeException(ex);

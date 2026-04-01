@@ -26,8 +26,8 @@ import java.util.Map;
 public class RoomDetailsPage extends JPanel {
 
     // Input fields for booking information
-    private JTextField checkInField;
-    private JTextField checkOutField;
+    private JLabel checkInField;
+    private JLabel checkOutField;
     private JSpinner guestsSpinner;
     // Labels used to display booking summary
     private JLabel nightsValueLabel;
@@ -38,21 +38,24 @@ public class RoomDetailsPage extends JPanel {
     private LocalDate startDate;
     private LocalDate endDate;
     private int numGuests;
-    private double rate;
     private String imageFile;
+    private Room room;
+    private ReservationService reservationService;
 
     /**
      * Constructor: initializes the main window and layout
      */
     public RoomDetailsPage(CardLayout cardLayout,JPanel mainPanel,
-                           LocalDate startDate,LocalDate endDate,int numGuests,double rate,String imageFile) throws IOException {
+                           LocalDate startDate,LocalDate endDate,int numGuests,Room room,String imageFile,
+                           ReservationService reservationService) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.startDate = startDate;
         this.endDate = endDate;
         this.numGuests = numGuests;
-        this.rate = rate;
+        this.room = room;
         this.imageFile = imageFile;
+        this.reservationService = reservationService;
 
         setLayout(new BorderLayout());
 
@@ -208,7 +211,7 @@ public class RoomDetailsPage extends JPanel {
         amenities.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Price display
-        JLabel priceLabel = new JLabel("Price: $250 / night");
+        JLabel priceLabel = new JLabel("Price: $" + room.getRate() + " / night");
         priceLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         priceLabel.setForeground(new Color(0, 130, 0));
         priceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -254,10 +257,10 @@ public class RoomDetailsPage extends JPanel {
 
         // Booking inputs
         JLabel checkInLabel = new JLabel("Check-in Date");
-        checkInField = new JTextField(startDate.toString());
+        checkInField = new JLabel(startDate.toString());
 
         JLabel checkOutLabel = new JLabel("Check-out Date");
-        checkOutField = new JTextField(endDate.toString());
+        checkOutField = new JLabel(endDate.toString());
 
         JLabel guestsLabel = new JLabel("Number of Guests");
         guestsSpinner = new JSpinner(new SpinnerNumberModel(numGuests, 1, 10, 1));
@@ -271,7 +274,7 @@ public class RoomDetailsPage extends JPanel {
         JPanel priceRow = new JPanel(new BorderLayout());
         priceRow.setOpaque(false);
         priceRow.add(new JLabel("Price per night:"), BorderLayout.WEST);
-        priceRow.add(new JLabel("$" + rate), BorderLayout.EAST);
+        priceRow.add(new JLabel("$" + String.format("%.2f",room.getRate())), BorderLayout.EAST);
 
         JPanel nightsRow = new JPanel(new BorderLayout());
         nightsRow.setOpaque(false);
@@ -283,7 +286,7 @@ public class RoomDetailsPage extends JPanel {
         totalRow.setOpaque(false);
         JLabel totalText = new JLabel("Total:");
         totalText.setFont(new Font("SansSerif", Font.BOLD, 18));
-        totalValueLabel = new JLabel("$" + rate*Period.between(startDate,endDate).getDays());
+        totalValueLabel = new JLabel("$" + String.format("%.2f",room.getRate()*Period.between(startDate,endDate).getDays()));
         totalValueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         totalRow.add(totalText, BorderLayout.WEST);
         totalRow.add(totalValueLabel, BorderLayout.EAST);
@@ -297,15 +300,7 @@ public class RoomDetailsPage extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     startDate = LocalDate.parse(checkInField.getText());
                     endDate = LocalDate.parse(checkOutField.getText());
-                    ReservationService reservationService = new ReservationService(Path.of("filename"));
-                    try {
-                        RoomService roomService = new RoomService("filename");
-                        //TODO: Andrei, reservation now takes a single room object. Can you edit this to fit your implementation
-                        reservationService.createReservation(roomService.getRoomList().get(0),startDate,endDate,
-                                rate*Period.between(startDate,endDate).getDays());
-                    } catch (FileNotFoundException ex) {
-                        throw new RuntimeException(ex);
-                    }
+                    reservationService.createReservation(room,startDate,endDate,room.getRate());
                 }
             }
         );

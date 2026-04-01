@@ -66,7 +66,7 @@ public class ReservationService {
         String newResId = createResId();
         //Confirms that the two given dates are within a valid range
         if (!DateRange.validateRange(start, end)) {
-            JOptionPane.showMessageDialog(null, "Invalid date range");
+            JOptionPane.showMessageDialog(null, "Invalid Date Range");
             return;
         }
         Reservation newRes = new Reservation(newResId, room, new DateRange(start, end), bill);

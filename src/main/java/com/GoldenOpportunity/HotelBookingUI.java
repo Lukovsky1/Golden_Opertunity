@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,10 +26,15 @@ public class HotelBookingUI extends JPanel {
     private JTextField startDate;
     private JTextField endDate;
     private JSpinner numGuests;
+    private RoomService roomService;
+    private ReservationService reservationService;
 
-    public HotelBookingUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public HotelBookingUI(CardLayout cardLayout, JPanel mainPanel,
+                          RoomService roomService,ReservationService reservationService) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.roomService = roomService;
+        this.reservationService = reservationService;
 
         setLayout(new BorderLayout(10, 10));
 
@@ -84,10 +91,10 @@ public class HotelBookingUI extends JPanel {
         JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         wrapper.setBackground(new Color(245, 245, 245));
 
-        startDate = new JTextField("yyyy-MM-dd");
+        startDate = new JTextField("");
         startDate.setPreferredSize(new Dimension(120, 35));
 
-        endDate = new JTextField("yyyy-MM-dd");
+        endDate = new JTextField("");
         endDate.setPreferredSize(new Dimension(120, 35));
 
         numGuests = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
@@ -100,10 +107,10 @@ public class HotelBookingUI extends JPanel {
         searchButton.setBackground(new Color(50, 100, 230));
         searchButton.setForeground(Color.WHITE);
 
-        wrapper.add(new JLabel("Check-in:"));
+        wrapper.add(new JLabel("Check-in (yyyy-MM-dd):"));
         wrapper.add(startDate);
 
-        wrapper.add(new JLabel("Check-out:"));
+        wrapper.add(new JLabel("Check-out (yyyy-MM-dd):"));
         wrapper.add(endDate);
 
         wrapper.add(new JLabel("Guests:"));
@@ -120,19 +127,16 @@ public class HotelBookingUI extends JPanel {
         list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
         list.setBackground(new Color(245, 245, 245));
 
-        list.add(createRoomCard("Standard Room", "Comfortable room with queen bed", "$120 / night","src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
-        list.add(Box.createVerticalStrut(15));
+        List<String> photos = new ArrayList<>();
+        photos.add("src/main/java/com/GoldenOpportunity/roomStandard.jpg");
+        photos.add("src/main/java/com/GoldenOpportunity/roomDeluxe.png");
+        photos.add("src/main/java/com/GoldenOpportunity/roomSuite.jpg");
 
-        list.add(createRoomCard("Deluxe Room", "Spacious room with balcony", "$180 / night","src/main/java/com/GoldenOpportunity/roomDeluxe.png"));
-        list.add(Box.createVerticalStrut(15));
-
-        list.add(createRoomCard("Suite", "Luxury suite with living area", "$250 / night","src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
-        list.add(Box.createVerticalStrut(15));
-
-        list.add(createRoomCard("King Room", "King bed with city view", "$200 / night","src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
-        list.add(Box.createVerticalStrut(15));
-
-        list.add(createRoomCard("Twin Room", "Two beds for shared stay", "$150 / night","src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
+        for(Room room : roomService.getRoomList()){
+            int randomNum = (int)(Math.random() * 3);
+            list.add(createRoomCard(room,photos.get(randomNum)));
+            list.add(Box.createVerticalStrut(15));
+        }
 
         return list;
     }
@@ -155,7 +159,7 @@ public class HotelBookingUI extends JPanel {
         return main;
     }
 
-    private JPanel createRoomCard(String roomName, String description, String price, String imageFile) {
+    private JPanel createRoomCard(Room room, String imageFile) {
         JPanel card = new JPanel(new BorderLayout(15, 15));
         card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         card.setBackground(Color.WHITE);
@@ -180,11 +184,17 @@ public class HotelBookingUI extends JPanel {
         info.setBackground(Color.WHITE);
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JLabel nameLabel = new JLabel(roomName);
+        JLabel nameLabel = new JLabel(room.getRoomType() + " Room");
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
 
-        JLabel descLabel = new JLabel(description);
-        JLabel priceLabel = new JLabel("Price: " + price);
+        String desc = "";
+        for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+            desc = desc.concat(entry.getValue() + " ");
+            desc = desc.concat(entry.getKey() + ", ");
+        }
+        String finalDesc = desc.substring(0,desc.length()-2);
+        JLabel descLabel = new JLabel(finalDesc);
+        JLabel priceLabel = new JLabel("Price: " + String.format("%.2f",room.getRate()) + " / night");
 
         JButton book = new JButton("Select / Book");
         book.setBackground(new Color(30, 170, 70));
@@ -198,14 +208,13 @@ public class HotelBookingUI extends JPanel {
                 try {
                     mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
                                     LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
-                                    (Integer) numGuests.getValue(),
-                                    Double.parseDouble(price.replaceAll("\\D","")),imageFile),
+                                    (Integer) numGuests.getValue(),room,imageFile,reservationService),
                             "DETAILS");
                     mainPanel.revalidate();
                     mainPanel.repaint();
                 }
                 catch (DateTimeParseException ex){
-                    JOptionPane.showMessageDialog(null, "Invalid Date");
+                    JOptionPane.showMessageDialog(null, "Invalid Dates");
                 }
                 catch (IOException ex) {
                     throw new RuntimeException(ex);
