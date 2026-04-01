@@ -1,12 +1,15 @@
-
 package com.GoldenOpportunity;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +19,9 @@ public class HotelHomePageUI extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private JTextField startDate;
+    private JTextField endDate;
+    private JTextField numGuests;
 
     public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
@@ -24,7 +30,14 @@ public class HotelHomePageUI extends JPanel {
         setLayout(new BorderLayout(10, 10));
 
         add(createHeader(), BorderLayout.NORTH);
-        add(createMainContent(), BorderLayout.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane(createMainContent());
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        add(scrollPane, BorderLayout.CENTER);
+
         add(createFooter(), BorderLayout.SOUTH);
     }
 
@@ -60,10 +73,10 @@ public class HotelHomePageUI extends JPanel {
         }
 
         buttonMap.get("Home").addActionListener(e -> {
-            cardLayout.show(mainPanel,"Home");
+            cardLayout.show(mainPanel,"HOME");
         });
         buttonMap.get("Rooms").addActionListener(e -> {
-            cardLayout.show(mainPanel,"Rooms");
+            cardLayout.show(mainPanel,"ROOMS");
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -71,7 +84,7 @@ public class HotelHomePageUI extends JPanel {
         return header;
     }
 
-    private JPanel createMainContent() {
+    private JPanel createMainContent() throws IOException {
         JPanel main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         main.setBorder(new EmptyBorder(10, 20, 10, 20));
@@ -91,11 +104,24 @@ public class HotelHomePageUI extends JPanel {
     }
 
     private JPanel createHeroSection() {
-        JPanel hero = new JPanel();
-        hero.setPreferredSize(new Dimension(1100, 220));
+        JPanel hero = new JPanel(new BorderLayout());
+        hero.setPreferredSize(new Dimension(900, 450));
         hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
-        hero.setBackground(new Color(210, 215, 220));
-        hero.add(new JLabel("Image Placeholder"));
+
+        try {
+            Image heroImage = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/lobby.jpg"));
+            Image scaledHero = heroImage.getScaledInstance(884, 360, Image.SCALE_SMOOTH);
+
+            JLabel imageLabel = new JLabel(new ImageIcon(scaledHero));
+            hero.add(imageLabel, BorderLayout.CENTER);
+
+        } catch (IOException | IllegalArgumentException e) {
+            JLabel fallback = new JLabel("Image not found", SwingConstants.CENTER);
+            fallback.setOpaque(true);
+            fallback.setBackground(new Color(210, 215, 220));
+            hero.add(fallback, BorderLayout.CENTER);
+        }
+
         return hero;
     }
 
@@ -120,11 +146,14 @@ public class HotelHomePageUI extends JPanel {
 
         gbc.gridy = 1;
         gbc.gridx = 0;
-        search.add(new JTextField("mm/dd/yyyy", 10), gbc);
+        startDate = new JTextField("yyyy-MM-dd", 10);
+        search.add(startDate, gbc);
         gbc.gridx = 1;
-        search.add(new JTextField("mm/dd/yyyy", 10), gbc);
+        endDate = new JTextField("yyyy-MM-dd", 10);
+        search.add(endDate, gbc);
         gbc.gridx = 2;
-        search.add(new JTextField("1", 10), gbc);
+        numGuests = new JTextField("1", 10);
+        search.add(numGuests, gbc);
         gbc.gridx = 3;
         search.add(new JComboBox<>(new String[]{"Standard", "Deluxe", "Suite"}), gbc);
 
@@ -137,32 +166,32 @@ public class HotelHomePageUI extends JPanel {
         return search;
     }
 
-    private JPanel createFeaturedRooms() {
+    private JPanel createFeaturedRooms() throws IOException {
         JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         wrapper.setBackground(new Color(245, 245, 245));
 
-        JPanel rooms = new JPanel(new GridLayout(1, 3, 15, 15));
-        rooms.setPreferredSize(new Dimension(900, 300));
+        JPanel rooms = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         rooms.setBackground(new Color(245, 245, 245));
 
-        rooms.add(createRoomCard("Standard Room", "Comfortable room", "$120 / night"));
-        rooms.add(createRoomCard("Deluxe Room", "Spacious deluxe room", "$180 / night"));
-        rooms.add(createRoomCard("Suite", "Luxury suite", "$250 / night"));
+        rooms.add(createRoomCard("Standard Room", "Comfortable room", "$120 / night","src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
+        rooms.add(createRoomCard("Deluxe Room", "Spacious deluxe room", "$180 / night","src/main/java/com/GoldenOpportunity/roomDeluxe.png"));
+        rooms.add(createRoomCard("Suite", "Luxury suite", "$250 / night","src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
 
         wrapper.add(rooms);
         return wrapper;
     }
 
-    private JPanel createRoomCard(String name, String desc, String price) {
+    private JPanel createRoomCard(String name, String desc, String price,String imageFile) throws IOException {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         card.setPreferredSize(new Dimension(280, 280));
         card.setBackground(Color.WHITE);
 
-        JPanel image = new JPanel();
-        image.setPreferredSize(new Dimension(200, 120));
-        image.setBackground(new Color(210, 215, 220));
-        image.add(new JLabel("Image Placeholder"));
+        Image roomImage = ImageIO.read(new File(imageFile));
+        Image scaledRoom = roomImage.getScaledInstance(260, 120, Image.SCALE_SMOOTH);
+
+        JLabel image = new JLabel(new ImageIcon(scaledRoom));
+        image.setPreferredSize(new Dimension(260, 120));
 
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
@@ -176,10 +205,32 @@ public class HotelHomePageUI extends JPanel {
         info.add(new JLabel("Price: " + price));
         info.add(Box.createVerticalStrut(10));
 
-        JButton details = new JButton("View Details");
+        JButton details = new JButton("Select / Book");
         details.setBackground(new Color(30, 170, 70));
         details.setForeground(Color.WHITE);
         info.add(details);
+
+        details.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
+                            LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
+                            Integer.parseInt(numGuests.getText()),Double.parseDouble(price.replaceAll("\\D","")),
+                                    imageFile),
+                            "DETAILS");
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                }
+                catch (DateTimeParseException ex){
+                    JOptionPane.showMessageDialog(null, "Invalid Date");
+                }
+                catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                cardLayout.show(mainPanel,"DETAILS");
+            }
+        });
 
         card.add(image, BorderLayout.NORTH);
         card.add(info, BorderLayout.CENTER);
@@ -221,4 +272,3 @@ public class HotelHomePageUI extends JPanel {
         return footer;
     }
 }
-

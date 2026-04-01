@@ -3,6 +3,7 @@ package com.GoldenOpportunity;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.time.LocalDate;
 
 // New main frame for all of the UI
 
@@ -12,8 +13,11 @@ public class MainUIFrame extends JFrame {
         CardLayout cardLayout = new CardLayout();
         JPanel mainPanel = new JPanel(cardLayout);
 
-        mainPanel.add(new HotelHomePageUI(cardLayout, mainPanel), "Home");
-        mainPanel.add(new HotelBookingUI(cardLayout, mainPanel), "Rooms");
+        HotelHomePageUI hotelHomePageUI = new HotelHomePageUI(cardLayout, mainPanel);
+        HotelBookingUI hotelBookingUI = new HotelBookingUI(cardLayout,mainPanel);
+
+        mainPanel.add(hotelHomePageUI, "HOME");
+        mainPanel.add(hotelBookingUI, "ROOMS");
 
         add(mainPanel);
 

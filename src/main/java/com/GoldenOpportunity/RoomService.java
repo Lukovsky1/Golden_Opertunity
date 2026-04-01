@@ -17,7 +17,6 @@ public class RoomService {
         // Skip header
         if (fileScanner.hasNextLine()) {
             fileScanner.nextLine();
-
         }
 
         while (fileScanner.hasNextLine()) {
@@ -28,18 +27,52 @@ public class RoomService {
             int roomNo = Integer.parseInt(parts[1]);
             String roomType = parts[2];
             String qLevel = parts[3];
-            int beds = Integer.parseInt(parts[4]);
+            int numBeds = Integer.parseInt(parts[4]);
+
+            // Parse bed types: e.g. "1 Full, 2 Twin"
+            Map<String, Integer> bedTypeMap = parseBedTypes(parts[5]);
+
             boolean smoking = Boolean.parseBoolean(parts[6]);
+            double rate = Double.parseDouble(parts[7]);
 
-            // No rate in CSV → default to 0.0
-            double rate = 0.0;
+            Room r = new Room(
+                    floorNum,
+                    roomNo,
+                    numBeds,
+                    smoking,
+                    qLevel,
+                    roomType,
+                    rate,
+                    bedTypeMap
+            );
 
-            Room r = new Room(floorNum, roomNo, beds, smoking, qLevel, roomType, rate);
             roomList.add(r);
             roomMap.put(roomNo, r);
         }
 
         fileScanner.close();
+    }
+
+    private Map<String, Integer> parseBedTypes(String input) {
+        Map<String, Integer> map = new HashMap<>();
+
+        // Remove quotes if present
+        input = input.replace("\"", "").trim();
+
+        // Split by comma
+        String[] parts = input.split(",");
+
+        for (String part : parts) {
+            part = part.trim(); // "1 Full"
+
+            String[] tokens = part.split(" ");
+            int count = Integer.parseInt(tokens[0]);
+            String type = tokens[1];
+
+            map.put(type, count);
+        }
+
+        return map;
     }
 
     private String[] parseCSVLine(String line) {
@@ -62,19 +95,61 @@ public class RoomService {
         return tokens.toArray(new String[0]);
     }
 
-    List<Room> searchRoom(LocalDate start, LocalDate end, String roomType, double price){
-        List<Room> validRooms = new ArrayList<>();
-        for(Room r: roomList){
-            if(roomType.equalsIgnoreCase(r.getRoomType()) && r.getRate() <= price){
-                validRooms.add(r);
+    //TODO: See about refactoring
+    List<Room> searchRoom(Criteria criteria){
+        List<Room> validRoomList = new ArrayList<>();
+        for(Room room: roomList){
+            if(criteria.getFloorNum() != 0 && criteria.getFloorNum() != room.getFloorNum() ){
+                continue;
             }
-        }
-        return validRooms;
+            if(criteria.getRoomNum() != 0 && criteria.getRoomNum() != room.getRoomNo()){
+                continue;
+            }
+            if(criteria.getRoomType() != null &&
+                    !criteria.getRoomType().isBlank() &&
+                    !criteria.getRoomType().equalsIgnoreCase(room.getRoomType())){
+                continue;
+            }
+            if(criteria.getQuality() != null &&
+                    !criteria.getQuality().isBlank() &&
+                    !criteria.getQuality().equalsIgnoreCase(room.getQLevel())){
+                continue;
+            }
+            if (criteria.isSmoking() && !room.isSmoking()) {
+                continue;
+            }
+            if(criteria.getNumBeds() > 0 && criteria.getNumBeds() != room.getBeds()){
+                continue;
+            }
+            if (!criteria.getBeds().isEmpty()) {
+                boolean bedMatch = true;
 
+                for (Map.Entry<String, Integer> entry : criteria.getBeds().entrySet()) {
+                    String bedType = entry.getKey();
+                    int required = entry.getValue();
+
+                    if (required == 0) continue;
+
+                    int available = room.getBedTypes().getOrDefault(bedType, 0);
+                    if (available < required) {
+                        bedMatch = false;
+                        break;
+                    }
+                }
+
+                if (!bedMatch) continue;
+            }
+            if(criteria.getRate() > 0 && criteria.getRate() < room.getRate()){
+                continue;
+            }
+            validRoomList.add(room);
+        }
+        return validRoomList;
     }
 
-    void createRoom(int floorNum, int rmNo, int b, boolean sm, String qlty, String rmType, double r){
-        Room a = new Room(floorNum, rmNo, b, sm, qlty, rmType, r);
+    void createRoom(int floorNum, int rmNo, int numBeds, boolean smoke, String qlty,
+                    String rmType, double rate, Map<String, Integer> bedTypesInput){
+        Room a = new Room(floorNum, rmNo, numBeds, smoke, qlty, rmType, rate, bedTypesInput);
         roomList.add(a);
         //write to file
     }

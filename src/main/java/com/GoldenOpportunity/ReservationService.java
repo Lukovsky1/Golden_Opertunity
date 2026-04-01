@@ -1,10 +1,12 @@
 package com.GoldenOpportunity;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
 
+//TODO: Must edit so reservation objects hold information expert responsibilities
 public class ReservationService {
     private List<Reservation> reserveList = new ArrayList<>();
     //ReservationId mapped to its reservation object
@@ -54,20 +56,20 @@ public class ReservationService {
      * //TODO: IF there are more than 999 reservations, how do we handle that edge case.
      * createReservation: Will create a new reservation and place it in both reserveList
      * and reservationMap.
-     * @param rooms
+     * @param room
      * @param start
      * @param end
      * @param bill
      */
-    public void createReservation(List<Room> rooms , LocalDate start, LocalDate end, double bill) {
+    public void createReservation( Room room , LocalDate start, LocalDate end, double bill) {
         //Creates a new reservation ID from the set of all valid reservation ids
         String newResId = createResId();
         //Confirms that the two given dates are within a valid range
         if (!DateRange.validateRange(start, end)) {
-            System.out.println("Invalid date range");
+            JOptionPane.showMessageDialog(null, "Invalid date range");
             return;
         }
-        Reservation newRes = new Reservation(newResId, rooms, new DateRange(start, end), bill);
+        Reservation newRes = new Reservation(newResId, room, new DateRange(start, end), bill);
         reserveList.add(newRes);
         try {
             assert newResId != null;
@@ -76,6 +78,7 @@ public class ReservationService {
         catch (NullPointerException e) {
             System.err.println("Can not put reservation into map: " + e.getMessage());
         }
+        JOptionPane.showMessageDialog(null, "Go to Booking / Confirmation page");
     }
 
     //TODO: Must be able to write to the database/file and remove/add reservations
@@ -145,12 +148,30 @@ public class ReservationService {
         return null;
     }
 
+    //Find all rooms in the list that overlap with the given dateRange
+    //In SearchController, find the intersection of those rooms which do not overlap
+    public List<Room> findOverlaps(List<Room> currentAvailableRooms, DateRange possibleOverlap) {
+        //Set<Room> overlaps = new HashSet<>();
+        return currentAvailableRooms.stream().filter(r ->  r.isAvailable(possibleOverlap, reserveList))
+                .toList();
+    }
+
     public List<Reservation> getReservations() {
         return reserveList;
     }
 
     public Map<String, Reservation> getReservationMap() {
         return reservationMap;
+    }
+
+    /**
+     * getReservationsForRoom: Will return a list of reservations that a room has
+     * @param room
+     * @return
+     */
+    public List<Reservation> getReservationsForRoom(Room room) {
+        return reserveList.stream().filter(r -> r.getRoom().equals(room))
+                .toList();
     }
 
     //TODO: Delete test
