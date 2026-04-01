@@ -3,6 +3,7 @@ package com.GoldenOpportunity;
 
 import java.util.List;
 
+//TODO: Must implement proper billing functionality
 public class Reservation {
     final String resId;
     private List<Room> rooms;
