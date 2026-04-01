@@ -3,30 +3,40 @@ package com.GoldenOpportunity;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * AddRoomPage represents the UI used by a clerk to:
- * - Enter details of a new room
- * - Submit the room to the system
- * - Clear or reset the form
+ * This page allows a clerk to:
+ * - Add a new room
+ * - Validate inputs
+ * - Save room into CSV file
  */
 public class AddRoomPage extends JFrame {
 
-    // Input fields for room data
+    // ===== UI COMPONENTS =====
     private JTextField roomNumberField;
     private JTextField rateField;
     private JSpinner bedsSpinner;
     private JCheckBox smokingCheckBox;
     private JComboBox<String> qualityComboBox;
     private JComboBox<String> floorComboBox;
-    private JComboBox<String> bedTypeComboBox;
+    private JComboBox<String> roomTypeComboBox;
+
+    // Panel that dynamically shows bed types
+    private JPanel bedTypesPanel;
+    private List<JComboBox<String>> bedTypeComboBoxes;
+
+    // Path to CSV file
+    private static final String ROOM_CSV_FILE = "src/main/resources/testRoomData1.csv";
 
     /**
-     * Constructor: initializes the window and layout
+     * Constructor → initializes UI
      */
     public AddRoomPage() {
         setTitle("Add New Room");
-        setSize(700, 600);
+        setSize(700, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -36,165 +46,315 @@ public class AddRoomPage extends JFrame {
     }
 
     /**
-     * Creates the header section with the page title
+     * Header (title)
      */
     private JPanel createHeader() {
         JPanel header = new JPanel();
         header.setBackground(Color.WHITE);
-        header.setBorder(new EmptyBorder(20, 20, 10, 20));
 
-        JLabel titleLabel = new JLabel("Add New Room");
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
+        JLabel title = new JLabel("Add New Room");
+        title.setFont(new Font("SansSerif", Font.BOLD, 28));
 
-        header.add(titleLabel);
+        header.add(title);
         return header;
     }
 
     /**
-     * Builds the main form where the clerk enters room details
+     * Main form UI
      */
     private JPanel createFormPanel() {
-        JPanel outerPanel = new JPanel(new BorderLayout());
-        outerPanel.setBackground(new Color(245, 245, 245));
-        outerPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
-
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
-        formPanel.setBorder(new CompoundBorder(
-                new LineBorder(new Color(220, 220, 220), 1, true),
-                new EmptyBorder(25, 25, 25, 25)
-        ));
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setBackground(Color.WHITE);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
 
-        // Initialize input components
+        // ===== INPUT FIELDS =====
         roomNumberField = new JTextField(20);
+        rateField = new JTextField(20);
+
         bedsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
 
         smokingCheckBox = new JCheckBox("Smoking Allowed");
-        smokingCheckBox.setBackground(Color.WHITE);
 
-        qualityComboBox = new JComboBox<>(new String[] {
-                "Standard", "Deluxe", "Suite"
+        qualityComboBox = new JComboBox<>(new String[]{
+                "Economic", "Business", "Comfort", "Executive"
         });
 
-        floorComboBox = new JComboBox<>(new String[] {
-        		"Floor 1", "Floor 2", "Floor 3"
+        floorComboBox = new JComboBox<>(new String[]{
+                "1", "2", "3"
         });
 
-        bedTypeComboBox = new JComboBox<>(new String[] {
-                "Single", "Double", "Queen", "King"
+        roomTypeComboBox = new JComboBox<>(new String[]{
+                "Single", "Double", "Suite", "Standard", "Deluxe"
         });
 
-        rateField = new JTextField(20);
+        // ===== BED TYPES (dynamic) =====
+        bedTypeComboBoxes = new ArrayList<>();
+        bedTypesPanel = new JPanel();
+        bedTypesPanel.setLayout(new BoxLayout(bedTypesPanel, BoxLayout.Y_AXIS));
+
+        updateBedTypeFields(); // initial creation
+
+        // When number of beds changes → update UI
+        bedsSpinner.addChangeListener(e -> updateBedTypeFields());
+
+        // Auto smoking for floor 2 & 3
+        floorComboBox.addActionListener(e -> updateSmokingByFloor());
+        updateSmokingByFloor();
 
         int row = 0;
 
-        // Add labeled fields to the form
-        addFormRow(formPanel, gbc, row++, "Room Number:", roomNumberField);
-        addFormRow(formPanel, gbc, row++, "Number of Beds:", bedsSpinner);
-        addFormRow(formPanel, gbc, row++, "Quality Level:", qualityComboBox);
-        addFormRow(formPanel, gbc, row++, "Floor:", floorComboBox);
-        addFormRow(formPanel, gbc, row++, "Bed Type:", bedTypeComboBox);
-        addFormRow(formPanel, gbc, row++, "Rate per Night:", rateField);
+        addRow(form, gbc, row++, "Room Number:", roomNumberField);
+        addRow(form, gbc, row++, "Room Type:", roomTypeComboBox);
+        addRow(form, gbc, row++, "Quality:", qualityComboBox);
+        addRow(form, gbc, row++, "Floor:", floorComboBox);
+        addRow(form, gbc, row++, "Number of Beds:", bedsSpinner);
+        addRow(form, gbc, row++, "Type of Beds:", bedTypesPanel);
+        addRow(form, gbc, row++, "Rate:", rateField);
 
-        // Smoking checkbox (full row)
+        // Smoking checkbox
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.gridwidth = 2;
-        formPanel.add(smokingCheckBox, gbc);
+        form.add(smokingCheckBox, gbc);
 
         row++;
 
-        // Buttons panel (Save / Clear / Back)
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        buttonPanel.setBackground(Color.WHITE);
+        // ===== BUTTONS =====
+        JPanel buttons = new JPanel();
 
-        JButton saveButton = new JButton("Save Room");
-        JButton clearButton = new JButton("Clear");
-        JButton backButton = new JButton("Back");
+        JButton save = new JButton("Save");
+        JButton clear = new JButton("Clear");
 
-        // Temporary actions (UI only for now)
-        saveButton.addActionListener(e -> saveRoom());
-        clearButton.addActionListener(e -> clearForm());
-        backButton.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "Go back to Clerk Menu")
-        );
+        save.addActionListener(e -> saveRoom());
+        clear.addActionListener(e -> clearForm());
 
-        buttonPanel.add(saveButton);
-        buttonPanel.add(clearButton);
-        buttonPanel.add(backButton);
+        buttons.add(save);
+        buttons.add(clear);
 
-        gbc.gridx = 0;
         gbc.gridy = row;
-        gbc.gridwidth = 2;
-        formPanel.add(buttonPanel, gbc);
+        form.add(buttons, gbc);
 
-        outerPanel.add(formPanel, BorderLayout.NORTH);
-        return outerPanel;
+        return form;
     }
 
     /**
-     * Helper method to add a label + input component in one row
+     * Helper → adds label + field
      */
-    private void addFormRow(JPanel panel, GridBagConstraints gbc, int row, String labelText, JComponent component) {
-        gbc.gridwidth = 1;
-
+    private void addRow(JPanel panel, GridBagConstraints gbc, int row, String label, JComponent comp) {
         gbc.gridx = 0;
         gbc.gridy = row;
-        panel.add(new JLabel(labelText), gbc);
+        panel.add(new JLabel(label), gbc);
 
         gbc.gridx = 1;
-        panel.add(component, gbc);
+        panel.add(comp, gbc);
     }
 
     /**
-     * Handles the "Save Room" action
-     * (Currently UI-only; later this will connect to backend logic)
+     * Creates one dropdown per bed
+     */
+    private void updateBedTypeFields() {
+        bedTypesPanel.removeAll();
+        bedTypeComboBoxes.clear();
+
+        int beds = (int) bedsSpinner.getValue();
+
+        for (int i = 1; i <= beds; i++) {
+            JComboBox<String> box = new JComboBox<>(new String[]{
+                    "Twin", "Full", "Queen", "King"
+            });
+
+            bedTypeComboBoxes.add(box);
+            bedTypesPanel.add(new JLabel("Bed " + i));
+            bedTypesPanel.add(box);
+        }
+
+        bedTypesPanel.revalidate();
+        bedTypesPanel.repaint();
+    }
+
+    /**
+     * Automatically set smoking based on floor
+     */
+    private void updateSmokingByFloor() {
+        int floor = getFloor();
+
+        if (floor == 2 || floor == 3) {
+            smokingCheckBox.setSelected(true);
+            smokingCheckBox.setEnabled(false);
+        } else {
+            smokingCheckBox.setEnabled(true);
+            smokingCheckBox.setSelected(false);
+        }
+    }
+
+    /**
+     * Get selected floor (int)
+     */
+    private int getFloor() {
+        return Integer.parseInt((String) floorComboBox.getSelectedItem());
+    }
+
+    /**
+     * MAIN LOGIC → SAVE ROOM
      */
     private void saveRoom() {
-        String roomNumber = roomNumberField.getText().trim();
-        String rate = rateField.getText().trim();
 
-        // Basic validation
-        if (roomNumber.isEmpty() || rate.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Please fill in the required fields.",
-                    "Missing Information",
-                    JOptionPane.WARNING_MESSAGE);
+        // ===== READ INPUT =====
+        String roomText = roomNumberField.getText().trim();
+        String rateText = rateField.getText().trim();
+
+        // ===== BASIC CHECK =====
+        if (roomText.isEmpty() || rateText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Fill all fields");
             return;
         }
 
-        // Simulate successful room creation
-        JOptionPane.showMessageDialog(this,
-                "New room added successfully.",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
+        int roomNumber;
+        double rate;
+
+        try {
+            roomNumber = Integer.parseInt(roomText);
+            rate = Double.parseDouble(rateText);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid number format");
+            return;
+        }
+
+        // ===== NEGATIVE CHECK =====
+        if (roomNumber < 0 || rate < 0) {
+            JOptionPane.showMessageDialog(this, "Values cannot be negative");
+            return;
+        }
+
+        int floor = getFloor();
+
+        // ===== FLOOR RULE =====
+        if (String.valueOf(roomNumber).charAt(0) != String.valueOf(floor).charAt(0)) {
+            JOptionPane.showMessageDialog(this,
+                    "Room must start with floor number");
+            return;
+        }
+
+        // ===== DUPLICATE CHECK =====
+        if (roomExists(roomNumber)) {
+            JOptionPane.showMessageDialog(this,
+                    "Room already exists");
+            return;
+        }
+
+        // ===== COLLECT DATA =====
+        String roomType = (String) roomTypeComboBox.getSelectedItem();
+        String quality = (String) qualityComboBox.getSelectedItem();
+        int beds = (int) bedsSpinner.getValue();
+        boolean smoking = smokingCheckBox.isSelected();
+
+        List<String> bedsList = new ArrayList<>();
+        for (JComboBox<String> box : bedTypeComboBoxes) {
+            bedsList.add((String) box.getSelectedItem());
+        }
+
+        String bedsText = "\"" + String.join(", ", bedsList) + "\"";
+
+        // ===== SAVE TO CSV =====
+        boolean saved = writeToCSV(
+                floor, roomNumber, roomType, quality,
+                beds, bedsText, smoking, rate
+        );
+
+        if (saved) {
+            JOptionPane.showMessageDialog(this, "Room added!");
+            clearForm();
+        }
     }
 
     /**
-     * Clears all input fields and resets the form
+     * Check if room already exists in CSV
+     */
+    private boolean roomExists(int roomNumber) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ROOM_CSV_FILE))) {
+
+            String line;
+            br.readLine(); // skip header
+
+            while ((line = br.readLine()) != null) {
+
+                String[] parts = parseCSV(line);
+
+                int existing = Integer.parseInt(parts[1].trim());
+
+                if (existing == roomNumber) return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Write new room to CSV
+     */
+    private boolean writeToCSV(int floor, int room, String type, String quality,
+                              int beds, String bedTypes, boolean smoking, double rate) {
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ROOM_CSV_FILE, true))) {
+
+            bw.newLine();
+
+            bw.write(floor + "," +
+                    room + "," +
+                    type + "," +
+                    quality + "," +
+                    beds + "," +
+                    bedTypes + "," +
+                    (smoking ? "TRUE" : "FALSE") + "," +
+                    rate);
+
+            return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Handles CSV parsing with quotes
+     */
+    private String[] parseCSV(String line) {
+        List<String> parts = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean insideQuotes = false;
+
+        for (char c : line.toCharArray()) {
+
+            if (c == '"') insideQuotes = !insideQuotes;
+
+            else if (c == ',' && !insideQuotes) {
+                parts.add(current.toString());
+                current.setLength(0);
+            } else current.append(c);
+        }
+
+        parts.add(current.toString());
+        return parts.toArray(new String[0]);
+    }
+
+    /**
+     * Reset form
      */
     private void clearForm() {
         roomNumberField.setText("");
         rateField.setText("");
         bedsSpinner.setValue(1);
-        smokingCheckBox.setSelected(false);
-        qualityComboBox.setSelectedIndex(0);
-        floorComboBox.setSelectedIndex(0);
-        bedTypeComboBox.setSelectedIndex(0);
+        updateBedTypeFields();
     }
 
-    /**
-     * Entry point to launch this page independently
-     */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            AddRoomPage page = new AddRoomPage();
-            page.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new AddRoomPage().setVisible(true));
     }
 }
