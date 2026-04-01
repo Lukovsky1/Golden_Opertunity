@@ -1,5 +1,6 @@
 package com.GoldenOpportunity;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -65,7 +66,7 @@ public class ReservationService {
         String newResId = createResId();
         //Confirms that the two given dates are within a valid range
         if (!DateRange.validateRange(start, end)) {
-            System.out.println("Invalid date range");
+            JOptionPane.showMessageDialog(null, "Invalid date range");
             return;
         }
         Reservation newRes = new Reservation(newResId, rooms, new DateRange(start, end), bill);
@@ -77,6 +78,7 @@ public class ReservationService {
         catch (NullPointerException e) {
             System.err.println("Can not put reservation into map: " + e.getMessage());
         }
+        JOptionPane.showMessageDialog(null, "Go to Booking / Confirmation page");
     }
 
     //TODO: Must be able to write to the database/file and remove/add reservations
