@@ -27,7 +27,7 @@ public class SearchController {
             int num = roomService.getRoomList().get(i).getRoomNo();
             System.out.println("All reservations assigned to " + num);
             for (Reservation r : resService.getReservations()) {
-                if (r.getRooms().contains(roomService.getRoomList().get(i))) {
+                if (r.getRoom().equals(roomService.getRoomList().get(i))) {
                     System.out.println(r.getId());
                 }
             }
@@ -58,7 +58,7 @@ public class SearchController {
     //TODO: Move to room class
     private boolean isRoomAvailable(Room room, DateRange range) {
         for (Reservation r : resService.getReservations()) {
-            if (r.getRooms().contains(room) &&
+            if (r.getRoom().equals(room) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
             }
@@ -86,7 +86,7 @@ public class SearchController {
             List<Room> newRooms = Arrays.asList(testRooms);
 
             //TODO: reserveRoom Use Case
-            searchController.resService.createReservation(newRooms, LocalDate.now(),
+            searchController.resService.createReservation(newRooms.get(0), LocalDate.now(),
                     LocalDate.parse("2026-11-20"), 0.0);
             searchController.resService.deleteReservation("R-019");
 

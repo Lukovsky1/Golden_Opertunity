@@ -300,7 +300,8 @@ public class RoomDetailsPage extends JPanel {
                     ReservationService reservationService = new ReservationService(Path.of("filename"));
                     try {
                         RoomService roomService = new RoomService("filename");
-                        reservationService.createReservation(roomService.getRoomList(),startDate,endDate,
+                        //TODO: Andrei, reservation now takes a single room object. Can you edit this to fit your implementation
+                        reservationService.createReservation(roomService.getRoomList().get(0),startDate,endDate,
                                 rate*Period.between(startDate,endDate).getDays());
                     } catch (FileNotFoundException ex) {
                         throw new RuntimeException(ex);

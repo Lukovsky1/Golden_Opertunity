@@ -63,17 +63,53 @@ public class Room {
      * @param reservations - The list of reservations to be checked against
      */
     public boolean isAvailable(DateRange range, List<Reservation> reservations) {
-        return reservations.stream().filter(r -> r.getRooms().contains(this))
+        return reservations.stream().filter(r -> r.getRoom().equals(this))
                 .noneMatch(r -> r.getDateRange().overlaps(range));
     }
 
     boolean isRoomAvailable(DateRange range) {
         ReservationService resService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
         for (Reservation r : resService.getReservations()) {
-            if (r.getRooms().contains(this) &&
+            if (r.getRoom().equals(this) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Room other = (Room) obj;
+        if (this.floorNum != other.floorNum) {
+            return false;
+        }
+        if (this.roomNo != other.roomNo) {
+            return false;
+        }
+        if (this.beds != other.beds) {
+            return false;
+        }
+        if (this.qLevel.equals(other.qLevel)) {
+            return false;
+        }
+        if (this.roomType.equals(other.roomType)) {
+            return false;
+        }
+        if  (this.smoking != other.smoking) {
+            return false;
+        }
+        else if (this.rate != other.rate) {
+            return false;
         }
         return true;
     }
