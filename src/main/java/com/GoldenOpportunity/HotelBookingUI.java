@@ -75,36 +75,15 @@ public class HotelBookingUI extends JPanel {
 
     private JPanel createMainContent() {
         JPanel main = new JPanel(new BorderLayout(15, 15));
-        main.setBorder(new EmptyBorder(15, 20, 15, 20));
-        main.setBackground(new Color(245, 245, 245));
+        main.setBorder(new EmptyBorder(10, 20, 10, 20));
 
-        main.add(createSearchBar(), BorderLayout.NORTH);
+        main.add(createFilterPanel(), BorderLayout.WEST);
         main.add(createRoomGrid(), BorderLayout.CENTER);
+
 
         return main;
     }
 
-    private JPanel createSearchBar() {
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        searchPanel.setBackground(Color.WHITE);
-        searchPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-
-        JTextField searchField = new JTextField(25);
-        searchField.setPreferredSize(new Dimension(300, 35));
-
-        JButton searchButton = new JButton("Search");
-        searchButton.setPreferredSize(new Dimension(100, 35));
-        searchButton.setBackground(new Color(50, 100, 230));
-        searchButton.setForeground(Color.WHITE);
-        searchButton.setFocusPainted(false);
-
-        searchPanel.add(new JLabel("Search Rooms:"));
-        searchPanel.add(searchField);
-        searchPanel.add(searchButton);
-
-        return searchPanel;
-    }
-/*
     private JPanel createFilterPanel() {
         JPanel filter = new JPanel(new GridBagLayout());
         filter.setPreferredSize(new Dimension(170, 600));
@@ -166,9 +145,9 @@ public class HotelBookingUI extends JPanel {
 
         return filter;
     }
-*/
+
     private JPanel createRoomGrid() {
-        JPanel grid = new JPanel(new GridLayout(2, 2, 15, 15));
+        JPanel grid = new JPanel(new GridLayout(2, 3, 15, 15));
         grid.setBackground(new Color(245, 245, 245));
 
         grid.add(createRoomCard("Standard Room", "Comfortable room with queen bed", "$120 / night"));

@@ -1,4 +1,3 @@
-
 package com.GoldenOpportunity;
 
 import javax.imageio.ImageIO;
@@ -9,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,9 @@ public class HotelHomePageUI extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private JTextField startDate;
+    private JTextField endDate;
+    private JTextField numGuests;
 
     public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
@@ -73,7 +77,7 @@ public class HotelHomePageUI extends JPanel {
         return header;
     }
 
-    private JPanel createMainContent() {
+    private JPanel createMainContent() throws IOException {
         JPanel main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         main.setBorder(new EmptyBorder(10, 20, 10, 20));
@@ -120,20 +124,18 @@ public class HotelHomePageUI extends JPanel {
         gbc.gridx = 3;
         search.add(new JLabel("Room Type"), gbc);
 
-        JTextField startDate = new JTextField("mm/dd/yyyy", 10);
-        JTextField endDate = new JTextField("mm/dd/yyyy", 10);
-        JTextField numGuests = new JTextField("1", 10);
-        JComboBox<String> roomType = new JComboBox<>(new String[]{"Standard", "Deluxe", "Suite"});
-
         gbc.gridy = 1;
         gbc.gridx = 0;
+        startDate = new JTextField("yyyy-MM-dd", 10);
         search.add(startDate, gbc);
         gbc.gridx = 1;
+        endDate = new JTextField("yyyy-MM-dd", 10);
         search.add(endDate, gbc);
         gbc.gridx = 2;
+        numGuests = new JTextField("1", 10);
         search.add(numGuests, gbc);
         gbc.gridx = 3;
-        search.add(roomType, gbc);
+        search.add(new JComboBox<>(new String[]{"Standard", "Deluxe", "Suite"}), gbc);
 
         gbc.gridx = 4;
         JButton searchBtn = new JButton("Search");
@@ -141,17 +143,10 @@ public class HotelHomePageUI extends JPanel {
         searchBtn.setForeground(Color.WHITE);
         search.add(searchBtn, gbc);
 
-        searchBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(mainPanel,"ROOMS");
-            }
-        });
-
         return search;
     }
 
-    private JPanel createFeaturedRooms() {
+    private JPanel createFeaturedRooms() throws IOException {
         JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         wrapper.setBackground(new Color(245, 245, 245));
 
@@ -198,6 +193,20 @@ public class HotelHomePageUI extends JPanel {
         details.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
+                            LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
+                            Integer.parseInt(numGuests.getText()),Double.parseDouble(price.replaceAll("\\D",""))),
+                            "DETAILS");
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                }
+                catch (DateTimeParseException ex){
+                    JOptionPane.showMessageDialog(null, "Invalid Date");
+                }
+                catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 cardLayout.show(mainPanel,"DETAILS");
             }
         });
@@ -242,4 +251,3 @@ public class HotelHomePageUI extends JPanel {
         return footer;
     }
 }
-

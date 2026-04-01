@@ -1,11 +1,20 @@
+
 package com.GoldenOpportunity;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * RoomDetailsPage represents the UI page where a guest can:
@@ -26,13 +35,22 @@ public class RoomDetailsPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private int numGuests;
+    private double rate;
 
     /**
-    * Constructor: initializes the main window and layout
-    */
-    public RoomDetailsPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+     * Constructor: initializes the main window and layout
+     */
+    public RoomDetailsPage(CardLayout cardLayout,JPanel mainPanel,
+                           LocalDate startDate,LocalDate endDate,int numGuests,double rate) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.numGuests = numGuests;
+        this.rate = rate;
 
         setLayout(new BorderLayout());
 
@@ -68,29 +86,29 @@ public class RoomDetailsPage extends JPanel {
         JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
         logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
-        // Navigation buttons (simulate navigation for now)
-        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
-        navPanel.setOpaque(false);
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        nav.setBackground(Color.WHITE);
+        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        Map<String,JButton> buttonMap = new HashMap<>();
 
-        JButton homeButton = new JButton("Home");
-        JButton roomsButton = new JButton("Rooms");
-        JButton shopButton = new JButton("Shop");
-        JButton loginButton = new JButton("Log In");
+        for (String item : items) {
+            buttonMap.put(item,new JButton(item));
+            buttonMap.get(item).setFocusPainted(false);
+            buttonMap.get(item).setBackground(Color.WHITE);
+            buttonMap.get(item).setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
+            nav.add(buttonMap.get(item));
+        }
 
-        // Temporary actions (to be replaced by real navigation later)
-        homeButton.addActionListener(e -> cardLayout.show(mainPanel, "HOME"));
-        roomsButton.addActionListener(e -> cardLayout.show(mainPanel, "ROOMS"));
-        shopButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Shop page"));
-        loginButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Login page"));
-
-        navPanel.add(homeButton);
-        navPanel.add(roomsButton);
-        navPanel.add(shopButton);
-        navPanel.add(loginButton);
+        buttonMap.get("Home").addActionListener(e -> {
+            cardLayout.show(mainPanel,"HOME");
+        });
+        buttonMap.get("Rooms").addActionListener(e -> {
+            cardLayout.show(mainPanel,"ROOMS");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
-        header.add(navPanel, BorderLayout.EAST);
-
+        header.add(nav, BorderLayout.EAST);
         return header;
     }
 
@@ -144,10 +162,9 @@ public class RoomDetailsPage extends JPanel {
         // Room image
         Image roomIcon = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/room.png"));
         //ImageIcon roomIcon = new ImageIcon(getClass().getResource("/com/GoldenOpportunity/room.png"));
-        Image scaledLogo = roomIcon.getScaledInstance(500, 280, Image.SCALE_SMOOTH);
+        Image scaledRoom = roomIcon.getScaledInstance(500, 280, Image.SCALE_SMOOTH);
         //Image scaledRoom = roomIcon.getImage().getScaledInstance(500, 280, Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(scaledLogo));
-        //JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
+        JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
         imageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel roomTitle = new JLabel("Deluxe Suite with Ocean View");
@@ -156,9 +173,9 @@ public class RoomDetailsPage extends JPanel {
 
         // Room description
         JTextArea description = new JTextArea(
-            "Experience luxury in our spacious Deluxe Suite, offering breathtaking ocean views. "
-          + "This elegantly designed room features a comfortable king-size bed, a private balcony, "
-          + "and a modern en-suite bathroom. Enjoy premium amenities and personalized service during your stay."
+                "Experience luxury in our spacious Deluxe Suite, offering breathtaking ocean views. "
+                        + "This elegantly designed room features a comfortable king-size bed, a private balcony, "
+                        + "and a modern en-suite bathroom. Enjoy premium amenities and personalized service during your stay."
         );
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
@@ -173,15 +190,15 @@ public class RoomDetailsPage extends JPanel {
 
         // Amenities list
         JTextArea amenities = new JTextArea(
-            "- King-size bed\n"
-          + "- Private balcony\n"
-          + "- Ocean view\n"
-          + "- Air conditioning\n"
-          + "- Flat-screen TV\n"
-          + "- Free Wi-Fi\n"
-          + "- Minibar\n"
-          + "- Coffee maker\n"
-          + "- Hairdryer"
+                "- King-size bed\n"
+                        + "- Private balcony\n"
+                        + "- Ocean view\n"
+                        + "- Air conditioning\n"
+                        + "- Flat-screen TV\n"
+                        + "- Free Wi-Fi\n"
+                        + "- Minibar\n"
+                        + "- Coffee maker\n"
+                        + "- Hairdryer"
         );
         amenities.setEditable(false);
         amenities.setOpaque(false);
@@ -235,13 +252,13 @@ public class RoomDetailsPage extends JPanel {
 
         // Booking inputs
         JLabel checkInLabel = new JLabel("Check-in Date");
-        checkInField = new JTextField("mm/dd/yyyy");
+        checkInField = new JTextField(startDate.toString());
 
         JLabel checkOutLabel = new JLabel("Check-out Date");
-        checkOutField = new JTextField("mm/dd/yyyy");
+        checkOutField = new JTextField(endDate.toString());
 
         JLabel guestsLabel = new JLabel("Number of Guests");
-        guestsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+        guestsSpinner = new JSpinner(new SpinnerNumberModel(numGuests, 1, 10, 1));
 
         JSeparator separator = new JSeparator();
 
@@ -252,19 +269,19 @@ public class RoomDetailsPage extends JPanel {
         JPanel priceRow = new JPanel(new BorderLayout());
         priceRow.setOpaque(false);
         priceRow.add(new JLabel("Price per night:"), BorderLayout.WEST);
-        priceRow.add(new JLabel("$250"), BorderLayout.EAST);
+        priceRow.add(new JLabel("$" + rate), BorderLayout.EAST);
 
         JPanel nightsRow = new JPanel(new BorderLayout());
         nightsRow.setOpaque(false);
         nightsRow.add(new JLabel("Number of nights:"), BorderLayout.WEST);
-        nightsValueLabel = new JLabel("3");
+        nightsValueLabel = new JLabel(String.valueOf(Period.between(startDate,endDate).getDays()));
         nightsRow.add(nightsValueLabel, BorderLayout.EAST);
 
         JPanel totalRow = new JPanel(new BorderLayout());
         totalRow.setOpaque(false);
         JLabel totalText = new JLabel("Total:");
         totalText.setFont(new Font("SansSerif", Font.BOLD, 18));
-        totalValueLabel = new JLabel("$750");
+        totalValueLabel = new JLabel("$" + rate*Period.between(startDate,endDate).getDays());
         totalValueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         totalRow.add(totalText, BorderLayout.WEST);
         totalRow.add(totalValueLabel, BorderLayout.EAST);
@@ -273,8 +290,21 @@ public class RoomDetailsPage extends JPanel {
         JButton proceedButton = new JButton("Proceed to Booking");
         proceedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         proceedButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        proceedButton.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "Go to Booking / Confirmation page")
+        proceedButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    startDate = LocalDate.parse(checkInField.getText());
+                    endDate = LocalDate.parse(checkOutField.getText());
+                    ReservationService reservationService = new ReservationService(Path.of("filename"));
+                    try {
+                        RoomService roomService = new RoomService("filename");
+                        reservationService.createReservation(roomService.getRoomList(),startDate,endDate,
+                                rate*Period.between(startDate,endDate).getDays());
+                    } catch (FileNotFoundException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
         );
 
         // Add components
@@ -317,7 +347,7 @@ public class RoomDetailsPage extends JPanel {
         footer.setBackground(Color.WHITE);
 
         JLabel contactLabel = new JLabel(
-            "Contact Info: 123 Hotel St, City, Country | +123 456 7890 | info@goldenopportunity.com"
+                "Contact Info: 123 Hotel St, City, Country | +123 456 7890 | info@goldenopportunity.com"
         );
         footer.add(contactLabel);
 
