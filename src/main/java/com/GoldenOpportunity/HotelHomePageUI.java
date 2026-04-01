@@ -13,14 +13,16 @@ import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.lgooddatepicker.components.DatePicker;
+
 // Changed to JPanel instead of JFrame
 
 public class HotelHomePageUI extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private JTextField startDate;
-    private JTextField endDate;
+    private DatePicker startDate;
+    private DatePicker endDate;
     private JTextField numGuests;
 
     public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
@@ -146,11 +148,13 @@ public class HotelHomePageUI extends JPanel {
 
         gbc.gridy = 1;
         gbc.gridx = 0;
-        startDate = new JTextField("yyyy-MM-dd", 10);
+        startDate = new DatePicker(); // Calendar picker for check-in
         search.add(startDate, gbc);
+
         gbc.gridx = 1;
-        endDate = new JTextField("yyyy-MM-dd", 10);
+        endDate = new DatePicker(); // Calendar picker for check-out
         search.add(endDate, gbc);
+        
         gbc.gridx = 2;
         numGuests = new JTextField("1", 10);
         search.add(numGuests, gbc);
@@ -213,21 +217,29 @@ public class HotelHomePageUI extends JPanel {
         details.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
-                            LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
-                            Integer.parseInt(numGuests.getText()),Double.parseDouble(price.replaceAll("\\D","")),
-                                    imageFile),
-                            "DETAILS");
-                    mainPanel.revalidate();
-                    mainPanel.repaint();
-                }
-                catch (DateTimeParseException ex){
-                    JOptionPane.showMessageDialog(null, "Invalid Date");
-                }
-                catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+            	try {
+            	    // Check if user selected dates
+            	    if (startDate.getDate() == null || endDate.getDate() == null) {
+            	        JOptionPane.showMessageDialog(null, "Please select valid dates");
+            	        return;
+            	    }
+
+            	    mainPanel.add(new RoomDetailsPage(
+            	            cardLayout,
+            	            mainPanel,
+            	            startDate.getDate(),   
+            	            endDate.getDate(),   
+            	            Integer.parseInt(numGuests.getText()),
+            	            Double.parseDouble(price.replaceAll("\\D","")),
+            	            imageFile
+            	    ), "DETAILS");
+
+            	    mainPanel.revalidate();
+            	    mainPanel.repaint();
+
+            	} catch (Exception ex) {
+            	    JOptionPane.showMessageDialog(null, "Error processing booking");
+            	}
                 cardLayout.show(mainPanel,"DETAILS");
             }
         });
