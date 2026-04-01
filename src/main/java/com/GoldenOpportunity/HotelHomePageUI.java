@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -230,22 +231,27 @@ public class HotelHomePageUI extends JPanel {
         details.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
-                            LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
-                            Integer.parseInt(numGuests.getText()),room,
-                                    imageFile,reservationService),
-                            "DETAILS");
-                    mainPanel.revalidate();
-                    mainPanel.repaint();
-                }
-                catch (DateTimeParseException ex){
+                if(Period.between(LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText())).getDays() < 1){
                     JOptionPane.showMessageDialog(null, "Invalid Dates");
                 }
-                catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                else{
+                    try {
+                        mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
+                                        LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
+                                        Integer.parseInt(numGuests.getText()),room,
+                                        imageFile,reservationService),
+                                "DETAILS");
+                        mainPanel.revalidate();
+                        mainPanel.repaint();
+                    }
+                    catch (DateTimeParseException ex){
+                        JOptionPane.showMessageDialog(null, "Invalid Dates");
+                    }
+                    catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    cardLayout.show(mainPanel,"DETAILS");
                 }
-                cardLayout.show(mainPanel,"DETAILS");
             }
         });
 

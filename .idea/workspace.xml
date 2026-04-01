@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Updates to UI:&#10;Almost linked to reserveRoom&#10;Added images&#10;Updated look of home page&#10;Changed layout of booking page&#10;Smoother transitions between pages">
+    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Fully linked UI">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/LoginPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/LoginPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI$1.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -251,7 +247,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775077132898</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Fully linked UI">
+      <option name="closed" value="true" />
+      <created>1775082850665</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1775082850666</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -264,6 +268,7 @@
     <MESSAGE value="The HotelBookingUI and HotelHomePageUI are now extending Jpanels instead of JFrames. The main frame is now implemented in MainUIFrame. The buttons in the header such as &quot;Home&quot; and &quot;Rooms&quot; now switch panels to HotelHomePageUI and HotelBookingUI, respectively. So instead of deleting frame and showing a new one it only switches panels." />
     <MESSAGE value="Update to UI for smooth connection between pages" />
     <MESSAGE value="Updates to UI:&#10;Almost linked to reserveRoom&#10;Added images&#10;Updated look of home page&#10;Changed layout of booking page&#10;Smoother transitions between pages" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updates to UI:&#10;Almost linked to reserveRoom&#10;Added images&#10;Updated look of home page&#10;Changed layout of booking page&#10;Smoother transitions between pages" />
+    <MESSAGE value="Fully linked UI" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fully linked UI" />
   </component>
 </project>
