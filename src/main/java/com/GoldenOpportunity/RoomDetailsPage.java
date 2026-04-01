@@ -303,7 +303,7 @@ public class RoomDetailsPage extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     startDate = LocalDate.parse(checkInField.getText());
                     endDate = LocalDate.parse(checkOutField.getText());
-                    reservationService.createReservation(room,startDate,endDate,room.getRate());
+                    reservationService.createReservation(room,startDate,endDate,room.getRate()*Period.between(startDate,endDate).getDays());
                 }
             }
         );
