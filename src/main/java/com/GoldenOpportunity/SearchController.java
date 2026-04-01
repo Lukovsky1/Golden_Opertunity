@@ -3,6 +3,7 @@ package com.GoldenOpportunity;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,6 +34,39 @@ public class SearchController {
         }
     }
 
+    public List<Room> searchAvailableRooms(Criteria criteria) {
+        List<Room> filteredRooms = roomService.searchRoom(criteria);
+        List<Room> availableRooms = new ArrayList<>();
+
+        // If no date range, treat all filtered rooms as available
+        if (criteria.getDateRange() == null) {
+            availableRooms.addAll(filteredRooms);
+        } else {
+            for (Room room : filteredRooms) {
+                if (room.isRoomAvailable(criteria.getDateRange())) {
+                    availableRooms.add(room);
+                }
+            }
+        }
+
+        System.out.println("Available Rooms:");
+        availableRooms.forEach(System.out::println);
+
+        return availableRooms;
+    }
+
+    //TODO: Move to room class
+    private boolean isRoomAvailable(Room room, DateRange range) {
+        for (Reservation r : resService.getReservations()) {
+            if (r.getRooms().contains(room) &&
+                    r.getDateRange().overlaps(range)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     /*
     Testing and debug note: DO NOT use "new" when trying to create room objects!
     They will create new objects in memory that, even if ostensibly identical,
@@ -56,7 +90,23 @@ public class SearchController {
                     LocalDate.parse("2026-11-20"), 0.0);
             searchController.resService.deleteReservation("R-019");
 
-            searchController.printRoomsAndReservations();
+            Criteria criteria = new Criteria();
+            criteria.setDateRange(null);
+            //criteria.setRoomNum(101);
+            criteria.setFloorNum(3);
+            criteria.setSmoking(true);
+            criteria.setRoomType("Deluxe");
+            criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
+            searchController.searchAvailableRooms(criteria);
+
+            List<Room> availableRooms = searchController.searchAvailableRooms(criteria);
+            availableRooms.forEach(r -> System.out.println(r.getRoomNo()));
+
+
+
+
+            //searchController.printRoomsAndReservations();
+            //searchController.printRoomsAndReservations();
         }catch (FileNotFoundException e){
             System.out.println("Room or Reservation File Not Found");
         }

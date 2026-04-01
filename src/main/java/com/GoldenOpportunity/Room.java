@@ -1,18 +1,26 @@
 package com.GoldenOpportunity;
 
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Edits: Added floorNum to the class
  */
+//TODO: Add some form of method for a room to check its availability
+//In the roomTestFile, add new column for each range of dates that a room is reserved
 public class Room {
     int floorNum;
     int roomNo;
     int beds;
+    Map<String, Integer> bedTypes;
     boolean smoking;
     String qLevel;
     String roomType;
     double rate;
 
-    Room(int floorNum, int rmNo, int b, boolean sm, String qlty, String rmType, double r){
+    Room(int floorNum, int rmNo, int b, boolean sm, String qlty,
+         String rmType, double r, Map<String, Integer> InputBedTypes){
         this.floorNum = floorNum;
         roomNo = rmNo;
         beds = b;
@@ -20,6 +28,7 @@ public class Room {
         qLevel = qlty;
         roomType = rmType;
         rate = r;
+        bedTypes = InputBedTypes;
     }
 
     public int getFloorNum() {return floorNum;}
@@ -29,12 +38,14 @@ public class Room {
     public String getQLevel() { return qLevel; }
     public String getRoomType() { return roomType; }
     public double getRate() { return rate; }
+    public Map<String, Integer> getBedTypes(){return bedTypes;}
 
     public void setBeds(int beds) { this.beds = beds; }
     public void setSmoking(boolean smoking) { this.smoking = smoking; }
     public void setQLevel(String qLevel) { this.qLevel = qLevel; }
     public void setRoomType(String roomType) { this.roomType = roomType; }
     public void setRate(double rate) { this.rate = rate; }
+    public void setBedTypes(Map<String, Integer> bedTypeInput){bedTypes.putAll(bedTypeInput);}
 
     //String [] bedTypes = {"King", "Queen", "Twin", "Full"};
 
@@ -42,6 +53,30 @@ public class Room {
     /*public enum QualityLevel{
         Economy, Comfort, Business, Executive;
     } */
+
+    //TODO: Confirm that this is the best (check the algorithm) and confirm it works
+    /**
+     * isAvailable - Will check all reservations and if any reservation both has this room
+     * and conflicts with the given dateRange, the function will return false meaning
+     * the room is not available for a given date range.
+     * @param range - A given date range that could overlap with all reservations
+     * @param reservations - The list of reservations to be checked against
+     */
+    public boolean isAvailable(DateRange range, List<Reservation> reservations) {
+        return reservations.stream().filter(r -> r.getRooms().contains(this))
+                .noneMatch(r -> r.getDateRange().overlaps(range));
+    }
+
+    boolean isRoomAvailable(DateRange range) {
+        ReservationService resService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+        for (Reservation r : resService.getReservations()) {
+            if (r.getRooms().contains(this) &&
+                    r.getDateRange().overlaps(range)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public String toString(){
