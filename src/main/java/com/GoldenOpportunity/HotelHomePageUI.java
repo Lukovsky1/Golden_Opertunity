@@ -210,7 +210,7 @@ public class HotelHomePageUI extends JPanel {
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
         info.setBackground(Color.WHITE);
 
-        info.add(new JLabel(room.getRoomType() + "Room"));
+        info.add(new JLabel(room.getRoomType() + " Room"));
         info.add(Box.createVerticalStrut(8));
         String desc = "";
         for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){

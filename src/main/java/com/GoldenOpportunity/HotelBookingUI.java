@@ -253,11 +253,4 @@ public class HotelBookingUI extends JPanel {
         footer.add(new JLabel("Contact Info: 123 Hotel St, City, Country | +123 456 7890 | info@goldenopportunity.com"));
         return footer;
     }
-
-    private JLabel sectionLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("SansSerif", Font.BOLD, 18));
-        label.setBorder(new EmptyBorder(5, 10, 5, 10));
-        return label;
-    }
 }
