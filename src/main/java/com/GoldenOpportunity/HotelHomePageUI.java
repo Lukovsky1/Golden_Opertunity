@@ -8,7 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +25,19 @@ public class HotelHomePageUI extends JPanel {
     private JPanel mainPanel;
     private DatePicker startDate;
     private DatePicker endDate;
-    private JTextField numGuests;
+    private JSpinner numGuests;
+
+    private RoomService roomService;
+    private ReservationService reservationService;
+
+    public RoomService getRoomService(){return roomService;}
+    public ReservationService getReservationService(){return reservationService;}
 
     public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+        roomService = new RoomService("src/main/resources/testRoomData1.csv");
 
         setLayout(new BorderLayout(10, 10));
 
@@ -79,6 +89,9 @@ public class HotelHomePageUI extends JPanel {
         });
         buttonMap.get("Rooms").addActionListener(e -> {
             cardLayout.show(mainPanel,"ROOMS");
+        });
+        buttonMap.get("Login").addActionListener(e -> {
+            cardLayout.show(mainPanel,"LOGIN");
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -156,7 +169,7 @@ public class HotelHomePageUI extends JPanel {
         search.add(endDate, gbc);
         
         gbc.gridx = 2;
-        numGuests = new JTextField("1", 10);
+        numGuests = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
         search.add(numGuests, gbc);
         gbc.gridx = 3;
         search.add(new JComboBox<>(new String[]{"Standard", "Deluxe", "Suite"}), gbc);
@@ -165,6 +178,8 @@ public class HotelHomePageUI extends JPanel {
         JButton searchBtn = new JButton("Search");
         searchBtn.setBackground(new Color(50, 100, 230));
         searchBtn.setForeground(Color.WHITE);
+        searchBtn.setOpaque(true);
+        searchBtn.setContentAreaFilled(true);
         search.add(searchBtn, gbc);
 
         return search;
@@ -177,15 +192,15 @@ public class HotelHomePageUI extends JPanel {
         JPanel rooms = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         rooms.setBackground(new Color(245, 245, 245));
 
-        rooms.add(createRoomCard("Standard Room", "Comfortable room", "$120 / night","src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
-        rooms.add(createRoomCard("Deluxe Room", "Spacious deluxe room", "$180 / night","src/main/java/com/GoldenOpportunity/roomDeluxe.png"));
-        rooms.add(createRoomCard("Suite", "Luxury suite", "$250 / night","src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(4),"src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(6),"src/main/java/com/GoldenOpportunity/roomDeluxe.png"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(8),"src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
 
         wrapper.add(rooms);
         return wrapper;
     }
 
-    private JPanel createRoomCard(String name, String desc, String price,String imageFile) throws IOException {
+    private JPanel createRoomCard(Room room,String imageFile) throws IOException {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         card.setPreferredSize(new Dimension(280, 280));
@@ -202,44 +217,56 @@ public class HotelHomePageUI extends JPanel {
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
         info.setBackground(Color.WHITE);
 
-        info.add(new JLabel(name));
+        info.add(new JLabel(room.getRoomType() + "Room"));
         info.add(Box.createVerticalStrut(8));
-        info.add(new JLabel(desc));
+        String desc = "";
+        for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+            desc = desc.concat(entry.getValue() + " ");
+            desc = desc.concat(entry.getKey() + ", ");
+        }
+        String finalDesc = desc.substring(0,desc.length()-2);
+        info.add(new JLabel(finalDesc));
         info.add(Box.createVerticalStrut(10));
-        info.add(new JLabel("Price: " + price));
+        info.add(new JLabel("Price: $" + String.format("%.2f",room.getRate()) + " / night"));
         info.add(Box.createVerticalStrut(10));
 
         JButton details = new JButton("Select / Book");
         details.setBackground(new Color(30, 170, 70));
         details.setForeground(Color.WHITE);
+        details.setFocusPainted(false);
+        details.setOpaque(true);
+        details.setBorderPainted(false);
+        details.setContentAreaFilled(true);
         info.add(details);
 
         details.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	try {
-            	    // Check if user selected dates
-            	    if (startDate.getDate() == null || endDate.getDate() == null) {
-            	        JOptionPane.showMessageDialog(null, "Please select valid dates");
-            	        return;
-            	    }
+                try {
+                    // Check if user selected dates
+                    if (startDate.getDate() == null || endDate.getDate() == null ||
+                            Period.between(startDate.getDate(),endDate.getDate()).getDays() < 1) {
+                        JOptionPane.showMessageDialog(null, "Please select valid dates");
+                        return;
+                    }
 
-            	    mainPanel.add(new RoomDetailsPage(
-            	            cardLayout,
-            	            mainPanel,
-            	            startDate.getDate(),   
-            	            endDate.getDate(),   
-            	            Integer.parseInt(numGuests.getText()),
-            	            Double.parseDouble(price.replaceAll("\\D","")),
-            	            imageFile
-            	    ), "DETAILS");
+                    mainPanel.add(new RoomDetailsPage(
+                            cardLayout,
+                            mainPanel,
+                            startDate.getDate(),
+                            endDate.getDate(),
+                            (int) numGuests.getValue(),
+                            room,
+                            imageFile,
+                            reservationService
+                    ), "DETAILS");
 
-            	    mainPanel.revalidate();
-            	    mainPanel.repaint();
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
 
-            	} catch (Exception ex) {
-            	    JOptionPane.showMessageDialog(null, "Error processing booking");
-            	}
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
                 cardLayout.show(mainPanel,"DETAILS");
             }
         });

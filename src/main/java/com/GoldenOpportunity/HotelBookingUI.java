@@ -9,11 +9,15 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.GoldenOpportunity.Roles.*;
+import com.github.lgooddatepicker.components.DatePicker;
 
 // Changed to JPanel instead of JFrame
 
@@ -21,13 +25,18 @@ public class HotelBookingUI extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private JTextField startDate;
-    private JTextField endDate;
+    private DatePicker startDate;
+    private DatePicker endDate;
     private JSpinner numGuests;
+    private RoomService roomService;
+    private ReservationService reservationService;
 
-    public HotelBookingUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public HotelBookingUI(CardLayout cardLayout, JPanel mainPanel,
+                          RoomService roomService,ReservationService reservationService) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.roomService = roomService;
+        this.reservationService = reservationService;
 
         setLayout(new BorderLayout(10, 10));
 
@@ -73,6 +82,9 @@ public class HotelBookingUI extends JPanel {
         buttonMap.get("Rooms").addActionListener(e -> {
             cardLayout.show(mainPanel,"ROOMS");
         });
+        buttonMap.get("Login").addActionListener(e -> {
+            cardLayout.show(mainPanel,"LOGIN");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -81,38 +93,64 @@ public class HotelBookingUI extends JPanel {
     }
 
     private JPanel createSearchBar() {
-        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        wrapper.setBackground(new Color(245, 245, 245));
+        JPanel search = new JPanel(new GridBagLayout());
+        search.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        search.setBackground(Color.WHITE);
+        search.setPreferredSize(new Dimension(900, 90));
 
-        startDate = new JTextField("yyyy-MM-dd");
-        startDate.setPreferredSize(new Dimension(120, 35));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 8, 5, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        endDate = new JTextField("yyyy-MM-dd");
-        endDate.setPreferredSize(new Dimension(120, 35));
+        // Labels row
+        gbc.gridy = 0;
 
+        gbc.gridx = 0;
+        search.add(new JLabel("Check-In Date"), gbc);
+
+        gbc.gridx = 1;
+        search.add(new JLabel("Check-out Date"), gbc);
+
+        gbc.gridx = 2;
+        search.add(new JLabel("Number of Guests"), gbc);
+
+        gbc.gridx = 3;
+        search.add(new JLabel("Search"), gbc);
+
+        // Input row
+        gbc.gridy = 1;
+
+        gbc.gridx = 0;
+        startDate = new DatePicker();
+        startDate.setPreferredSize(new Dimension(180, 32));
+        search.add(startDate, gbc);
+
+        gbc.gridx = 1;
+        endDate = new DatePicker();
+        endDate.setPreferredSize(new Dimension(180, 32));
+        search.add(endDate, gbc);
+
+        gbc.gridx = 2;
         numGuests = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-        numGuests.setPreferredSize(new Dimension(80, 35));
+        numGuests.setPreferredSize(new Dimension(80, 32));
+        search.add(numGuests, gbc);
 
+        gbc.gridx = 3;
         JTextField searchField = new JTextField();
-        searchField.setPreferredSize(new Dimension(250, 35));
+        searchField.setPreferredSize(new Dimension(300, 32));
+        search.add(searchField, gbc);
 
+        gbc.gridx = 4;
         JButton searchButton = new JButton("Search");
+        searchButton.setPreferredSize(new Dimension(100, 32));
         searchButton.setBackground(new Color(50, 100, 230));
         searchButton.setForeground(Color.WHITE);
+        searchButton.setOpaque(true);
+        searchButton.setContentAreaFilled(true);
+        search.add(searchButton, gbc);
 
-        wrapper.add(new JLabel("Check-in:"));
-        wrapper.add(startDate);
-
-        wrapper.add(new JLabel("Check-out:"));
-        wrapper.add(endDate);
-
-        wrapper.add(new JLabel("Guests:"));
-        wrapper.add(numGuests);
-
-        wrapper.add(searchField);
-        wrapper.add(searchButton);
-
-        return wrapper;
+        return search;
     }
 
     private JPanel createRoomList() {
@@ -120,19 +158,16 @@ public class HotelBookingUI extends JPanel {
         list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
         list.setBackground(new Color(245, 245, 245));
 
-        list.add(createRoomCard("Standard Room", "Comfortable room with queen bed", "$120 / night","src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
-        list.add(Box.createVerticalStrut(15));
+        List<String> photos = new ArrayList<>();
+        photos.add("src/main/java/com/GoldenOpportunity/roomStandard.jpg");
+        photos.add("src/main/java/com/GoldenOpportunity/roomDeluxe.png");
+        photos.add("src/main/java/com/GoldenOpportunity/roomSuite.jpg");
 
-        list.add(createRoomCard("Deluxe Room", "Spacious room with balcony", "$180 / night","src/main/java/com/GoldenOpportunity/roomDeluxe.png"));
-        list.add(Box.createVerticalStrut(15));
-
-        list.add(createRoomCard("Suite", "Luxury suite with living area", "$250 / night","src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
-        list.add(Box.createVerticalStrut(15));
-
-        list.add(createRoomCard("King Room", "King bed with city view", "$200 / night","src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
-        list.add(Box.createVerticalStrut(15));
-
-        list.add(createRoomCard("Twin Room", "Two beds for shared stay", "$150 / night","src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
+        for(Room room : roomService.getRoomList()){
+            int randomNum = (int)(Math.random() * 3);
+            list.add(createRoomCard(room,photos.get(randomNum)));
+            list.add(Box.createVerticalStrut(15));
+        }
 
         return list;
     }
@@ -155,7 +190,7 @@ public class HotelBookingUI extends JPanel {
         return main;
     }
 
-    private JPanel createRoomCard(String roomName, String description, String price, String imageFile) {
+    private JPanel createRoomCard(Room room, String imageFile) {
         JPanel card = new JPanel(new BorderLayout(15, 15));
         card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         card.setBackground(Color.WHITE);
@@ -180,35 +215,54 @@ public class HotelBookingUI extends JPanel {
         info.setBackground(Color.WHITE);
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JLabel nameLabel = new JLabel(roomName);
+        JLabel nameLabel = new JLabel(room.getRoomType() + " Room");
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
 
-        JLabel descLabel = new JLabel(description);
-        JLabel priceLabel = new JLabel("Price: " + price);
+        String desc = "";
+        for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+            desc = desc.concat(entry.getValue() + " ");
+            desc = desc.concat(entry.getKey() + ", ");
+        }
+        String finalDesc = desc.substring(0,desc.length()-2);
+        JLabel descLabel = new JLabel(finalDesc);
+        JLabel priceLabel = new JLabel("Price: " + String.format("%.2f",room.getRate()) + " / night");
 
         JButton book = new JButton("Select / Book");
         book.setBackground(new Color(30, 170, 70));
         book.setForeground(Color.WHITE);
         book.setFocusPainted(false);
+        book.setOpaque(true);
+        book.setBorderPainted(false);
+        book.setContentAreaFilled(true);
         book.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         book.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
-                                    LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
-                                    (Integer) numGuests.getValue(),
-                                    Double.parseDouble(price.replaceAll("\\D","")),imageFile),
-                            "DETAILS");
+                    // Check if user selected dates
+                    if (startDate.getDate() == null || endDate.getDate() == null ||
+                            Period.between(startDate.getDate(),endDate.getDate()).getDays() < 1) {
+                        JOptionPane.showMessageDialog(null, "Please select valid dates");
+                        return;
+                    }
+
+                    mainPanel.add(new RoomDetailsPage(
+                            cardLayout,
+                            mainPanel,
+                            startDate.getDate(),
+                            endDate.getDate(),
+                            (int) numGuests.getValue(),
+                            room,
+                            imageFile,
+                            reservationService
+                    ), "DETAILS");
+
                     mainPanel.revalidate();
                     mainPanel.repaint();
-                }
-                catch (DateTimeParseException ex){
-                    JOptionPane.showMessageDialog(null, "Invalid Date");
-                }
-                catch (IOException ex) {
-                    throw new RuntimeException(ex);
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
                 }
                 cardLayout.show(mainPanel,"DETAILS");
             }

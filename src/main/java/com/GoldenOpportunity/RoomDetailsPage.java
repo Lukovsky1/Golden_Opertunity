@@ -41,22 +41,24 @@ public class RoomDetailsPage extends JPanel {
     private LocalDate startDate;
     private LocalDate endDate;
     private int numGuests;
-    private double rate;
     private String imageFile;
+    private Room room;
+    private ReservationService reservationService;
 
     /**
-     * Constructor: initializes the panel and layout
+     * Constructor: initializes the main window and layout
      */
-    public RoomDetailsPage(CardLayout cardLayout, JPanel mainPanel,
-                           LocalDate startDate, LocalDate endDate,
-                           int numGuests, double rate, String imageFile) throws IOException {
+    public RoomDetailsPage(CardLayout cardLayout,JPanel mainPanel,
+                           LocalDate startDate,LocalDate endDate,int numGuests,Room room,String imageFile,
+                           ReservationService reservationService) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.startDate = startDate;
         this.endDate = endDate;
         this.numGuests = numGuests;
-        this.rate = rate;
+        this.room = room;
         this.imageFile = imageFile;
+        this.reservationService = reservationService;
 
         setLayout(new BorderLayout());
 
@@ -207,7 +209,7 @@ public class RoomDetailsPage extends JPanel {
         amenities.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Price display
-        JLabel priceLabel = new JLabel("Price: $" + rate + " / night");
+        JLabel priceLabel = new JLabel("Price: $" + room.getRate() + " / night");
         priceLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         priceLabel.setForeground(new Color(0, 130, 0));
         priceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -278,7 +280,7 @@ public class RoomDetailsPage extends JPanel {
         JPanel priceRow = new JPanel(new BorderLayout());
         priceRow.setOpaque(false);
         priceRow.add(new JLabel("Price per night:"), BorderLayout.WEST);
-        priceRow.add(new JLabel("$" + rate), BorderLayout.EAST);
+        priceRow.add(new JLabel("$" + String.format("%.2f",room.getRate())), BorderLayout.EAST);
 
         long initialNights = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
         if (initialNights < 0) {
@@ -295,7 +297,7 @@ public class RoomDetailsPage extends JPanel {
         totalRow.setOpaque(false);
         JLabel totalText = new JLabel("Total:");
         totalText.setFont(new Font("SansSerif", Font.BOLD, 18));
-        totalValueLabel = new JLabel("$" + (rate * initialNights));
+        totalValueLabel = new JLabel("$" + String.format("%.2f",(room.getRate() * initialNights)));
         totalValueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         totalRow.add(totalText, BorderLayout.WEST);
         totalRow.add(totalValueLabel, BorderLayout.EAST);
@@ -368,7 +370,7 @@ public class RoomDetailsPage extends JPanel {
             long nights = java.time.temporal.ChronoUnit.DAYS.between(checkInDate, checkOutDate);
 
             if (nights > 0) {
-                double total = nights * rate;
+                double total = nights * room.getRate();
                 nightsValueLabel.setText(String.valueOf(nights));
                 totalValueLabel.setText("$" + total);
             } else {
@@ -400,12 +402,6 @@ public class RoomDetailsPage extends JPanel {
 
             int guests = (Integer) guestsSpinner.getValue();
 
-            // Create a sample room using the current rate
-            Map<String, Integer> bedTypes = new HashMap<>();
-            bedTypes.put("King", 1);
-
-            Room selectedRoom = new Room(1, 101, 2, false, "Executive", "King", rate, bedTypes);
-
             // Calculate number of nights
             long nights = java.time.temporal.ChronoUnit.DAYS.between(checkInDate, checkOutDate);
             if (nights <= 0) {
@@ -413,10 +409,10 @@ public class RoomDetailsPage extends JPanel {
                 return;
             }
 
-            double totalBill = nights * rate;
+            double totalBill = nights * room.getRate();
 
             ReservationService reservationService = new ReservationService(Path.of(RESERVATION_FILE));
-            reservationService.createReservation(selectedRoom, checkInDate, checkOutDate, totalBill);
+            reservationService.createReservation(room, checkInDate, checkOutDate, totalBill);
 
             // Retrieve the newly created reservation
             Reservation newReservation =
