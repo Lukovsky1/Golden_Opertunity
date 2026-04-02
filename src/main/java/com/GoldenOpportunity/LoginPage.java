@@ -1,14 +1,19 @@
 package com.GoldenOpportunity;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * LoginPage represents the UI where a user (Guest, Clerk, or Admin)
  * can enter credentials and request authentication.
  */
-public class LoginPage extends JFrame {
+public class LoginPage extends JPanel {
 
     // Input fields for user credentials
     private JTextField usernameField;
@@ -17,14 +22,17 @@ public class LoginPage extends JFrame {
     // Label used to display feedback messages
     private JLabel messageLabel;
 
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+
     /**
      * Constructor: initializes the login window
      */
-    public LoginPage() {
-        setTitle("Log In");
+    public LoginPage(CardLayout cardLayout,JPanel mainPanel) throws IOException {
+        this.cardLayout = cardLayout;
+        this.mainPanel = mainPanel;
+
         setSize(500, 450);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         add(createHeader(), BorderLayout.NORTH);
@@ -34,15 +42,49 @@ public class LoginPage extends JFrame {
     /**
      * Creates the page header with the title
      */
-    private JPanel createHeader() {
-        JPanel header = new JPanel();
+    private JPanel createHeader() throws IOException {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
-        header.setBorder(new EmptyBorder(20, 20, 10, 20));
 
-        JLabel titleLabel = new JLabel("Log In");
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/logo.png"));
 
-        header.add(titleLabel);
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
+
+        int newHeight = 70;
+        int newWidth = (originalWidth * newHeight) / originalHeight;
+
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
+        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        nav.setBackground(Color.WHITE);
+        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        Map<String,JButton> buttonMap = new HashMap<>();
+
+        for (String item : items) {
+            buttonMap.put(item,new JButton(item));
+            buttonMap.get(item).setFocusPainted(false);
+            buttonMap.get(item).setBackground(Color.WHITE);
+            buttonMap.get(item).setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
+            nav.add(buttonMap.get(item));
+        }
+
+        buttonMap.get("Home").addActionListener(e -> {
+            cardLayout.show(mainPanel,"HOME");
+        });
+        buttonMap.get("Rooms").addActionListener(e -> {
+            cardLayout.show(mainPanel,"ROOMS");
+        });
+        buttonMap.get("Login").addActionListener(e -> {
+            cardLayout.show(mainPanel,"LOGIN");
+        });
+
+        header.add(logoLabel, BorderLayout.WEST);
+        header.add(nav, BorderLayout.EAST);
         return header;
     }
 
@@ -149,15 +191,5 @@ public class LoginPage extends JFrame {
                 "Authentication successful. Open next page based on user role.",
                 "Login Success",
                 JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    /**
-     * Entry point to run the page independently
-     */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            LoginPage page = new LoginPage();
-            page.setVisible(true);
-        });
     }
 }
