@@ -1,0 +1,13 @@
+Price,Stock,Name,ProductID,Images
+20,5,T-Shirt,1,src/main/java/com/GoldenOpportunity/Images/Products/tshirt.jpg
+8,2,Hat,2,src/main/java/com/GoldenOpportunity/Images/Products/hat.jpg
+1,7,Pen,3,src/main/java/com/GoldenOpportunity/Images/Products/pen.jpg
+5,3,Mug,4,src/main/java/com/GoldenOpportunity/Images/Products/mug.jpg
+1,5,Keychain,5,src/main/java/com/GoldenOpportunity/Images/Products/keychain.jpg
+1.5,9,Water,6,src/main/java/com/GoldenOpportunity/Images/Products/water.jpg
+0.5,15,Chocolate,7,src/main/java/com/GoldenOpportunity/Images/Products/chocolate.jpg
+2,7,Coke,8,src/main/java/com/GoldenOpportunity/Images/Products/coke.jpg
+2,8,Sprite,9,src/main/java/com/GoldenOpportunity/Images/Products/sprite.jpg
+5,9,Popcorn,10,src/main/java/com/GoldenOpportunity/Images/Products/popcorn.jpg
+5,10,Ramen,11,src/main/java/com/GoldenOpportunity/Images/Products/ramen.jpg
+9,10,Beer,12,src/main/java/com/GoldenOpportunity/Images/Products/beer.jpg
