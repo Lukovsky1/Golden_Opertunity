@@ -13,10 +13,15 @@ public class ShopPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private Shop shop;
+    private ShoppingCart shoppingCart;
 
     public ShopPage(CardLayout cardLayout,JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+
+        shop = new Shop("src/main/resources/testProductData.csv");
+        shoppingCart = new ShoppingCart();
 
         setLayout(new BorderLayout(10, 10));
 
@@ -37,7 +42,7 @@ public class ShopPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/logo.png"));
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -81,7 +86,7 @@ public class ShopPage extends JPanel {
         return header;
     }
 
-    private JPanel createMainContent() {
+    private JPanel createMainContent() throws IOException {
         JPanel center = new JPanel();
         center.setLayout(new BorderLayout());
         center.setBackground(Color.WHITE);
@@ -94,8 +99,8 @@ public class ShopPage extends JPanel {
         grid.setBackground(Color.WHITE);
         grid.setBorder(new EmptyBorder(10, 20, 20, 20));
 
-        for (int i = 0; i < 6; i++) {
-            grid.add(createProductCard());
+        for (Product product : shop.getProducts()) {
+            grid.add(createProductCard(product));
         }
 
         center.add(title, BorderLayout.NORTH);
@@ -104,7 +109,7 @@ public class ShopPage extends JPanel {
         return center;
     }
 
-    private JPanel createProductCard() {
+    private JPanel createProductCard(Product product) throws IOException {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
         card.setBackground(Color.WHITE);
@@ -112,21 +117,29 @@ public class ShopPage extends JPanel {
         card.setPreferredSize(new Dimension(280, 240));
 
         // Image placeholder
+        Image roomImage = ImageIO.read(new File(product.getImage()));
+        Image scaledRoom = roomImage.getScaledInstance(180, 120, Image.SCALE_SMOOTH);
+
+        JLabel image = new JLabel(new ImageIcon(scaledRoom));
+        image.setPreferredSize(new Dimension(180, 120));
+        /*
         JPanel image = new JPanel();
         image.setPreferredSize(new Dimension(180, 120));
         image.setBackground(new Color(220, 220, 220));
         image.add(new JLabel("Product Image"));
-
+        */
         // Info section
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBackground(Color.WHITE);
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JLabel name = new JLabel("Product Name");
+        JLabel name = new JLabel(product.getName());
         name.setFont(new Font("Arial", Font.BOLD, 14));
 
-        JLabel price = new JLabel("Price: $XX.XX");
+        JLabel price = new JLabel("Price: $" + String.format("%.2f",product.getPrice()));
+
+        JLabel stock = new JLabel("Stock: " + product.getStock());
 
         JButton addButton = new JButton("Add to Cart");
         addButton.setBackground(new Color(255, 204, 0));
@@ -135,6 +148,7 @@ public class ShopPage extends JPanel {
         info.add(name);
         info.add(Box.createVerticalStrut(5));
         info.add(price);
+        info.add(stock);
         info.add(Box.createVerticalStrut(10));
         info.add(addButton);
 
