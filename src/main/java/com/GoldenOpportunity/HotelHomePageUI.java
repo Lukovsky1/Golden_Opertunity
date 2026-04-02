@@ -93,6 +93,9 @@ public class HotelHomePageUI extends JPanel {
         buttonMap.get("Login").addActionListener(e -> {
             cardLayout.show(mainPanel,"LOGIN");
         });
+        buttonMap.get("Shop").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SHOP");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -178,7 +181,9 @@ public class HotelHomePageUI extends JPanel {
         JButton searchBtn = new JButton("Search");
         searchBtn.setBackground(new Color(50, 100, 230));
         searchBtn.setForeground(Color.WHITE);
+        searchBtn.setFocusPainted(false);
         searchBtn.setOpaque(true);
+        searchBtn.setBorderPainted(false);
         searchBtn.setContentAreaFilled(true);
         search.add(searchBtn, gbc);
 

@@ -85,6 +85,9 @@ public class HotelBookingUI extends JPanel {
         buttonMap.get("Login").addActionListener(e -> {
             cardLayout.show(mainPanel,"LOGIN");
         });
+        buttonMap.get("Shop").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SHOP");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -96,59 +99,47 @@ public class HotelBookingUI extends JPanel {
         JPanel search = new JPanel(new GridBagLayout());
         search.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         search.setBackground(Color.WHITE);
-        search.setPreferredSize(new Dimension(900, 90));
+        search.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 8, 5, 8);
+        gbc.insets = new Insets(8, 10, 8, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.CENTER;
 
-        // Labels row
-        gbc.gridy = 0;
-
-        gbc.gridx = 0;
+        gbc.gridx = 0; gbc.gridy = 0;
         search.add(new JLabel("Check-In Date"), gbc);
-
         gbc.gridx = 1;
         search.add(new JLabel("Check-out Date"), gbc);
-
         gbc.gridx = 2;
         search.add(new JLabel("Number of Guests"), gbc);
-
         gbc.gridx = 3;
         search.add(new JLabel("Search"), gbc);
 
-        // Input row
         gbc.gridy = 1;
-
         gbc.gridx = 0;
-        startDate = new DatePicker();
-        startDate.setPreferredSize(new Dimension(180, 32));
+        startDate = new DatePicker(); // Calendar picker for check-in
         search.add(startDate, gbc);
 
         gbc.gridx = 1;
-        endDate = new DatePicker();
-        endDate.setPreferredSize(new Dimension(180, 32));
+        endDate = new DatePicker(); // Calendar picker for check-out
         search.add(endDate, gbc);
 
         gbc.gridx = 2;
         numGuests = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-        numGuests.setPreferredSize(new Dimension(80, 32));
         search.add(numGuests, gbc);
-
         gbc.gridx = 3;
-        JTextField searchField = new JTextField();
-        searchField.setPreferredSize(new Dimension(300, 32));
-        search.add(searchField, gbc);
+        JTextField searchTextField = new JTextField();
+        searchTextField.setPreferredSize(new Dimension(300,25));
+        search.add(searchTextField, gbc);
 
         gbc.gridx = 4;
-        JButton searchButton = new JButton("Search");
-        searchButton.setPreferredSize(new Dimension(100, 32));
-        searchButton.setBackground(new Color(50, 100, 230));
-        searchButton.setForeground(Color.WHITE);
-        searchButton.setOpaque(true);
-        searchButton.setContentAreaFilled(true);
-        search.add(searchButton, gbc);
+        JButton searchBtn = new JButton("Search");
+        searchBtn.setBackground(new Color(50, 100, 230));
+        searchBtn.setForeground(Color.WHITE);
+        searchBtn.setFocusPainted(false);
+        searchBtn.setOpaque(true);
+        searchBtn.setBorderPainted(false);
+        searchBtn.setContentAreaFilled(true);
+        search.add(searchBtn, gbc);
 
         return search;
     }

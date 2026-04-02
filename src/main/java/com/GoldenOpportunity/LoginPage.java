@@ -82,6 +82,9 @@ public class LoginPage extends JPanel {
         buttonMap.get("Login").addActionListener(e -> {
             cardLayout.show(mainPanel,"LOGIN");
         });
+        buttonMap.get("Shop").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SHOP");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
