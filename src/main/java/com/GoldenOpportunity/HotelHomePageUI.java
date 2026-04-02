@@ -187,6 +187,13 @@ public class HotelHomePageUI extends JPanel {
         searchBtn.setContentAreaFilled(true);
         search.add(searchBtn, gbc);
 
+        searchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
         return search;
     }
 
