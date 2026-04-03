@@ -58,7 +58,7 @@ public class HotelHomePageUI extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/logo.png"));
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -127,7 +127,7 @@ public class HotelHomePageUI extends JPanel {
         hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
 
         try {
-            Image heroImage = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/lobby.jpg"));
+            Image heroImage = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/lobby.jpg"));
             Image scaledHero = heroImage.getScaledInstance(884, 360, Image.SCALE_SMOOTH);
 
             JLabel imageLabel = new JLabel(new ImageIcon(scaledHero));
@@ -187,6 +187,13 @@ public class HotelHomePageUI extends JPanel {
         searchBtn.setContentAreaFilled(true);
         search.add(searchBtn, gbc);
 
+        searchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
         return search;
     }
 
@@ -197,9 +204,9 @@ public class HotelHomePageUI extends JPanel {
         JPanel rooms = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         rooms.setBackground(new Color(245, 245, 245));
 
-        rooms.add(createRoomCard(roomService.getRoomList().get(4),"src/main/java/com/GoldenOpportunity/roomStandard.jpg"));
-        rooms.add(createRoomCard(roomService.getRoomList().get(6),"src/main/java/com/GoldenOpportunity/roomDeluxe.png"));
-        rooms.add(createRoomCard(roomService.getRoomList().get(8),"src/main/java/com/GoldenOpportunity/roomSuite.jpg"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
+        rooms.add(createRoomCard(roomService.getRoomList().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
 
         wrapper.add(rooms);
         return wrapper;

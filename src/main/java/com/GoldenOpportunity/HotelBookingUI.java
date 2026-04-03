@@ -50,7 +50,7 @@ public class HotelBookingUI extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/logo.png"));
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -141,6 +141,13 @@ public class HotelBookingUI extends JPanel {
         searchBtn.setContentAreaFilled(true);
         search.add(searchBtn, gbc);
 
+        searchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
         return search;
     }
 
@@ -150,9 +157,9 @@ public class HotelBookingUI extends JPanel {
         list.setBackground(new Color(245, 245, 245));
 
         List<String> photos = new ArrayList<>();
-        photos.add("src/main/java/com/GoldenOpportunity/roomStandard.jpg");
-        photos.add("src/main/java/com/GoldenOpportunity/roomDeluxe.png");
-        photos.add("src/main/java/com/GoldenOpportunity/roomSuite.jpg");
+        photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg");
+        photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png");
+        photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg");
 
         for(Room room : roomService.getRoomList()){
             int randomNum = (int)(Math.random() * 3);
