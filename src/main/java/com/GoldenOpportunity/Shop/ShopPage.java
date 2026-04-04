@@ -122,12 +122,6 @@ public class ShopPage extends JPanel {
 
         JLabel image = new JLabel(new ImageIcon(scaledRoom));
         image.setPreferredSize(new Dimension(180, 120));
-        /*
-        JPanel image = new JPanel();
-        image.setPreferredSize(new Dimension(180, 120));
-        image.setBackground(new Color(220, 220, 220));
-        image.add(new JLabel("Product Image"));
-        */
         // Info section
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
