@@ -1,12 +1,17 @@
 package com.GoldenOpportunity.Shop;
 
+import com.github.lgooddatepicker.components.DatePicker;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ShopPage extends JPanel {
@@ -16,7 +21,7 @@ public class ShopPage extends JPanel {
     private Shop shop;
     private ShoppingCart shoppingCart;
 
-    public ShopPage(CardLayout cardLayout,JPanel mainPanel) throws IOException {
+    public ShopPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
 
@@ -27,13 +32,19 @@ public class ShopPage extends JPanel {
 
         add(createHeader(), BorderLayout.NORTH);
 
-        JScrollPane scrollPane = new JScrollPane(createMainContent());
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.setBackground(Color.WHITE);
+
+        centerPanel.add(createTopSection(), BorderLayout.NORTH);
+
+        JScrollPane scrollPane = new JScrollPane(createProductGrid());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
 
+        add(centerPanel, BorderLayout.CENTER);
         add(createFooter(), BorderLayout.SOUTH);
     }
 
@@ -86,15 +97,57 @@ public class ShopPage extends JPanel {
         return header;
     }
 
-    private JPanel createMainContent() throws IOException {
-        JPanel center = new JPanel();
-        center.setLayout(new BorderLayout());
-        center.setBackground(Color.WHITE);
+    private JPanel createSearchBar() {
+        JPanel search = new JPanel(new GridBagLayout());
+        search.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        search.setBackground(Color.WHITE);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 15, 10, 15);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        search.add(new JLabel("Search"), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;   // important: text field expands
+        JTextField searchTextField = new JTextField();
+        searchTextField.setPreferredSize(new Dimension(400, 30));
+        search.add(searchTextField, gbc);
+
+        gbc.gridx = 2;
+        gbc.weightx = 0;
+        JButton searchBtn = new JButton("Search");
+        searchBtn.setBackground(new Color(50, 100, 230));
+        searchBtn.setForeground(Color.WHITE);
+        searchBtn.setFocusPainted(false);
+        searchBtn.setPreferredSize(new Dimension(100, 30));
+
+        search.add(searchBtn, gbc);
+
+        return search;
+    }
+
+    private JPanel createTopSection() {
+        JPanel topSection = new JPanel();
+        topSection.setLayout(new BoxLayout(topSection, BoxLayout.Y_AXIS));
+        topSection.setBackground(Color.WHITE);
 
         JLabel title = new JLabel("Our Products");
         title.setFont(new Font("Arial", Font.BOLD, 26));
-        title.setBorder(new EmptyBorder(20, 20, 20, 20));
+        title.setBorder(new EmptyBorder(20, 20, 10, 20));
 
+        JPanel searchBar = createSearchBar();
+        searchBar.setBorder(new EmptyBorder(0, 20, 15, 20));
+
+        topSection.add(title);
+        topSection.add(searchBar);
+
+        return topSection;
+    }
+
+    private JPanel createProductGrid() throws IOException {
         JPanel grid = new JPanel(new GridLayout(0, 3, 25, 25));
         grid.setBackground(Color.WHITE);
         grid.setBorder(new EmptyBorder(10, 20, 20, 20));
@@ -103,10 +156,7 @@ public class ShopPage extends JPanel {
             grid.add(createProductCard(product));
         }
 
-        center.add(title, BorderLayout.NORTH);
-        center.add(grid, BorderLayout.CENTER);
-
-        return center;
+        return grid;
     }
 
     private JPanel createProductCard(Product product) throws IOException {
@@ -114,14 +164,14 @@ public class ShopPage extends JPanel {
         card.setLayout(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        card.setPreferredSize(new Dimension(280, 240));
+        card.setPreferredSize(new Dimension(280, 320));
 
         // Image placeholder
-        Image roomImage = ImageIO.read(new File(product.getImage()));
-        Image scaledRoom = roomImage.getScaledInstance(180, 120, Image.SCALE_SMOOTH);
+        Image productImage = ImageIO.read(new File(product.getImage()));
+        Image scaledRoom = productImage.getScaledInstance(180, 200, Image.SCALE_SMOOTH);
 
         JLabel image = new JLabel(new ImageIcon(scaledRoom));
-        image.setPreferredSize(new Dimension(180, 120));
+        image.setPreferredSize(new Dimension(180, 200));
         // Info section
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
@@ -142,6 +192,7 @@ public class ShopPage extends JPanel {
         info.add(name);
         info.add(Box.createVerticalStrut(5));
         info.add(price);
+        info.add(Box.createVerticalStrut(5));
         info.add(stock);
         info.add(Box.createVerticalStrut(10));
         info.add(addButton);
