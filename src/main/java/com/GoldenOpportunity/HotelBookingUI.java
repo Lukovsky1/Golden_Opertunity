@@ -11,12 +11,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.GoldenOpportunity.Roles.*;
+import com.github.lgooddatepicker.components.DatePicker;
 
 // Changed to JPanel instead of JFrame
 
@@ -24,8 +25,8 @@ public class HotelBookingUI extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private JTextField startDate;
-    private JTextField endDate;
+    private DatePicker startDate;
+    private DatePicker endDate;
     private JSpinner numGuests;
     private RoomService roomService;
     private ReservationService reservationService;
@@ -49,7 +50,7 @@ public class HotelBookingUI extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/logo.png"));
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -84,6 +85,9 @@ public class HotelBookingUI extends JPanel {
         buttonMap.get("Login").addActionListener(e -> {
             cardLayout.show(mainPanel,"LOGIN");
         });
+        buttonMap.get("Shop").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SHOP");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -92,38 +96,59 @@ public class HotelBookingUI extends JPanel {
     }
 
     private JPanel createSearchBar() {
-        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        wrapper.setBackground(new Color(245, 245, 245));
+        JPanel search = new JPanel(new GridBagLayout());
+        search.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        search.setBackground(Color.WHITE);
+        search.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
 
-        startDate = new JTextField("");
-        startDate.setPreferredSize(new Dimension(120, 35));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        endDate = new JTextField("");
-        endDate.setPreferredSize(new Dimension(120, 35));
+        gbc.gridx = 0; gbc.gridy = 0;
+        search.add(new JLabel("Check-In Date"), gbc);
+        gbc.gridx = 1;
+        search.add(new JLabel("Check-out Date"), gbc);
+        gbc.gridx = 2;
+        search.add(new JLabel("Number of Guests"), gbc);
+        gbc.gridx = 3;
+        search.add(new JLabel("Search"), gbc);
 
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        startDate = new DatePicker(); // Calendar picker for check-in
+        search.add(startDate, gbc);
+
+        gbc.gridx = 1;
+        endDate = new DatePicker(); // Calendar picker for check-out
+        search.add(endDate, gbc);
+
+        gbc.gridx = 2;
         numGuests = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-        numGuests.setPreferredSize(new Dimension(80, 35));
+        search.add(numGuests, gbc);
+        gbc.gridx = 3;
+        JTextField searchTextField = new JTextField();
+        searchTextField.setPreferredSize(new Dimension(300,25));
+        search.add(searchTextField, gbc);
 
-        JTextField searchField = new JTextField();
-        searchField.setPreferredSize(new Dimension(250, 35));
+        gbc.gridx = 4;
+        JButton searchBtn = new JButton("Search");
+        searchBtn.setBackground(new Color(50, 100, 230));
+        searchBtn.setForeground(Color.WHITE);
+        searchBtn.setFocusPainted(false);
+        searchBtn.setOpaque(true);
+        searchBtn.setBorderPainted(false);
+        searchBtn.setContentAreaFilled(true);
+        search.add(searchBtn, gbc);
 
-        JButton searchButton = new JButton("Search");
-        searchButton.setBackground(new Color(50, 100, 230));
-        searchButton.setForeground(Color.WHITE);
+        searchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-        wrapper.add(new JLabel("Check-in (yyyy-MM-dd):"));
-        wrapper.add(startDate);
+            }
+        });
 
-        wrapper.add(new JLabel("Check-out (yyyy-MM-dd):"));
-        wrapper.add(endDate);
-
-        wrapper.add(new JLabel("Guests:"));
-        wrapper.add(numGuests);
-
-        wrapper.add(searchField);
-        wrapper.add(searchButton);
-
-        return wrapper;
+        return search;
     }
 
     private JPanel createRoomList() {
@@ -132,9 +157,9 @@ public class HotelBookingUI extends JPanel {
         list.setBackground(new Color(245, 245, 245));
 
         List<String> photos = new ArrayList<>();
-        photos.add("src/main/java/com/GoldenOpportunity/roomStandard.jpg");
-        photos.add("src/main/java/com/GoldenOpportunity/roomDeluxe.png");
-        photos.add("src/main/java/com/GoldenOpportunity/roomSuite.jpg");
+        photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg");
+        photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png");
+        photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg");
 
         for(Room room : roomService.getRoomList()){
             int randomNum = (int)(Math.random() * 3);
@@ -204,31 +229,40 @@ public class HotelBookingUI extends JPanel {
         book.setBackground(new Color(30, 170, 70));
         book.setForeground(Color.WHITE);
         book.setFocusPainted(false);
+        book.setOpaque(true);
+        book.setBorderPainted(false);
+        book.setContentAreaFilled(true);
         book.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         book.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(Period.between(LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText())).getDays() < 1){
-                    JOptionPane.showMessageDialog(null, "Invalid Dates");
+                try {
+                    // Check if user selected dates
+                    if (startDate.getDate() == null || endDate.getDate() == null ||
+                            Period.between(startDate.getDate(),endDate.getDate()).getDays() < 1) {
+                        JOptionPane.showMessageDialog(null, "Please select valid dates");
+                        return;
+                    }
+
+                    mainPanel.add(new RoomDetailsPage(
+                            cardLayout,
+                            mainPanel,
+                            startDate.getDate(),
+                            endDate.getDate(),
+                            (int) numGuests.getValue(),
+                            room,
+                            imageFile,
+                            reservationService
+                    ), "DETAILS");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
                 }
-                else{
-                    try {
-                        mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,
-                                        LocalDate.parse(startDate.getText()),LocalDate.parse(endDate.getText()),
-                                        (Integer) numGuests.getValue(),room,imageFile,reservationService),
-                                "DETAILS");
-                        mainPanel.revalidate();
-                        mainPanel.repaint();
-                    }
-                    catch (DateTimeParseException ex){
-                        JOptionPane.showMessageDialog(null, "Invalid Dates");
-                    }
-                    catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    cardLayout.show(mainPanel,"DETAILS");
-                }
+                cardLayout.show(mainPanel,"DETAILS");
             }
         });
 
@@ -252,5 +286,12 @@ public class HotelBookingUI extends JPanel {
         footer.setBackground(Color.WHITE);
         footer.add(new JLabel("Contact Info: 123 Hotel St, City, Country | +123 456 7890 | info@goldenopportunity.com"));
         return footer;
+    }
+
+    private JLabel sectionLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("SansSerif", Font.BOLD, 18));
+        label.setBorder(new EmptyBorder(5, 10, 5, 10));
+        return label;
     }
 }

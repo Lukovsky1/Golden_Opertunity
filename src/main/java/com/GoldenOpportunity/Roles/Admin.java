@@ -3,8 +3,19 @@ package com.GoldenOpportunity.Roles;
 import com.GoldenOpportunity.User;
 import com.GoldenOpportunity.Login.enums.Role;
 
+/**
+ * Concrete user type representing an administrator.
+ * Uses the {@link Role#ADMIN} role to grant elevated privileges.
+ */
 public class Admin extends User {
-
+    /**
+     * Constructs an admin user with the ADMIN role.
+     *
+     * @param id unique user identifier
+     * @param username login name
+     * @param password plaintext password (to be replaced by hashing in future)
+     * @param contactInfo contact details for the user
+     */
     public Admin(int id, String username, String password, String contactInfo) {
         super(id, username, password, contactInfo, Role.ADMIN);
     }
