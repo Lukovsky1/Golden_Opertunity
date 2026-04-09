@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Added files for all of the images">
+    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Changes to shop page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopPage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +161,8 @@
       <workItem from="1774890779609" duration="13446000" />
       <workItem from="1775063210851" duration="8153000" />
       <workItem from="1775173252506" duration="164000" />
-      <workItem from="1775325174149" duration="5293000" />
+      <workItem from="1775325174149" duration="5312000" />
+      <workItem from="1775584787045" duration="56000" />
     </task>
     <task id="LOCAL-00001" summary="UI Booking and Home class">
       <option name="closed" value="true" />
@@ -292,7 +292,23 @@
       <option name="project" value="LOCAL" />
       <updated>1775325327524</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Changes to shop page">
+      <option name="closed" value="true" />
+      <created>1775331570008</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1775331570008</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Changes to shop page">
+      <option name="closed" value="true" />
+      <created>1775331573754</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1775331573754</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -308,7 +324,8 @@
     <MESSAGE value="Fixed Errors" />
     <MESSAGE value="New Shop Page with added functionality" />
     <MESSAGE value="Added files for all of the images" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added files for all of the images" />
+    <MESSAGE value="Changes to shop page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes to shop page" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
