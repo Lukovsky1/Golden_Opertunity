@@ -40,6 +40,8 @@ public class Room {
     public double getRate() { return rate; }
     public Map<String, Integer> getBedTypes(){return bedTypes;}
 
+    public void setFloorNum(int floorNum) {this.floorNum = floorNum;}
+    public void setRoomNo(int roomNo) {this.roomNo = roomNo; }
     public void setBeds(int beds) { this.beds = beds; }
     public void setSmoking(boolean smoking) { this.smoking = smoking; }
     public void setQLevel(String qLevel) { this.qLevel = qLevel; }

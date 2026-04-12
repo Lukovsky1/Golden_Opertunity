@@ -21,7 +21,7 @@ public class ReservationLoader {
     public List<Reservation> loadReservations(Path csvPath) throws IOException {
         List<String> lines = Files.readAllLines(csvPath);
         List<Reservation> reservations = new ArrayList<>();
-
+        RoomService roomService = new RoomService();
 
         // Skip header
         for (int i = 1; i < lines.size(); i++) {
@@ -33,7 +33,7 @@ public class ReservationLoader {
             String ID = parts[0].trim();
             int roomNumber = Integer.parseInt(parts[1].trim());
             //TODO: Make sure this works to get all room data into the List
-            Room reservedRoom = RoomService.roomMap.get(roomNumber);
+            Room reservedRoom = roomService.findRoom(roomNumber);
             LocalDate start = LocalDate.parse(parts[2].trim(), FORMATTER);
             LocalDate end = LocalDate.parse(parts[3].trim(), FORMATTER);
 
