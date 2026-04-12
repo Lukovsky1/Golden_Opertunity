@@ -383,6 +383,7 @@ public class RoomDetailsPage extends JPanel {
         }
     }
 
+    //TODO: Must edit to account for multiple rooms
     /**
      * handleBooking:
      * Handles the booking process when the user clicks the button.
@@ -411,10 +412,13 @@ public class RoomDetailsPage extends JPanel {
                 return;
             }
 
+            //TODO: Must account for multiple rooms and their rates (List<Room>)
             double totalBill = nights * room.getRate();
+            List<Room> currRooms = new ArrayList<>();
+            currRooms.add(room);
 
             ReservationService reservationService = new ReservationService(Path.of(RESERVATION_FILE));
-            reservationService.createReservation(room, checkInDate, checkOutDate, totalBill);
+            reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
 
             // Retrieve the newly created reservation
             Reservation newReservation =
@@ -444,14 +448,21 @@ public class RoomDetailsPage extends JPanel {
     private void appendReservationToCsv(Reservation reservation) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(RESERVATION_FILE, true));
 
+        //TODO: Edit to align with database and also use multiple rooms in a reservation
         // Extract relevant data from the reservation
-        String roomId = String.valueOf(reservation.getRoom().getRoomNo());
+        String roomIds = null;
+        StringBuilder builder = new StringBuilder();
+        for (Room room : reservation.getRooms()) {
+            builder.append(room.getRoomNo()).append("& ");
+        }
+        roomIds = builder.toString();
+        //String roomId = String.valueOf(reservation.getRooms().getRoomNo());
         String start = reservation.getDateRange().startDate().format(DateTimeFormatter.ofPattern("M/d/yy"));
         String end = reservation.getDateRange().endDate().format(DateTimeFormatter.ofPattern("M/d/yy"));
 
         // Write new reservation line to file
         writer.newLine();
-        writer.write(reservation.getId() + "," + roomId + "," + start + "," + end);
+        writer.write(reservation.getId() + "," + roomIds + "," + start + "," + end);
         writer.close();
     }
 }

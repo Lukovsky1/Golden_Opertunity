@@ -56,12 +56,12 @@ public class ReservationService {
      * //TODO: IF there are more than 999 reservations, how do we handle that edge case.
      * createReservation: Will create a new reservation and place it in both reserveList
      * and reservationMap.
-     * @param room
+     * @param roomList
      * @param start
      * @param end
      * @param bill
      */
-    public void createReservation( Room room , LocalDate start, LocalDate end, double bill) {
+    public void createReservation( List<Room> roomList , LocalDate start, LocalDate end, double bill) {
         //Creates a new reservation ID from the set of all valid reservation ids
         String newResId = createResId();
         //Confirms that the two given dates are within a valid range
@@ -69,7 +69,7 @@ public class ReservationService {
             JOptionPane.showMessageDialog(null, "Invalid date range");
             return;
         }
-        Reservation newRes = new Reservation(newResId, room, new DateRange(start, end), bill);
+        Reservation newRes = new Reservation(newResId, roomList, new DateRange(start, end), bill);
         reserveList.add(newRes);
         try {
             assert newResId != null;
@@ -170,7 +170,7 @@ public class ReservationService {
      * @return
      */
     public List<Reservation> getReservationsForRoom(Room room) {
-        return reserveList.stream().filter(r -> r.getRoom().equals(room))
+        return reserveList.stream().filter(r -> r.getRooms().contains(room))
                 .toList();
     }
 
