@@ -1,5 +1,7 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Shop.ShopPage;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -12,8 +14,16 @@ public class MainUIFrame extends JFrame {
         CardLayout cardLayout = new CardLayout();
         JPanel mainPanel = new JPanel(cardLayout);
 
-        mainPanel.add(new HotelHomePageUI(cardLayout, mainPanel), "Home");
-        mainPanel.add(new HotelBookingUI(cardLayout, mainPanel), "Rooms");
+        HotelHomePageUI hotelHomePageUI = new HotelHomePageUI(cardLayout,mainPanel);
+        HotelBookingUI hotelBookingUI = new HotelBookingUI(cardLayout,mainPanel,
+                hotelHomePageUI.getRoomService(),hotelHomePageUI.getReservationService());
+        LoginPage loginPage = new LoginPage(cardLayout,mainPanel);
+        ShopPage shopPage = new ShopPage(cardLayout,mainPanel);
+
+        mainPanel.add(hotelHomePageUI, "HOME");
+        mainPanel.add(hotelBookingUI, "ROOMS");
+        mainPanel.add(loginPage,"LOGIN");
+        mainPanel.add(shopPage,"SHOP");
 
         add(mainPanel);
 

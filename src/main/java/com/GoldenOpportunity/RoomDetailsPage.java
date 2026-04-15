@@ -1,22 +1,65 @@
 package com.GoldenOpportunity;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import com.github.lgooddatepicker.components.DatePicker;
 
-public class RoomDetailsPage extends JFrame {
+/**
+ * RoomDetailsPage represents the UI page where a guest can:
+ * - View detailed information about a selected room
+ * - Enter booking details (dates, guests)
+ * - Proceed to reservation
+ */
+public class RoomDetailsPage extends JPanel {
 
-    private JTextField checkInField;
-    private JTextField checkOutField;
+    // Input fields for booking information
+    private DatePicker checkInPicker;
+    private DatePicker checkOutPicker;
     private JSpinner guestsSpinner;
+
+    // Labels used to display booking summary
     private JLabel nightsValueLabel;
     private JLabel totalValueLabel;
 
-    public RoomDetailsPage() {
-        setTitle("Room Details");
-        setSize(1100, 750);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    private static final String RESERVATION_FILE = "src/main/resources/testReservationData1.csv";
+
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private int numGuests;
+    private String imageFile;
+    private Room room;
+    private ReservationService reservationService;
+
+    /**
+     * Constructor: initializes the main window and layout
+     */
+    public RoomDetailsPage(CardLayout cardLayout,JPanel mainPanel,
+                           LocalDate startDate,LocalDate endDate,int numGuests,Room room,String imageFile,
+                           ReservationService reservationService) throws IOException {
+        this.cardLayout = cardLayout;
+        this.mainPanel = mainPanel;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.numGuests = numGuests;
+        this.room = room;
+        this.imageFile = imageFile;
+        this.reservationService = reservationService;
+
         setLayout(new BorderLayout());
 
         add(createHeader(), BorderLayout.NORTH);
@@ -31,74 +74,89 @@ public class RoomDetailsPage extends JFrame {
         add(createFooter(), BorderLayout.SOUTH);
     }
 
-    private JPanel createHeader() {
+    /**
+     * Creates the header with logo and navigation buttons
+     */
+    private JPanel createHeader() throws IOException {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        java.net.URL logoUrl = getClass().getResource("/com/GoldenOpportunity/logo.png");
-        ImageIcon logoIcon = new ImageIcon(logoUrl);
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
 
-        int originalWidth = logoIcon.getIconWidth();
-        int originalHeight = logoIcon.getIconHeight();
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
 
         int newHeight = 70;
         int newWidth = (originalWidth * newHeight) / originalHeight;
 
-        Image scaledLogo = logoIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
         logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
-        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
-        navPanel.setOpaque(false);
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        nav.setBackground(Color.WHITE);
+        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        Map<String, JButton> buttonMap = new HashMap<>();
 
-        JButton homeButton = new JButton("Home");
-        JButton roomsButton = new JButton("Rooms");
-        JButton shopButton = new JButton("Shop");
-        JButton loginButton = new JButton("Log In");
+        for (String item : items) {
+            JButton button = new JButton(item);
+            button.setFocusPainted(false);
+            button.setBackground(Color.WHITE);
+            button.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            button.setPreferredSize(new Dimension(90, 35));
+            buttonMap.put(item, button);
+            nav.add(button);
+        }
 
-        homeButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Home page"));
-        roomsButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Rooms page"));
-        shopButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Shop page"));
-        loginButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Go to Login page"));
-
-        navPanel.add(homeButton);
-        navPanel.add(roomsButton);
-        navPanel.add(shopButton);
-        navPanel.add(loginButton);
+        buttonMap.get("Home").addActionListener(e -> cardLayout.show(mainPanel, "HOME"));
+        buttonMap.get("Rooms").addActionListener(e -> cardLayout.show(mainPanel, "ROOMS"));
+        buttonMap.get("Login").addActionListener(e -> cardLayout.show(mainPanel, "LOGIN"));
+        buttonMap.get("Shop").addActionListener(e -> cardLayout.show(mainPanel, "SHOP"));
 
         header.add(logoLabel, BorderLayout.WEST);
-        header.add(navPanel, BorderLayout.EAST);
-
+        header.add(nav, BorderLayout.EAST);
         return header;
     }
 
-    private JPanel createMainContent() {
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        mainPanel.setBackground(new Color(245, 245, 245));
+    /**
+     * Creates the main layout with two sections:
+     * - Left: room details
+     * - Right: booking panel
+     */
+    private JPanel createMainContent() throws IOException {
+        JPanel contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        contentPanel.setBackground(new Color(245, 245, 245));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(0, 0, 0, 20);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridy = 0;
 
-        // Left panel
+        // Left panel: room information
         gbc.gridx = 0;
         gbc.weightx = 0.52;
         gbc.weighty = 1.0;
-        mainPanel.add(createLeftPanel(), gbc);
+        contentPanel.add(createLeftPanel(), gbc);
 
-        // Right panel
+        // Right panel: booking section
         gbc.gridx = 1;
         gbc.weightx = 0.48;
         gbc.insets = new Insets(0, 0, 0, 0);
-        mainPanel.add(createRightPanel(), gbc);
+        contentPanel.add(createRightPanel(), gbc);
 
-        return mainPanel;
+        return contentPanel;
     }
 
-    private JPanel createLeftPanel() {
+    /**
+     * Builds the left section displaying:
+     * - Room image
+     * - Description
+     * - Amenities
+     * - Price
+     */
+    private JPanel createLeftPanel() throws IOException {
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBackground(Color.WHITE);
@@ -108,8 +166,9 @@ public class RoomDetailsPage extends JFrame {
         pageTitle.setFont(new Font("SansSerif", Font.BOLD, 28));
         pageTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        ImageIcon roomIcon = new ImageIcon(getClass().getResource("/com/GoldenOpportunity/room.png"));
-        Image scaledRoom = roomIcon.getImage().getScaledInstance(500, 280, Image.SCALE_SMOOTH);
+        // Room image
+        Image roomImage = ImageIO.read(new File(imageFile));
+        Image scaledRoom = roomImage.getScaledInstance(500, 280, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
         imageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -117,10 +176,11 @@ public class RoomDetailsPage extends JFrame {
         roomTitle.setFont(new Font("SansSerif", Font.BOLD, 24));
         roomTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // Room description
         JTextArea description = new JTextArea(
-            "Experience luxury in our spacious Deluxe Suite, offering breathtaking ocean views. "
-          + "This elegantly designed room features a comfortable king-size bed, a private balcony, "
-          + "and a modern en-suite bathroom. Enjoy premium amenities and personalized service during your stay."
+                "Experience luxury in our spacious Deluxe Suite, offering breathtaking ocean views. "
+                        + "This elegantly designed room features a comfortable king-size bed, a private balcony, "
+                        + "and a modern en-suite bathroom. Enjoy premium amenities and personalized service during your stay."
         );
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
@@ -133,23 +193,25 @@ public class RoomDetailsPage extends JFrame {
         amenitiesTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
         amenitiesTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // Amenities list
         JTextArea amenities = new JTextArea(
-            "- King-size bed\n"
-          + "- Private balcony\n"
-          + "- Ocean view\n"
-          + "- Air conditioning\n"
-          + "- Flat-screen TV\n"
-          + "- Free Wi-Fi\n"
-          + "- Minibar\n"
-          + "- Coffee maker\n"
-          + "- Hairdryer"
+                "- King-size bed\n"
+                        + "- Private balcony\n"
+                        + "- Ocean view\n"
+                        + "- Air conditioning\n"
+                        + "- Flat-screen TV\n"
+                        + "- Free Wi-Fi\n"
+                        + "- Minibar\n"
+                        + "- Coffee maker\n"
+                        + "- Hairdryer"
         );
         amenities.setEditable(false);
         amenities.setOpaque(false);
         amenities.setFont(new Font("SansSerif", Font.PLAIN, 15));
         amenities.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel priceLabel = new JLabel("Price: $250 / night");
+        // Price display
+        JLabel priceLabel = new JLabel("Price: $" + room.getRate() + " / night");
         priceLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         priceLabel.setForeground(new Color(0, 130, 0));
         priceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -171,6 +233,12 @@ public class RoomDetailsPage extends JFrame {
         return leftPanel;
     }
 
+    /**
+     * Builds the booking panel where users:
+     * - Select dates
+     * - Choose number of guests
+     * - View total cost
+     */
     private JPanel createRightPanel() {
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(new Color(245, 245, 245));
@@ -186,56 +254,71 @@ public class RoomDetailsPage extends JFrame {
         JLabel title = new JLabel("Book Your Stay");
         title.setFont(new Font("SansSerif", Font.BOLD, 22));
 
+        // Booking inputs
         JLabel checkInLabel = new JLabel("Check-in Date");
-        checkInField = new JTextField("mm/dd/yyyy");
+        checkInPicker = new DatePicker();
+        checkInPicker.setDate(startDate);
+        checkInPicker.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
 
         JLabel checkOutLabel = new JLabel("Check-out Date");
-        checkOutField = new JTextField("mm/dd/yyyy");
+        checkOutPicker = new DatePicker();
+        checkOutPicker.setDate(endDate);
+        checkOutPicker.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+
+        // Add listeners to update the cost summary automatically
+        // whenever the user selects or changes a date
+        checkInPicker.addDateChangeListener(e -> updateCostSummary());
+        checkOutPicker.addDateChangeListener(e -> updateCostSummary());
 
         JLabel guestsLabel = new JLabel("Number of Guests");
-        guestsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+        guestsSpinner = new JSpinner(new SpinnerNumberModel(numGuests, 1, 10, 1));
 
         JSeparator separator = new JSeparator();
 
+        // Cost summary section
         JLabel summaryTitle = new JLabel("Total Cost Summary");
         summaryTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
 
         JPanel priceRow = new JPanel(new BorderLayout());
         priceRow.setOpaque(false);
         priceRow.add(new JLabel("Price per night:"), BorderLayout.WEST);
-        priceRow.add(new JLabel("$250"), BorderLayout.EAST);
+        priceRow.add(new JLabel("$" + String.format("%.2f",room.getRate())), BorderLayout.EAST);
+
+        long initialNights = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+        if (initialNights < 0) {
+            initialNights = 0;
+        }
 
         JPanel nightsRow = new JPanel(new BorderLayout());
         nightsRow.setOpaque(false);
         nightsRow.add(new JLabel("Number of nights:"), BorderLayout.WEST);
-        nightsValueLabel = new JLabel("3");
+        nightsValueLabel = new JLabel(String.valueOf(initialNights));
         nightsRow.add(nightsValueLabel, BorderLayout.EAST);
 
         JPanel totalRow = new JPanel(new BorderLayout());
         totalRow.setOpaque(false);
         JLabel totalText = new JLabel("Total:");
         totalText.setFont(new Font("SansSerif", Font.BOLD, 18));
-        totalValueLabel = new JLabel("$750");
+        totalValueLabel = new JLabel("$" + String.format("%.2f",(room.getRate() * initialNights)));
         totalValueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         totalRow.add(totalText, BorderLayout.WEST);
         totalRow.add(totalValueLabel, BorderLayout.EAST);
 
+        // Booking button
         JButton proceedButton = new JButton("Proceed to Booking");
         proceedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         proceedButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        proceedButton.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "Go to Booking / Confirmation page")
-        );
+        proceedButton.addActionListener(e -> handleBooking());
 
         bookingPanel.add(title);
         bookingPanel.add(Box.createVerticalStrut(20));
         bookingPanel.add(checkInLabel);
         bookingPanel.add(Box.createVerticalStrut(5));
-        bookingPanel.add(checkInField);
+        bookingPanel.add(checkInPicker);
         bookingPanel.add(Box.createVerticalStrut(15));
         bookingPanel.add(checkOutLabel);
         bookingPanel.add(Box.createVerticalStrut(5));
-        bookingPanel.add(checkOutField);
+        bookingPanel.add(checkOutPicker);
         bookingPanel.add(Box.createVerticalStrut(15));
         bookingPanel.add(guestsLabel);
         bookingPanel.add(Box.createVerticalStrut(5));
@@ -257,23 +340,118 @@ public class RoomDetailsPage extends JFrame {
         return wrapper;
     }
 
+    /**
+     * Footer displaying contact information
+     */
     private JPanel createFooter() {
         JPanel footer = new JPanel();
         footer.setBorder(new EmptyBorder(10, 10, 10, 10));
         footer.setBackground(Color.WHITE);
 
         JLabel contactLabel = new JLabel(
-            "Contact Info: 123 Hotel St, City, Country | +123 456 7890 | info@goldenopportunity.com"
+                "Contact Info: 123 Hotel St, City, Country | +123 456 7890 | info@goldenopportunity.com"
         );
         footer.add(contactLabel);
 
         return footer;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            RoomDetailsPage page = new RoomDetailsPage();
-            page.setVisible(true);
-        });
+    /**
+     * updateCostSummary:
+     * Calculates and updates the number of nights and total price
+     * based on the selected check-in and check-out dates.
+     * This is triggered automatically when the user changes dates.
+     */
+    private void updateCostSummary() {
+        LocalDate checkInDate = checkInPicker.getDate();
+        LocalDate checkOutDate = checkOutPicker.getDate();
+
+        if (checkInDate != null && checkOutDate != null) {
+
+            // Only calculate if both dates are selected
+            long nights = java.time.temporal.ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+
+            if (nights > 0) {
+                double total = nights * room.getRate();
+                nightsValueLabel.setText(String.valueOf(nights));
+                totalValueLabel.setText("$" + total);
+            } else {
+                // Handle invalid date selection (checkout before checkin)
+                nightsValueLabel.setText("0");
+                totalValueLabel.setText("$0");
+            }
+        }
+    }
+
+    /**
+     * handleBooking:
+     * Handles the booking process when the user clicks the button.
+     * - Retrieves selected dates and guest count
+     * - Creates a reservation through ReservationService
+     * - Saves the reservation to the CSV file
+     * - Updates the UI and shows confirmation
+     */
+    private void handleBooking() {
+        try {
+            LocalDate checkInDate = checkInPicker.getDate();
+            LocalDate checkOutDate = checkOutPicker.getDate();
+
+            // Ensure both dates are selected
+            if (checkInDate == null || checkOutDate == null) {
+                JOptionPane.showMessageDialog(this, "Please select both dates.");
+                return;
+            }
+
+            int guests = (Integer) guestsSpinner.getValue();
+
+            // Calculate number of nights
+            long nights = java.time.temporal.ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+            if (nights <= 0) {
+                JOptionPane.showMessageDialog(this, "Check-out date must be after check-in date.");
+                return;
+            }
+
+            double totalBill = nights * room.getRate();
+
+            ReservationService reservationService = new ReservationService(Path.of(RESERVATION_FILE));
+            reservationService.createReservation(room, checkInDate, checkOutDate, totalBill);
+
+            // Retrieve the newly created reservation
+            Reservation newReservation =
+                    reservationService.getReservations().get(reservationService.getReservations().size() - 1);
+
+            // Save reservation to CSV file
+            appendReservationToCsv(newReservation);
+
+            nightsValueLabel.setText(String.valueOf(nights));
+            totalValueLabel.setText("$" + totalBill);
+
+            // Show confirmation
+            JOptionPane.showMessageDialog(this,
+                    "Reservation created successfully.\nReservation ID: " + newReservation.getId());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * appendReservationToCsv:
+     * Appends a newly created reservation to the CSV file.
+     * Converts reservation data into a CSV line format.
+     */
+    private void appendReservationToCsv(Reservation reservation) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(RESERVATION_FILE, true));
+
+        // Extract relevant data from the reservation
+        String roomId = String.valueOf(reservation.getRoom().getRoomNo());
+        String start = reservation.getDateRange().startDate().format(DateTimeFormatter.ofPattern("M/d/yy"));
+        String end = reservation.getDateRange().endDate().format(DateTimeFormatter.ofPattern("M/d/yy"));
+
+        // Write new reservation line to file
+        writer.newLine();
+        writer.write(reservation.getId() + "," + roomId + "," + start + "," + end);
+        writer.close();
     }
 }
