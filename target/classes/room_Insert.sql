@@ -1,0 +1,16 @@
+INSERT INTO Room (floorNum, roomNo, roomType, qLevel, beds, smoking, rate) VALUES
+(1, 101, 'Single', 'Economic', 1, FALSE, 100),
+(1, 102, 'Double', 'Economic', 2, FALSE, 125),
+(1, 103, 'Double', 'Economic', 2, FALSE, 125),
+(1, 104, 'Single', 'Business', 1, FALSE, 120),
+(1, 105, 'Family', 'Comfort', 3, FALSE, 150),
+(2, 201, 'Suite', 'Economic', 2, TRUE, 120),
+(2, 202, 'Deluxe', 'Business', 1, TRUE, 120),
+(2, 203, 'Suite', 'Comfort', 3, TRUE, 150),
+(2, 204, 'Suite', 'Comfort', 4, TRUE, 165),
+(2, 205, 'Deluxe', 'Executive', 2, TRUE, 180),
+(3, 301, 'Standard', 'Executive', 1, TRUE, 170),
+(3, 302, 'Standard', 'Economic', 1, TRUE, 160),
+(3, 303, 'Deluxe', 'Executive', 1, TRUE, 180),
+(3, 304, 'Deluxe', 'Business', 2, TRUE, 190),
+(3, 305, 'Deluxe', 'Executive', 2, TRUE, 200);
