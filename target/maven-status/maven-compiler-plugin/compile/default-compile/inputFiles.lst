@@ -7,6 +7,7 @@
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/HotelBookingUI.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Loader.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Login/AuthResult.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Login/LoginResult.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Login/Session.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Login/enums/AccountStatus.java
@@ -31,6 +32,7 @@
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/ShopController.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/ShopPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/ShoppingCart.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/SignUpPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/User.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/Database.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/DbAuthenticationService.java

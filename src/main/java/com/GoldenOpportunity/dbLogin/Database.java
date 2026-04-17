@@ -87,8 +87,15 @@ public final class Database {
             );
         """;
 
+        String createUniqueEmailIndex = """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_users_contact_info_unique
+            ON users(contact_info)
+            WHERE contact_info IS NOT NULL AND contact_info <> '';
+        """;
+
         try (Statement st = conn.createStatement()) {
             st.execute(createUsers);
+            st.execute(createUniqueEmailIndex);
         }
     }
 }

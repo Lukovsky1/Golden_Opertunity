@@ -91,6 +91,9 @@ public class LoginPage extends JPanel {
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
         });
+        buttonMap.get("Sign Up").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SIGNUP");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -160,7 +163,7 @@ public class LoginPage extends JPanel {
         gbc.gridwidth = 2;
         formPanel.add(buttonPanel, gbc);
 
-        outerPanel.add(formPanel, BorderLayout.NORTH);
+        outerPanel.add(formPanel, BorderLayout.CENTER);
         return outerPanel;
     }
 

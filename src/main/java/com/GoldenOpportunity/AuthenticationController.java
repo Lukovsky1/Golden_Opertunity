@@ -1,5 +1,6 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Login.AuthResult;
 import com.GoldenOpportunity.Login.LoginResult;
 import com.GoldenOpportunity.dbLogin.DbAuthenticationService;
 
@@ -26,5 +27,9 @@ public class AuthenticationController {
      */
     public LoginResult logIn(String username, String password) {
         return authService.logIn(username, password);
+    }
+
+    public AuthResult signUp(String username, String email, String password) {
+        return authService.signUp(username, email, password);
     }
 }

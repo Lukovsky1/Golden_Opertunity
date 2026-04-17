@@ -1,9 +1,11 @@
 package com.GoldenOpportunity.dbLogin;
 
+import com.GoldenOpportunity.Login.AuthResult;
 import com.GoldenOpportunity.Login.LoginResult;
 import com.GoldenOpportunity.Login.Session;
 import com.GoldenOpportunity.Login.enums.Role;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.SQLException;
 
 /**
@@ -64,6 +66,35 @@ public class DbAuthenticationService {
         } catch (SQLException e) {
             // Avoid leaking details; surface a generic error to the UI.
             return new LoginResult(false, "Authentication error.", null);
+        }
+    }
+
+    public AuthResult signUp(String username, String email, String password) {
+        String normalizedUsername = username == null ? "" : username.trim();
+        String normalizedEmail = email == null ? "" : email.trim().toLowerCase();
+
+        try {
+            if (normalizedUsername.isEmpty() || normalizedEmail.isEmpty() || password == null || password.isBlank()) {
+                return new AuthResult(false, "All fields are required.");
+            }
+
+            if (userDao.findByUsername(normalizedUsername) != null) {
+                return new AuthResult(false, "That username is already taken.");
+            }
+            if (userDao.findByEmail(normalizedEmail) != null) {
+                return new AuthResult(false, "That email is already in use.");
+            }
+
+            int userId = userDao.createUser(normalizedUsername, password, "GUEST", normalizedEmail);
+            if (userId < 0) {
+                return new AuthResult(false, "Unable to create account.");
+            }
+
+            return new AuthResult(true, "Account created successfully. Please log in.");
+        } catch (SQLIntegrityConstraintViolationException e) {
+            return new AuthResult(false, "That username or email is already in use.");
+        } catch (SQLException e) {
+            return new AuthResult(false, "Authentication error.");
         }
     }
 }

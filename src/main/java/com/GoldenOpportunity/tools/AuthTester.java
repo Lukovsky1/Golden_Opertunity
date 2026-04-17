@@ -1,7 +1,9 @@
 package com.GoldenOpportunity.tools;
 
 import com.GoldenOpportunity.AuthenticationController;
+import com.GoldenOpportunity.Login.AuthResult;
 import com.GoldenOpportunity.Login.LoginResult;
+import com.GoldenOpportunity.dbLogin.DbUser;
 import com.GoldenOpportunity.dbLogin.UserDao;
 
 /**
@@ -70,6 +72,21 @@ public class AuthTester {
             assertFalse(res.isSuccess(), "Expected failure for unknown user");
         });
 
+        // 7) Signup writes a new guest user to SQLite
+        check("signup persists user in database", () -> {
+            String username = "signup_test_" + System.currentTimeMillis();
+            String email = username + "@example.com";
+
+            AuthResult res = auth.signUp(username, email, "secret123");
+            assertTrue(res.isSuccess(), "Expected signup success");
+
+            DbUser createdUser = dao.findByUsername(username);
+            assertTrue(createdUser != null, "Expected created user row");
+            assertEquals("GUEST", createdUser.role, "role stored");
+            assertEquals("ACTIVE", createdUser.accountStatus, "status stored");
+            assertEquals(email, createdUser.contactInfo, "email stored");
+        });
+
         System.out.println();
         if (failures == 0) {
             System.out.println("All authentication tests PASSED");
@@ -111,4 +128,3 @@ public class AuthTester {
     @FunctionalInterface
     interface CheckedRunnable { void run() throws Exception; }
 }
-
