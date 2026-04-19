@@ -19,11 +19,15 @@ public class MainUIFrame extends JFrame {
                 hotelHomePageUI.getRoomService(),hotelHomePageUI.getReservationService());
         LoginPage loginPage = new LoginPage(cardLayout,mainPanel);
         ShopPage shopPage = new ShopPage(cardLayout,mainPanel);
+        CheckoutPage checkoutPage = new CheckoutPage(cardLayout,mainPanel);
+        ProfilePage profilePage = new ProfilePage(cardLayout, mainPanel);
 
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
         mainPanel.add(loginPage,"LOGIN");
         mainPanel.add(shopPage,"SHOP");
+        mainPanel.add(checkoutPage,"CHECKOUT");
+        mainPanel.add(profilePage, "PROFILE");
 
         add(mainPanel);
 

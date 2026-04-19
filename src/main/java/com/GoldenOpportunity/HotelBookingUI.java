@@ -62,9 +62,9 @@ public class HotelBookingUI extends JPanel {
         JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
         logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
-        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
         Map<String,JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
@@ -88,10 +88,15 @@ public class HotelBookingUI extends JPanel {
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
         });
+        buttonMap.get("🛒").addActionListener(e -> {
+            cardLayout.show(mainPanel,"CHECKOUT");
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            cardLayout.show(mainPanel,"PROFILE");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
-
         return header;
     }
 

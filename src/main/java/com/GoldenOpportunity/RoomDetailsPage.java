@@ -4,6 +4,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -96,7 +98,7 @@ public class RoomDetailsPage extends JPanel {
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒"};
         Map<String, JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
@@ -113,6 +115,9 @@ public class RoomDetailsPage extends JPanel {
         buttonMap.get("Rooms").addActionListener(e -> cardLayout.show(mainPanel, "ROOMS"));
         buttonMap.get("Login").addActionListener(e -> cardLayout.show(mainPanel, "LOGIN"));
         buttonMap.get("Shop").addActionListener(e -> cardLayout.show(mainPanel, "SHOP"));
+        buttonMap.get("🛒").addActionListener(e -> {
+                cardLayout.show(mainPanel,"CHECKOUT");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -305,10 +310,15 @@ public class RoomDetailsPage extends JPanel {
         totalRow.add(totalValueLabel, BorderLayout.EAST);
 
         // Booking button
-        JButton proceedButton = new JButton("Proceed to Booking");
+        JButton proceedButton = new JButton("Add Room to Booking");
         proceedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         proceedButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        proceedButton.addActionListener(e -> handleBooking());
+        proceedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
 
         bookingPanel.add(title);
         bookingPanel.add(Box.createVerticalStrut(20));
