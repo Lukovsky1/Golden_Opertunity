@@ -11,7 +11,6 @@ public class Reservation {
     final double bill;
 
 
-    //TODO: Add ID as a field either to the test file or create them manually
     Reservation(String resId, List<Room> rooms, DateRange dateRange, double bill) {
         this.resId = resId;
         this.rooms = rooms;
