@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 //TODO: Must be implemented
+
 public class DBUtil {
     private static String url = "jdbc:sqlite:src/main/resources/Hotel.db";
 
@@ -17,5 +18,4 @@ public class DBUtil {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url);
     }
-
 }

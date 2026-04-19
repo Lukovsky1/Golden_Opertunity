@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Changes to shop page">
+    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Added room database">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Loader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Loader.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,11 +22,10 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="Andreis-Branch" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -49,7 +47,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Lukovsky1/Golden_Opertunity.git&quot;,
-    &quot;accountId&quot;: &quot;2f4487dd-cee3-4ae9-a554-d7cd7af1f8be&quot;
+    &quot;accountId&quot;: &quot;06be97dc-2351-43e4-be76-b53e86651871&quot;
   },
   &quot;recentNewPullRequestHead&quot;: {
     &quot;server&quot;: {
@@ -62,9 +60,9 @@
     &quot;repository&quot;: &quot;Golden_Opertunity&quot;
   }
 }</component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="jar:///opt/homebrew/opt/java/libexec/openjdk.jdk/Contents/Home/lib/src.zip!/java.base/java/lang/ClassLoader.java" root0="SKIP_INSPECTION" />
-    <setting file="jar:///opt/homebrew/opt/java/libexec/openjdk.jdk/Contents/Home/lib/src.zip!/java.base/sun/nio/fs/UnixException.java" root0="SKIP_INSPECTION" />
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -77,39 +75,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Application.AddRoomPage.executor": "Run",
-    "Application.HotelBookingUI.executor": "Run",
-    "Application.HotelHomePageUI.executor": "Run",
-    "Application.MainUIFrame.executor": "Run",
-    "Application.RoomDetailsPage.executor": "Run",
-    "Application.SearchController.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "reservationDatabase",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/andre/OneDrive/Documentos/Baylor_University/Software_Engineering_I/Repo/src/main/resources",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "vue.rearranger.settings.migration": "true"
-  },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "sqlite"
-    ]
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Application.AddRoomPage.executor&quot;: &quot;Run&quot;,
+    &quot;Application.HotelBookingUI.executor&quot;: &quot;Run&quot;,
+    &quot;Application.HotelHomePageUI.executor&quot;: &quot;Run&quot;,
+    &quot;Application.MainUIFrame.executor&quot;: &quot;Run&quot;,
+    &quot;Application.RoomDetailsPage.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SearchController.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;RoomDatabase&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/andre/OneDrive/Documentos/Baylor_University/Software_Engineering_I/Repo/src/main/resources&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\andre\OneDrive\Documentos\Baylor_University\Software_Engineering_I\Repo\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\griff\Documents\CSI 3471\Golden_Opertunity\src\main\resources" />
       <recent name="C:\Users\andre\OneDrive\Documentos\Baylor_University\Software_Engineering_I\Repo\src\main\java\com\GoldenOpportunity\Images\Products" />
       <recent name="C:\Users\andre\OneDrive\Documentos\Baylor_University\Software_Engineering_I\Repo\src\main\java\com\GoldenOpportunity\Images\Rooms" />
       <recent name="C:\Users\andre\OneDrive\Documentos\Baylor_University\Software_Engineering_I\Repo\src\main\java\com\GoldenOpportunity\Images" />
@@ -143,25 +142,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SearchController" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.GoldenOpportunity.SearchController" />
-      <module name="Golden_Opertunity" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.GoldenOpportunity.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SearchController" />
-        <item itemvalue="Application.HotelHomePageUI" />
         <item itemvalue="Application.HotelBookingUI" />
         <item itemvalue="Application.HotelHomePageUI" />
+        <item itemvalue="Application.HotelHomePageUI" />
+        <item itemvalue="Application.HotelBookingUI" />
         <item itemvalue="Application.HotelBookingUI" />
       </list>
     </recent_temporary>
@@ -170,7 +156,6 @@
     <attachedChunks>
       <set>
         <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.240" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.29346.240" />
       </set>
     </attachedChunks>
   </component>
@@ -332,7 +317,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775331573754</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Added room database">
+      <option name="closed" value="true" />
+      <created>1776028378199</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1776028378199</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -349,7 +342,8 @@
     <MESSAGE value="New Shop Page with added functionality" />
     <MESSAGE value="Added files for all of the images" />
     <MESSAGE value="Changes to shop page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes to shop page" />
+    <MESSAGE value="Added room database" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added room database" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -358,11 +352,6 @@
           <properties class="java.lang.NoClassDefFoundError" package="java.lang" />
           <option name="timeStamp" value="8" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SearchController.java</url>
-          <line>101</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

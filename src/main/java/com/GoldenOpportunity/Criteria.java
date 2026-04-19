@@ -50,6 +50,4 @@ public class Criteria {
     public void setRate(double rate) { this.rate = rate; }
     public void setDateRange(DateRange dateRange) { this.dateRange = dateRange; }
     public void setBeds(Map<String, Integer> beds){this.beds.putAll(beds);}
-
-
 }
