@@ -48,8 +48,8 @@ public class RoomLoader extends Loader {
     public void loadData() {
         try (Connection conn = DBUtil.getConnection();
              Statement stmt = conn.createStatement()) {
-            String roomSql = Files.readString(Path.of("src/main/resources/room_Insert.sql"));
-            String bedSql = Files.readString(Path.of("src/main/resources/bed_Insert.sql"));
+            String roomSql = Files.readString(Path.of("src/main/resources/room_insert.sql"));
+            String bedSql = Files.readString(Path.of("src/main/resources/bed_insert.sql"));
             stmt.executeUpdate(roomSql);
             stmt.executeUpdate(bedSql);
         } catch (SQLException e) {
