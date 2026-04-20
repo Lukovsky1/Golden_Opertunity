@@ -73,7 +73,10 @@ public class SearchController {
     are in different places in memory and are not equivalent to each other.
      */
     public static void main(String [] args) throws FileNotFoundException {
-        SearchController searchController = new SearchController(new RoomService(),
+        RoomService roomService = new RoomService();
+        roomService.createTable();
+        roomService.loadRoomsFromCSV("src/main/resources/testRoomData1.csv");
+        SearchController searchController = new SearchController(roomService,
                 new ReservationService
                         (Path.of("src/main/resources/testReservationData1.csv")));
         //Creating a new List<Room> for object for reservation for testing createReservation

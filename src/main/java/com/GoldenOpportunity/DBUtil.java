@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBUtil {
-    private static String url = "jdbc:sqlite:rooms.db";
+    private static String url = "jdbc:sqlite:src/main/resources/hotel.db";
 
     DBUtil() {
     }

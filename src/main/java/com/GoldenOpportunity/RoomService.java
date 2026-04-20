@@ -6,7 +6,6 @@ import java.sql.*;
 import java.util.*;
 
 public class RoomService {
-    String database = "jdbc:sqlite:src/main/resources/rooms.db";
     public RoomService() {
         // No roomList, no roomMap — DB only
     }
@@ -21,12 +20,13 @@ public class RoomService {
                     qLevel     TEXT NOT NULL,
                     roomType   TEXT NOT NULL,
                     rate       REAL NOT NULL,
-                    bedTypes   TEXT NOT NULL
+                    bedTypes   TEXT NOT NULL,
+                    capacity    INTEGER NOT NULL,
+                    description TEXT,
+                    image       TEXT
                 );
                 """;
 
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
@@ -35,13 +35,22 @@ public class RoomService {
         }
     }
 
+    public void deleteRoomTable(){
+        String sql = "DROP TABLE IF EXISTS rooms;";
+        try (Connection conn = DBUtil.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete table.", e);
+        }
+    }
+
     /** Load ALL rooms from DB */
     public List<Room> getAllRooms() {
         List<Room> rooms = new ArrayList<>();
 
-        String sql = "SELECT floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes FROM rooms";
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
+        String sql = "SELECT floorNum, roomNo, numBeds, smoking, qLevel," +
+                " roomType, rate, bedTypes, capacity, description, image FROM rooms";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -60,8 +69,6 @@ public class RoomService {
     /** Find a single room by room number */
     public Room findRoom(int roomNo) {
         String sql = "SELECT * FROM rooms WHERE roomNo = ?";
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -114,8 +121,7 @@ public class RoomService {
             sql.append(" AND rate <= ?");
             params.add(c.getRate());
         }
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
+
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
 
@@ -166,8 +172,12 @@ public class RoomService {
             Map<String, Integer> bedTypes = parseBedTypes(parts[5]);
             boolean smoking = Boolean.parseBoolean(parts[6]);
             double rate = Double.parseDouble(parts[7]);
+            int capacity = numBeds * 2;
+            String description = String.valueOf(roomNo) + " description";
+            String image = "insert image file path here";
 
-            createRoom(floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes);
+            createRoom(floorNum, roomNo, numBeds, smoking, qLevel, roomType,
+                    rate, bedTypes, capacity, description, image);
         }
 
         fileScanner.close();
@@ -196,13 +206,13 @@ public class RoomService {
     /** Create a new room in DB */
     public void createRoom(int floorNum, int rmNo, int numBeds, boolean smoke,
                            String qlty, String rmType, double rate,
-                           Map<String, Integer> bedTypesInput) {
+                           Map<String, Integer> bedTypesInput, int capacity,
+                           String description, String image) {
 
-        String sql = "INSERT INTO rooms (floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO rooms (floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes, " +
+                "capacity, description, image) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -214,6 +224,9 @@ public class RoomService {
             stmt.setString(6, rmType);
             stmt.setDouble(7, rate);
             stmt.setString(8, serializeBedTypes(bedTypesInput));
+            stmt.setInt(9, capacity);
+            stmt.setString(10, description);
+            stmt.setString(11, image);
 
             stmt.executeUpdate();
 
@@ -223,15 +236,80 @@ public class RoomService {
     }
 
     /** Modify an existing room in DB */
-    public void modifyRoom(int floorNum, int rmNo, int numBeds, boolean smoke,
+    public boolean modifyRoom(int floorNum, int rmNo, int numBeds, boolean smoke,
                            String qlty, String rmType, double rate,
-                           Map<String, Integer> bedTypesInput) {
+                           Map<String, Integer> bedTypesInput,
+                           int capacity, String description, String image) {
 
-        String sql = "UPDATE rooms SET floorNum=?, numBeds=?, smoking=?, qLevel=?, roomType=?, rate=?, bedTypes=? " +
+
+        // --- VALIDATION SECTION ---
+
+        // Floor must be 1–3
+        if (floorNum < 1 || floorNum > 3) {
+            System.out.println("Invalid floor number. Must be 1, 2, or 3.");
+            return false;
+        }
+
+        // Room number must start with floor number (e.g., 101, 203, 315)
+        int firstDigit = Integer.parseInt(Integer.toString(rmNo).substring(0, 1));
+        if (firstDigit != floorNum) {
+            System.out.println("Room number must start with the floor number.");
+            return false;
+        }
+
+        // Beds must be positive
+        if (numBeds <= 0) {
+            System.out.println("Number of beds must be positive.");
+            return false;
+        }
+
+        // Rate must be positive
+        if (rate <= 0) {
+            System.out.println("Rate must be positive.");
+            return false;
+        }
+
+        // Quality and room type must not be blank
+        if (qlty == null || qlty.isBlank()) {
+            System.out.println("Quality level cannot be empty.");
+            return false;
+        }
+        if (rmType == null || rmType.isBlank()) {
+            System.out.println("Room type cannot be empty.");
+            return false;
+        }
+
+        // Bed types must not be empty and must match numBeds
+        if (bedTypesInput == null || bedTypesInput.isEmpty()) {
+            System.out.println("Bed types cannot be empty.");
+            return false;
+        }
+
+        int bedTypeTotal = bedTypesInput.values().stream().mapToInt(i -> i).sum();
+        if (bedTypeTotal != numBeds) {
+            System.out.println("Sum of bed types must equal numBeds.");
+            return false;
+        }
+
+        // Capacity must be >= number of beds
+        if (capacity < numBeds) {
+            System.out.println("Capacity must be at least equal to number of beds.");
+            return false;
+        }
+
+        // Validate image path exists
+        if (image != null && !image.isBlank()) {
+            File f = new File(image);
+            if (!f.exists()) {
+                System.out.println("Warning: Image file does not exist.");
+                return false;
+            }
+        }
+
+        String sql = "UPDATE rooms SET floorNum=?, numBeds=?, smoking=?, qLevel=?, roomType=?," +
+                " rate=?, bedTypes=?, capacity=?, description=?, image=? " +
                 "WHERE roomNo=?";
 
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -242,13 +320,17 @@ public class RoomService {
             stmt.setString(5, rmType);
             stmt.setDouble(6, rate);
             stmt.setString(7, serializeBedTypes(bedTypesInput));
-            stmt.setInt(8, rmNo);
+            stmt.setInt(8, capacity);
+            stmt.setString(9, description);
+            stmt.setString(10, description);
+            stmt.setInt(11, rmNo);
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
     // -------------------------
@@ -263,10 +345,14 @@ public class RoomService {
         String qLevel = rs.getString("qLevel");
         String roomType = rs.getString("roomType");
         double rate = rs.getDouble("rate");
+        int capacity = rs.getInt("capacity");
+        String description = rs.getString("description");
+        String image = rs.getString("image");
 
         Map<String, Integer> bedTypes = parseBedTypes(rs.getString("bedTypes"));
 
-        return new Room(floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes);
+        return new Room(floorNum, roomNo, numBeds, smoking, qLevel, roomType,
+                rate, bedTypes, capacity, description, image);
     }
 
     private Map<String, Integer> parseBedTypes(String input) {

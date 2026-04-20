@@ -18,9 +18,13 @@ public class Room {
     String qLevel;
     String roomType;
     double rate;
+    int capacity;
+    String description;
+    String image;
 
     Room(int floorNum, int rmNo, int b, boolean sm, String qlty,
-         String rmType, double r, Map<String, Integer> InputBedTypes){
+         String rmType, double r, Map<String, Integer> InputBedTypes,
+         int capacity, String description, String image){
         this.floorNum = floorNum;
         roomNo = rmNo;
         beds = b;
@@ -29,6 +33,9 @@ public class Room {
         roomType = rmType;
         rate = r;
         bedTypes = InputBedTypes;
+        this.capacity = capacity;
+        this.description = description;
+        this.image = image;
     }
 
     public int getFloorNum() {return floorNum;}
@@ -39,6 +46,9 @@ public class Room {
     public String getRoomType() { return roomType; }
     public double getRate() { return rate; }
     public Map<String, Integer> getBedTypes(){return bedTypes;}
+    public int getCapacity() {return capacity;}
+    public String getDescription() {return description;}
+    public String getImage() {return image;}
 
     public void setFloorNum(int floorNum) {this.floorNum = floorNum;}
     public void setRoomNo(int roomNo) {this.roomNo = roomNo; }
@@ -48,7 +58,9 @@ public class Room {
     public void setRoomType(String roomType) { this.roomType = roomType; }
     public void setRate(double rate) { this.rate = rate; }
     public void setBedTypes(Map<String, Integer> bedTypeInput){bedTypes.putAll(bedTypeInput);}
-
+    public void setCapacity(int capacity) {this.capacity = capacity;}
+    public void setDescription(String description) {this.description = description;}
+    public void setImage(String image) {this.image = image;}
     //String [] bedTypes = {"King", "Queen", "Twin", "Full"};
 
 
