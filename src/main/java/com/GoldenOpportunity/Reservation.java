@@ -39,7 +39,7 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation: " + resId + " " +  rooms + ", " + dateRange + ", " + bill;
+        return "Reservation: " + resId + " " +  rooms + ", " + dateRange + ", " + bill + "Checked in: " + checkedIn;
     }
 
 }
