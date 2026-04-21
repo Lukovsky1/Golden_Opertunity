@@ -9,6 +9,7 @@ public class Reservation {
     private List<Room> rooms;
     final DateRange dateRange;
     final double bill;
+    boolean checkedIn;
 
 
     Reservation(String resId, List<Room> rooms, DateRange dateRange, double bill) {
@@ -16,6 +17,7 @@ public class Reservation {
         this.rooms = rooms;
         this.dateRange = dateRange;
         this.bill =  bill;
+        this.checkedIn = false;
     }
     public String getId() {
         return resId;
@@ -28,6 +30,9 @@ public class Reservation {
     }
     public double getBill() {
         return bill;
+    }
+    public boolean isCheckedIn() {
+        return checkedIn;
     }
 
 

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 //TODO: Must be implemented
 
 public class DBUtil {
-    private static String url = "jdbc:sqlite:src/main/resources/Hotel.db";
+    private static String url = "jdbc:sqlite:src/main/resources/golden.db";
 
     public DBUtil() {
     }
