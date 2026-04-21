@@ -70,7 +70,7 @@ public class Room {
     }
 
     boolean isRoomAvailable(DateRange range) {
-        ReservationService resService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+        ReservationService resService = new ReservationService();
         for (Reservation r : resService.getReservations()) {
             if (r.getRooms().contains(this) &&
                     r.getDateRange().overlaps(range)) {

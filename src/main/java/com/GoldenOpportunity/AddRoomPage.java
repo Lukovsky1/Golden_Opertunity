@@ -272,6 +272,7 @@ public class AddRoomPage extends JFrame {
 
     /**
      * Check if room already exists in CSV
+     *
      */
     private boolean roomExists(int roomNumber) {
         try (BufferedReader br = new BufferedReader(new FileReader(ROOM_CSV_FILE))) {

@@ -25,7 +25,8 @@ public class AuthenticationController {
         // Seed sample users for manual testing (no DB yet)
         users.add(new Admin(1, "admin1", "adminpass", "admin@golden.com"));
         users.add(new Clerk(2, "clerk1", "clerkpass", "clerk@golden.com"));
-        users.add(new Guest(3, "guest1", "guestpass", "guest@golden.com", false));
+        users.add(new Guest(3, "guest1", "guestpass", "guest@golden.com",
+                false, new ArrayList<>()));
     }
 
     /**

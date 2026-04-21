@@ -36,7 +36,7 @@ public class HotelHomePageUI extends JPanel {
     public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
-        reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+        reservationService = new ReservationService();
         roomService = new RoomService();
 
         setLayout(new BorderLayout(10, 10));

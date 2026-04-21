@@ -417,7 +417,7 @@ public class RoomDetailsPage extends JPanel {
             List<Room> currRooms = new ArrayList<>();
             currRooms.add(room);
 
-            ReservationService reservationService = new ReservationService(Path.of(RESERVATION_FILE));
+            ReservationService reservationService = new ReservationService();
             reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
 
             // Retrieve the newly created reservation

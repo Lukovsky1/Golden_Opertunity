@@ -1,4 +1,4 @@
-INSERT INTO Room (floorNum, roomNo, roomType, qLevel, beds, smoking, rate) VALUES
+INSERT INTO Rooms (floorNum, roomNo, roomType, qLevel, beds, smoking, rate) VALUES
 (1, 101, 'Single', 'Economic', 1, FALSE, 100),
 (1, 102, 'Double', 'Economic', 2, FALSE, 125),
 (1, 103, 'Double', 'Economic', 2, FALSE, 125),

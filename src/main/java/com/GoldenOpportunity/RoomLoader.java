@@ -14,7 +14,7 @@ public class RoomLoader extends Loader {
         //FIXME: Primary key should be roomNo ALONE. Because floorNum is non-unique,
         //FIXME: the statement will be made invalid
         String createRoom = """
-                CREATE TABLE IF NOT EXISTS Room (
+                CREATE TABLE IF NOT EXISTS Rooms (
                   roomNo INTEGER PRIMARY KEY NOT NULL,
                   floorNum INTEGER NOT NULL,
                   beds INTEGER NOT NULL,
@@ -27,10 +27,12 @@ public class RoomLoader extends Loader {
 
         String Beds = """
                 CREATE TABLE IF NOT EXISTS Beds (
-                    roomNo INTEGER NOT NULL REFERENCES Room(roomNo),
-                    floorNum INTEGER NOT NULL REFERENCES Room(floorNum),
+                    roomNo INTEGER NOT NULL,
+                    floorNum INTEGER NOT NULL,
                     bedType TEXT NOT NULL,
-                    quantity INTEGER NOT NULL
+                    quantity INTEGER NOT NULL,
+                    PRIMARY KEY (roomNo, bedType),
+                    FOREIGN KEY (roomNo, floorNum) REFERENCES Room(roomNo, floorNum)
                 );
                 """;
 
@@ -55,7 +57,7 @@ public class RoomLoader extends Loader {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to load SQL data.", e);
         } catch (IOException e) {
-            System.err.println(e.getMessage() + e.getCause());
+            System.err.println("Failed to read input." + e.getMessage() + e.getCause());
         }
     }
 

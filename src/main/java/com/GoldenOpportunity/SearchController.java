@@ -22,12 +22,13 @@ public class SearchController {
      * to that room. Will print the reservation ids as a proxy for the
      * reservation object.
      */
+    //TODO: Edit all these methods to align with database implementation
     public void printRoomsAndReservations() {
         for (int i = 0; i < roomService.getAllRooms().size(); i++) {
             int num = roomService.getAllRooms().get(i).getRoomNo();
             System.out.println("All reservations assigned to " + num);
             for (Reservation r : resService.getReservations()) {
-                if (r.getRoom().equals(roomService.getAllRooms().get(i))) {
+                if (r.getRooms().equals(roomService.getAllRooms().get(i))) {
                     System.out.println(r.getId());
                 }
             }
@@ -58,7 +59,7 @@ public class SearchController {
     //TODO: Move to room class
     private boolean isRoomAvailable(Room room, DateRange range) {
         for (Reservation r : resService.getReservations()) {
-            if (r.getRoom().equals(room) &&
+            if (r.getRooms().equals(room) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
             }
@@ -74,8 +75,7 @@ public class SearchController {
      */
     public static void main(String [] args) throws FileNotFoundException {
         SearchController searchController = new SearchController(new RoomService(),
-                new ReservationService
-                        (Path.of("src/main/resources/testReservationData1.csv")));
+                new ReservationService());
         //Creating a new List<Room> for object for reservation for testing createReservation
         Room [] testRooms = {searchController.roomService.getAllRooms().get(0),
                 searchController.roomService.getAllRooms().get(1),
@@ -83,7 +83,7 @@ public class SearchController {
         List<Room> newRooms = Arrays.asList(testRooms);
 
         //TODO: reserveRoom Use Case
-        searchController.resService.createReservation(newRooms.get(0), LocalDate.now(),
+        searchController.resService.createReservation(newRooms, LocalDate.now(),
                 LocalDate.parse("2026-11-20"), 0.0);
         searchController.resService.deleteReservation("R-019");
 

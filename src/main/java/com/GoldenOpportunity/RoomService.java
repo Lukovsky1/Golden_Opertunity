@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.*;
 
 public class RoomService {
-    String database = "jdbc:sqlite:src/main/resources/rooms.db";
+    String database = "jdbc:sqlite:src/main/resources/Hotel.db";
     public RoomService() {
         // No roomList, no roomMap — DB only
     }
@@ -39,9 +39,9 @@ public class RoomService {
     public List<Room> getAllRooms() {
         List<Room> rooms = new ArrayList<>();
 
-        String sql = "SELECT floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes FROM rooms";
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
+        String sql = "SELECT floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes FROM Rooms";
+        //DBUtil DBUtil = new DBUtil();
+        //DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

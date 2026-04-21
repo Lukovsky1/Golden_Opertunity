@@ -53,6 +53,40 @@ public class ReservationLoader extends Loader{
     }
 
     @Override
+    public void createTable() {
+        //FIXME: Primary key should be roomNo ALONE. Because floorNum is non-unique,
+        //FIXME: the statement will be made invalid
+        String createReservation = """
+                CREATE TABLE IF NOT EXISTS Reservations (
+                      resId TEXT PRIMARY KEY,
+                      startDate TEXT NOT NULL,
+                      endDate TEXT NOT NULL,
+                      bill REAL NOT NULL
+                  );
+
+                """;
+
+        String createReservedRooms = """
+                CREATE TABLE IF NOT EXISTS ReservedRooms (
+                      resId TEXT NOT NULL,
+                      roomNo INTEGER NOT NULL,
+                      floorNum INTEGER NOT NULL,
+                      PRIMARY KEY (resId, roomNo, floorNum),
+                      FOREIGN KEY (resId) REFERENCES Reservation(resId),
+                      FOREIGN KEY (roomNo, floorNum) REFERENCES Rooms(roomNo, floorNum)
+                );
+                """;
+
+        try (Connection conn = DBUtil.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(createReservation);
+            stmt.execute(createReservedRooms);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create table.", e);
+        }
+    }
+
+    @Override
     public void loadData() {
         try (Connection conn = DBUtil.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -64,40 +98,6 @@ public class ReservationLoader extends Loader{
             throw new RuntimeException("Failed to load SQL data.", e);
         } catch (IOException e) {
             System.err.println(e.getMessage() + e.getCause());
-        }
-    }
-
-    @Override
-    public void createTable() {
-        //FIXME: Primary key should be roomNo ALONE. Because floorNum is non-unique,
-        //FIXME: the statement will be made invalid
-        String createReservation = """
-                CREATE TABLE Reservations (
-                      resId TEXT PRIMARY KEY,
-                      startDate TEXT NOT NULL,
-                      endDate TEXT NOT NULL,
-                      bill REAL NOT NULL
-                  );
-
-                """;
-
-        String createReservedRooms = """
-                CREATE TABLE ReservedRooms (
-                      resId TEXT NOT NULL,
-                      roomNo INTEGER NOT NULL,
-                      floorNum INTEGER NOT NULL,
-                      PRIMARY KEY (resId, roomNo, floorNum),
-                      FOREIGN KEY (resId) REFERENCES Reservation(resId),
-                      FOREIGN KEY (roomNo, floorNum) REFERENCES Room(roomNo, floorNum)
-                );
-                """;
-
-        try (Connection conn = DBUtil.getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(createReservation);
-            stmt.execute(createReservedRooms);
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to create table.", e);
         }
     }
 }

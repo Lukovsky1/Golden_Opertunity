@@ -5,7 +5,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Added room database">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hotel.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AddRoomPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AddRoomPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AuthenticationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Roles/Guest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Roles/Guest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SearchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SearchController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/testDBMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/testDBMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/reservation_insert.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/reservation_insert.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/reservedRooms_insert.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/reservedRooms_insert.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/room_Insert.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/room_insert.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DBUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DBUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Loader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Loader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Reservation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Reservation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ReservationLoader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ReservationLoader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Room.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomLoader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomLoader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SearchController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SearchController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/testDBMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/testDBMain.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +73,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Lukovsky1/Golden_Opertunity.git&quot;,
-    &quot;accountId&quot;: &quot;06be97dc-2351-43e4-be76-b53e86651871&quot;
+    &quot;accountId&quot;: &quot;cf006c9e-5296-480d-a36d-3d71d6eb306a&quot;
   },
   &quot;recentNewPullRequestHead&quot;: {
     &quot;server&quot;: {
@@ -75,34 +101,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Application.AddRoomPage.executor&quot;: &quot;Run&quot;,
-    &quot;Application.HotelBookingUI.executor&quot;: &quot;Run&quot;,
-    &quot;Application.HotelHomePageUI.executor&quot;: &quot;Run&quot;,
-    &quot;Application.MainUIFrame.executor&quot;: &quot;Run&quot;,
-    &quot;Application.RoomDetailsPage.executor&quot;: &quot;Run&quot;,
-    &quot;Application.SearchController.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;RoomDatabase&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/andre/OneDrive/Documentos/Baylor_University/Software_Engineering_I/Repo/src/main/resources&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Application.AddRoomPage.executor": "Run",
+    "Application.HotelBookingUI.executor": "Debug",
+    "Application.HotelHomePageUI.executor": "Run",
+    "Application.MainUIFrame.executor": "Run",
+    "Application.RoomDetailsPage.executor": "Run",
+    "Application.SearchController.executor": "Run",
+    "Application.testDBMain.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "reservationDatabase",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/andre/OneDrive/Documentos/Baylor_University/Software_Engineering_I/Repo/src/main/resources",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlite"
+    ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\andre\OneDrive\Documentos\Baylor_University\Software_Engineering_I\Repo\src\main\resources" />
@@ -155,7 +189,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.240" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
       </set>
     </attachedChunks>
   </component>
@@ -172,6 +207,9 @@
       <workItem from="1775173252506" duration="164000" />
       <workItem from="1775325174149" duration="5312000" />
       <workItem from="1775584787045" duration="56000" />
+      <workItem from="1776652503480" duration="193000" />
+      <workItem from="1776652756873" duration="222000" />
+      <workItem from="1776653002315" duration="20140000" />
     </task>
     <task id="LOCAL-00001" summary="UI Booking and Home class">
       <option name="closed" value="true" />
@@ -352,6 +390,50 @@
           <properties class="java.lang.NoClassDefFoundError" package="java.lang" />
           <option name="timeStamp" value="8" />
         </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.RuntimeException" package="java.lang" />
+          <option name="timeStamp" value="18" />
+        </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java</url>
+          <line>103</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java</url>
+          <line>137</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java</url>
+          <line>111</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/testDBMain.java</url>
+          <line>42</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java</url>
+          <line>277</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java</url>
+          <line>324</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java</url>
+          <line>286</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/testDBMain.java</url>
+          <line>39</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
