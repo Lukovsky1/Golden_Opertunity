@@ -38,7 +38,18 @@ public class LoginPage extends JPanel {
         setLayout(new BorderLayout());
 
         add(createHeader(), BorderLayout.NORTH);
-        add(createFormPanel(), BorderLayout.CENTER);
+        add(createMainContent(), BorderLayout.CENTER);
+    }
+
+    private JPanel createMainContent() throws IOException {
+        JPanel content = new JPanel(new GridLayout(1,2));
+        content.setBackground(new Color(243, 246, 249));
+        content.setBorder(new EmptyBorder(12, 15, 18, 15));
+
+        content.add(createFormPanel());
+        content.add(new SignUpPage());
+
+        return content;
     }
 
     /**
@@ -117,7 +128,7 @@ public class LoginPage extends JPanel {
      * Builds the main login form
      */
     private JPanel createFormPanel() {
-        JPanel outerPanel = new JPanel(new BorderLayout());
+        JPanel outerPanel = new JPanel(new GridBagLayout());
         outerPanel.setBackground(new Color(245, 245, 245));
         outerPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
 
@@ -133,11 +144,18 @@ public class LoginPage extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
+        JLabel titleLabel = new JLabel("Login");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        formPanel.add(titleLabel, gbc);
+
         // Initialize input fields
         usernameField = new JTextField(20);
         passwordField = new JPasswordField(20);
 
-        int row = 0;
+        int row = 1;
 
         addFormRow(formPanel, gbc, row++, "Username / Email:", usernameField);
         addFormRow(formPanel, gbc, row++, "Password:", passwordField);
@@ -176,7 +194,7 @@ public class LoginPage extends JPanel {
         gbc.gridwidth = 2;
         formPanel.add(buttonPanel, gbc);
 
-        outerPanel.add(formPanel, BorderLayout.NORTH);
+        outerPanel.add(formPanel);
         return outerPanel;
     }
 
