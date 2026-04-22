@@ -28,15 +28,12 @@ public class HotelBookingUI extends JPanel {
     private DatePicker startDate;
     private DatePicker endDate;
     private JSpinner numGuests;
-    private RoomService roomService;
-    private ReservationService reservationService;
+    private UIState uiState;
 
-    public HotelBookingUI(CardLayout cardLayout, JPanel mainPanel,
-                          RoomService roomService,ReservationService reservationService) throws IOException {
+    public HotelBookingUI(CardLayout cardLayout, JPanel mainPanel,UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
-        this.roomService = roomService;
-        this.reservationService = reservationService;
+        this.uiState = uiState;
 
         setLayout(new BorderLayout(10, 10));
 
@@ -89,7 +86,21 @@ public class HotelBookingUI extends JPanel {
             cardLayout.show(mainPanel,"SHOP");
         });
         buttonMap.get("🛒").addActionListener(e -> {
-            cardLayout.show(mainPanel,"CHECKOUT");
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
         });
         buttonMap.get("👤").addActionListener(e -> {
             cardLayout.show(mainPanel,"PROFILE");
@@ -166,7 +177,7 @@ public class HotelBookingUI extends JPanel {
         photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png");
         photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg");
 
-        for(Room room : roomService.getRoomList()){
+        for(Room room : uiState.roomService.getRoomList()){
             int randomNum = (int)(Math.random() * 3);
             list.add(createRoomCard(room,photos.get(randomNum)));
             list.add(Box.createVerticalStrut(15));
@@ -250,16 +261,13 @@ public class HotelBookingUI extends JPanel {
                         return;
                     }
 
-                    mainPanel.add(new RoomDetailsPage(
-                            cardLayout,
-                            mainPanel,
-                            startDate.getDate(),
-                            endDate.getDate(),
-                            (int) numGuests.getValue(),
-                            room,
-                            imageFile,
-                            reservationService
-                    ), "DETAILS");
+                    uiState.startDate = startDate.getDate();
+                    uiState.endDate = endDate.getDate();
+                    uiState.numGuests = (int) numGuests.getValue();
+                    uiState.room = room;
+                    uiState.imageFile = imageFile;
+
+                    mainPanel.add(new RoomDetailsPage(cardLayout, mainPanel,uiState), "DETAILS");
 
                     mainPanel.revalidate();
                     mainPanel.repaint();

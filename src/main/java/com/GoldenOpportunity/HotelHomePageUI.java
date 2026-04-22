@@ -9,9 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,17 +25,14 @@ public class HotelHomePageUI extends JPanel {
     private DatePicker endDate;
     private JSpinner numGuests;
 
-    private RoomService roomService;
-    private ReservationService reservationService;
+    private UIState uiState;
 
-    public RoomService getRoomService(){return roomService;}
-    public ReservationService getReservationService(){return reservationService;}
-
-    public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
-        reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
-        roomService = new RoomService("src/main/resources/testRoomData1.csv");
+        this.uiState = uiState;
+        uiState.reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+        uiState.roomService = new RoomService("src/main/resources/testRoomData1.csv");
 
         setLayout(new BorderLayout(10, 10));
 
@@ -97,7 +92,21 @@ public class HotelHomePageUI extends JPanel {
             cardLayout.show(mainPanel,"SHOP");
         });
         buttonMap.get("🛒").addActionListener(e -> {
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
                 cardLayout.show(mainPanel,"CHECKOUT");
+            }
         });
         buttonMap.get("👤").addActionListener(e -> {
             cardLayout.show(mainPanel,"PROFILE");
@@ -210,9 +219,9 @@ public class HotelHomePageUI extends JPanel {
         JPanel rooms = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         rooms.setBackground(new Color(245, 245, 245));
 
-        rooms.add(createRoomCard(roomService.getRoomList().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
-        rooms.add(createRoomCard(roomService.getRoomList().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
-        rooms.add(createRoomCard(roomService.getRoomList().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
+        rooms.add(createRoomCard(uiState.roomService.getRoomList().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
+        rooms.add(createRoomCard(uiState.roomService.getRoomList().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
+        rooms.add(createRoomCard(uiState.roomService.getRoomList().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
 
         wrapper.add(rooms);
         return wrapper;
@@ -268,16 +277,13 @@ public class HotelHomePageUI extends JPanel {
                         return;
                     }
 
-                    mainPanel.add(new RoomDetailsPage(
-                            cardLayout,
-                            mainPanel,
-                            startDate.getDate(),
-                            endDate.getDate(),
-                            (int) numGuests.getValue(),
-                            room,
-                            imageFile,
-                            reservationService
-                    ), "DETAILS");
+                    uiState.startDate = startDate.getDate();
+                    uiState.endDate = endDate.getDate();
+                    uiState.numGuests = (int) numGuests.getValue();
+                    uiState.room = room;
+                    uiState.imageFile = imageFile;
+
+                    mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,uiState), "DETAILS");
 
                     mainPanel.revalidate();
                     mainPanel.repaint();

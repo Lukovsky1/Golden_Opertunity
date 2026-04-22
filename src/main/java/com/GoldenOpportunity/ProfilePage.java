@@ -1,18 +1,26 @@
 package com.GoldenOpportunity;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfilePage extends JPanel {
 
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
+    private UIState uiState;
 
-    public ProfilePage(CardLayout cardLayout, JPanel mainPanel) {
+    public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -22,51 +30,73 @@ public class ProfilePage extends JPanel {
     }
 
     // ================= HEADER =================
-    private JPanel createHeader() {
+    private JPanel createHeader() throws IOException {
         JPanel header = new JPanel(new BorderLayout());
+        header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
-        header.setBorder(new LineBorder(new Color(190, 200, 210), 1));
 
-        // Left logo area
-        JPanel logoPanel = new JPanel(new GridBagLayout());
-        logoPanel.setPreferredSize(new Dimension(190, 160));
-        logoPanel.setBackground(new Color(210, 216, 223));
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
 
-        JLabel logoPlaceholder = new JLabel("\uD83D\uDDBC");
-        logoPlaceholder.setFont(new Font("SansSerif", Font.PLAIN, 40));
-        logoPlaceholder.setForeground(new Color(130, 145, 160));
-        logoPanel.add(logoPlaceholder);
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
 
-        // Right nav area
-        JPanel navWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 55));
-        navWrapper.setOpaque(false);
-        navWrapper.setBorder(new EmptyBorder(0, 20, 0, 20));
+        int newHeight = 70;
+        int newWidth = (originalWidth * newHeight) / originalHeight;
 
-        navWrapper.add(createNavButton("Home"));
-        navWrapper.add(createNavButton("Rooms"));
-        navWrapper.add(createNavButton("Shop"));
-        navWrapper.add(createNavButton("Login"));
-        navWrapper.add(createNavButton("🛒"));
-        navWrapper.add(createNavButton("👤"));
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
+        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
-        header.add(logoPanel, BorderLayout.WEST);
-        header.add(navWrapper, BorderLayout.CENTER);
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        nav.setBackground(Color.WHITE);
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
+        Map<String,JButton> buttonMap = new HashMap<>();
 
+        for (String item : items) {
+            buttonMap.put(item,new JButton(item));
+            buttonMap.get(item).setFocusPainted(false);
+            buttonMap.get(item).setBackground(Color.WHITE);
+            buttonMap.get(item).setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
+            nav.add(buttonMap.get(item));
+        }
+
+        buttonMap.get("Home").addActionListener(e -> {
+            cardLayout.show(mainPanel,"HOME");
+        });
+        buttonMap.get("Rooms").addActionListener(e -> {
+            cardLayout.show(mainPanel,"ROOMS");
+        });
+        buttonMap.get("Login").addActionListener(e -> {
+            cardLayout.show(mainPanel,"LOGIN");
+        });
+        buttonMap.get("Shop").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SHOP");
+        });
+        buttonMap.get("🛒").addActionListener(e -> {
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            cardLayout.show(mainPanel,"PROFILE");
+        });
+
+        header.add(logoLabel, BorderLayout.WEST);
+        header.add(nav, BorderLayout.EAST);
         return header;
-    }
-
-    private JButton createNavButton(String text) {
-        JButton button = new JButton(text);
-        button.setPreferredSize(new Dimension(
-                text.length() <= 2 ? 50 : 95, 48
-        ));
-        button.setFocusPainted(false);
-        button.setBackground(Color.WHITE);
-        button.setForeground(Color.BLACK);
-        button.setBorder(new LineBorder(new Color(170, 170, 170), 1, true));
-        button.setOpaque(true);
-        button.setContentAreaFilled(true);
-        return button;
     }
 
     // ================= SCROLLABLE CONTENT =================
@@ -127,10 +157,15 @@ public class ProfilePage extends JPanel {
         paymentRow.setOpaque(false);
         paymentRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JTextField paymentField = new JTextField("****XXXX");
+        JLabel paymentField = new JLabel("****XXXX");
         paymentField.setPreferredSize(new Dimension(200, 48));
         paymentField.setFont(new Font("SansSerif", Font.PLAIN, 15));
-        paymentField.setBorder(new LineBorder(new Color(190, 200, 210), 2, true));
+        paymentField.setOpaque(true);
+        paymentField.setBackground(Color.WHITE);
+        paymentField.setBorder(new CompoundBorder(
+                new LineBorder(new Color(190, 200, 210), 2, true),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
 
         JButton editPaymentBtn = createBlackButton("Edit Payment Info", 210, 48);
 
@@ -151,16 +186,24 @@ public class ProfilePage extends JPanel {
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("SansSerif", Font.BOLD, 15));
         label.setForeground(new Color(45, 55, 70));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JTextField field = new JTextField(value);
-        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
-        field.setPreferredSize(new Dimension(300, 48));
-        field.setFont(new Font("SansSerif", Font.PLAIN, 15));
-        field.setBorder(new LineBorder(new Color(190, 200, 210), 2, true));
+        JLabel valueLabel = new JLabel(value);
+        valueLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        valueLabel.setForeground(Color.BLACK);
+        valueLabel.setOpaque(true);
+        valueLabel.setBackground(Color.WHITE);
+        valueLabel.setBorder(new CompoundBorder(
+                new LineBorder(new Color(190, 200, 210), 2, true),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+        valueLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        valueLabel.setPreferredSize(new Dimension(300, 48));
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         wrapper.add(label);
         wrapper.add(Box.createVerticalStrut(4));
-        wrapper.add(field);
+        wrapper.add(valueLabel);
 
         return wrapper;
     }
@@ -201,6 +244,7 @@ public class ProfilePage extends JPanel {
         ));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
 
+        // LEFT SIDE (INFO)
         JPanel infoPanel = new JPanel();
         infoPanel.setOpaque(false);
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
@@ -211,35 +255,27 @@ public class ProfilePage extends JPanel {
 
         JLabel datesLabel = new JLabel("Dates: " + dates);
         datesLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
-        datesLabel.setForeground(new Color(45, 55, 70));
 
         JLabel roomsLabel = new JLabel("Rooms: " + rooms);
         roomsLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
-        roomsLabel.setForeground(new Color(45, 55, 70));
 
-        infoPanel.add(Box.createVerticalStrut(8));
+        infoPanel.add(Box.createVerticalStrut(10));
         infoPanel.add(reservationLabel);
         infoPanel.add(Box.createVerticalStrut(8));
         infoPanel.add(datesLabel);
         infoPanel.add(Box.createVerticalStrut(8));
         infoPanel.add(roomsLabel);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        // RIGHT SIDE (BUTTON - CENTERED)
+        JPanel buttonWrapper = new JPanel(new GridBagLayout()); // this centers vertically
+        buttonWrapper.setOpaque(false);
 
         JButton modifyBtn = createBlackButton("Modify Reservation", 225, 50);
-        JButton cancelBtn = createRedButton("Cancel Reservation", 225, 50);
+        buttonWrapper.add(modifyBtn); // GridBagLayout centers it automatically
 
-        modifyBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        cancelBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        buttonPanel.add(modifyBtn);
-        buttonPanel.add(Box.createVerticalStrut(10));
-        buttonPanel.add(cancelBtn);
-
+        // ADD TO CARD
         card.add(infoPanel, BorderLayout.CENTER);
-        card.add(buttonPanel, BorderLayout.EAST);
+        card.add(buttonWrapper, BorderLayout.EAST);
 
         return card;
     }
@@ -271,25 +307,5 @@ public class ProfilePage extends JPanel {
         button.setOpaque(true);
         button.setContentAreaFilled(true);
         return button;
-    }
-
-    // ================= TEST MAIN =================
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Profile Page");
-            CardLayout cardLayout = new CardLayout();
-            JPanel mainPanel = new JPanel(cardLayout);
-
-            ProfilePage profilePage = new ProfilePage(cardLayout, mainPanel);
-            mainPanel.add(profilePage, "PROFILE");
-
-            frame.setContentPane(mainPanel);
-            frame.setSize(1250, 820);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-
-            cardLayout.show(mainPanel, "PROFILE");
-        });
     }
 }

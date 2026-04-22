@@ -1,17 +1,15 @@
 package com.GoldenOpportunity.Shop;
 
-import com.github.lgooddatepicker.components.DatePicker;
+import com.GoldenOpportunity.CheckoutPage;
+import com.GoldenOpportunity.UIState;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ShopPage extends JPanel {
@@ -20,10 +18,12 @@ public class ShopPage extends JPanel {
     private JPanel mainPanel;
     private Shop shop;
     private ShoppingCart shoppingCart;
+    private UIState uiState;
 
-    public ShopPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public ShopPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         shop = new Shop("src/main/resources/testProductData.csv");
         shoppingCart = new ShoppingCart();
@@ -92,7 +92,21 @@ public class ShopPage extends JPanel {
             cardLayout.show(mainPanel,"SHOP");
         });
         buttonMap.get("🛒").addActionListener(e -> {
-            cardLayout.show(mainPanel,"CHECKOUT");
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
         });
         buttonMap.get("👤").addActionListener(e -> {
             cardLayout.show(mainPanel,"PROFILE");

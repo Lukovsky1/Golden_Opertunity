@@ -4,16 +4,19 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class AddRoomPage extends JPanel {
+public class ModifyRoomsPage extends JPanel {
 
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
 
-    public AddRoomPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    private JTable roomsTable;
+
+    public ModifyRoomsPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
 
@@ -138,12 +141,85 @@ public class AddRoomPage extends JPanel {
     // CENTER AREA
     // =========================
     private JPanel createCenterArea() {
-        JPanel centerArea = new JPanel(new BorderLayout());
+        JPanel centerArea = new JPanel(new GridLayout(1, 2, 22, 0));
         centerArea.setOpaque(false);
 
-        centerArea.add(new EditRoomPanel("Add New Room"));
+        centerArea.add(createRoomsPanel());
+        centerArea.add(new EditRoomPanel("Modify Room"));
 
         return centerArea;
+    }
+
+    // =========================
+    // LEFT PANEL - TABLE
+    // =========================
+    private JPanel createRoomsPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(190, 205, 218), 1),
+                new EmptyBorder(14, 16, 16, 16)
+        ));
+
+        JLabel title = new JLabel("Rooms", SwingConstants.CENTER);
+        title.setFont(new Font("SansSerif", Font.BOLD, 20));
+        title.setForeground(new Color(52, 66, 80));
+        title.setBorder(new EmptyBorder(0, 0, 12, 0));
+
+        String[] columns = {"", "", "", "", ""};
+        Object[][] data = {
+                {"", "", "", "", ""},
+                {"", "", "", "", ""},
+                {"", "", "", "", ""},
+                {"", "", "", "", ""},
+                {"", "", "", "", ""},
+                {"", "", "", "", ""},
+                {"", "", "", "", ""}
+        };
+
+        DefaultTableModel model = new DefaultTableModel(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        roomsTable = new JTable(model);
+        roomsTable.setRowHeight(38);
+        roomsTable.setShowGrid(true);
+        roomsTable.setGridColor(new Color(210, 218, 226));
+        roomsTable.setSelectionBackground(new Color(220, 230, 240));
+        roomsTable.setSelectionForeground(Color.BLACK);
+        roomsTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        roomsTable.getTableHeader().setReorderingAllowed(false);
+        roomsTable.getTableHeader().setResizingAllowed(false);
+        roomsTable.getTableHeader().setPreferredSize(new Dimension(0, 36));
+        roomsTable.getTableHeader().setBackground(Color.WHITE);
+        roomsTable.getTableHeader().setBorder(new LineBorder(new Color(210, 218, 226), 1));
+
+        JScrollPane scrollPane = new JScrollPane(roomsTable);
+        scrollPane.setBorder(new LineBorder(new Color(210, 218, 226), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+
+        JButton selectButton = new JButton("Select");
+        selectButton.setFocusPainted(false);
+        selectButton.setBackground(Color.BLACK);
+        selectButton.setForeground(Color.WHITE);
+        selectButton.setFont(new Font("SansSerif", Font.BOLD, 15));
+        selectButton.setPreferredSize(new Dimension(82, 38));
+        selectButton.setBorder(BorderFactory.createEmptyBorder());
+        selectButton.setOpaque(true);
+        selectButton.setContentAreaFilled(true);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 14));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(selectButton);
+
+        panel.add(title, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        return panel;
     }
 
     // =========================
@@ -159,13 +235,13 @@ public class AddRoomPage extends JPanel {
             CardLayout cardLayout = new CardLayout();
             JPanel mainPanel = new JPanel(cardLayout);
 
-            AddRoomPage addRoomPage = null;
+            ModifyRoomsPage modifyRoomsPage = null;
             try {
-                addRoomPage = new AddRoomPage(cardLayout, mainPanel);
+                modifyRoomsPage = new ModifyRoomsPage(cardLayout, mainPanel);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            mainPanel.add(addRoomPage, "MODIFY_ROOMS");
+            mainPanel.add(modifyRoomsPage, "MODIFY_ROOMS");
 
             frame.setContentPane(mainPanel);
             cardLayout.show(mainPanel, "MODIFY_ROOMS");

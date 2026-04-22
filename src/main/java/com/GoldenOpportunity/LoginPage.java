@@ -24,13 +24,15 @@ public class LoginPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private UIState uiState;
 
     /**
      * Constructor: initializes the login window
      */
-    public LoginPage(CardLayout cardLayout,JPanel mainPanel) throws IOException {
+    public LoginPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         setSize(500, 450);
         setLayout(new BorderLayout());
@@ -86,7 +88,21 @@ public class LoginPage extends JPanel {
             cardLayout.show(mainPanel,"SHOP");
         });
         buttonMap.get("🛒").addActionListener(e -> {
-            cardLayout.show(mainPanel,"CHECKOUT");
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
         });
         buttonMap.get("👤").addActionListener(e -> {
             cardLayout.show(mainPanel,"PROFILE");

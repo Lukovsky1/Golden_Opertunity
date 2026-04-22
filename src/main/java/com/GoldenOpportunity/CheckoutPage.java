@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.time.Year;
@@ -14,10 +15,12 @@ public class CheckoutPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private UIState uiState;
 
-    public CheckoutPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public CheckoutPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         setLayout(new BorderLayout(10, 10));
         setBackground(new Color(245, 245, 245));
@@ -183,23 +186,30 @@ public class CheckoutPage extends JPanel {
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(title);
 
-        // FIRST ROOM IMAGE
-        panel.add(realImagePanel("src/main/java/com/GoldenOpportunity/Images/room.png"));
-        panel.add(leftLabel("Room Title + Description"));
-        panel.add(leftLabel("Start Date - End Date"));
-        panel.add(leftLabel("# Guests"));
+        double sum = 0.0;
+        long nights = java.time.temporal.ChronoUnit.DAYS.between(uiState.startDate, uiState.endDate);
+        if (nights < 0) {
+            nights = 0;
+        }
 
-        panel.add(Box.createVerticalStrut(15));
+        for(Room room : uiState.potentialRooms){
+            panel.add(realImagePanel("src/main/java/com/GoldenOpportunity/Images/room.png"));
+            String desc = "";
+            for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+                desc = desc.concat(entry.getValue() + " ");
+                desc = desc.concat(entry.getKey() + ", ");
+            }
+            String finalDesc = desc.substring(0,desc.length()-2);
+            panel.add(leftLabel(finalDesc));
 
-        // SECOND ROOM IMAGE
-        panel.add(realImagePanel("src/main/java/com/GoldenOpportunity/Images/room.png"));
-        panel.add(leftLabel("Room Title + Description"));
-        panel.add(leftLabel("Start Date - End Date"));
-        panel.add(leftLabel("# Guests"));
+            sum += room.getRate() * nights;
 
-        panel.add(Box.createVerticalStrut(15));
+            panel.add(Box.createVerticalStrut(15));
+        }
 
-        panel.add(leftLabel("USD Total: $XXXX"));
+        panel.add(leftLabel(uiState.startDate.toString() + " - " + uiState.endDate.toString()));
+        panel.add(leftLabel(uiState.numGuests + " Guests"));
+        panel.add(leftLabel("USD Total: $" + String.format("%.2f",sum)));
 
         JButton bookBtn = new JButton("Book");
         bookBtn.setBackground(new Color(30, 170, 70));
@@ -208,6 +218,11 @@ public class CheckoutPage extends JPanel {
         bookBtn.setBorderPainted(false);
         bookBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         bookBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        double finalSum = sum;
+        bookBtn.addActionListener(e -> {
+            //uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,uiState.endDate, finalSum);
+        });
 
         panel.add(Box.createVerticalStrut(10));
         panel.add(bookBtn);
