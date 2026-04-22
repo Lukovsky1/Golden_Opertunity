@@ -113,6 +113,7 @@ public class RoomDetailsPage extends JPanel {
         buttonMap.get("Rooms").addActionListener(e -> cardLayout.show(mainPanel, "ROOMS"));
         buttonMap.get("Login").addActionListener(e -> cardLayout.show(mainPanel, "LOGIN"));
         buttonMap.get("Shop").addActionListener(e -> cardLayout.show(mainPanel, "SHOP"));
+        buttonMap.get("Sign Up").addActionListener(e -> cardLayout.show(mainPanel, "SIGNUP"));
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);

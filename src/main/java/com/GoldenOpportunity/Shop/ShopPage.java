@@ -91,6 +91,9 @@ public class ShopPage extends JPanel {
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
         });
+        buttonMap.get("Sign Up").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SIGNUP");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);

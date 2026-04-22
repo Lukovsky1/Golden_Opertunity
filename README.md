@@ -1,1 +1,37 @@
-The initial piece of documentation
+Golden Opportunity — Project Notes
+
+SQLite user login database setup
+- Build: `mvn -q package`
+- Initialize DB and seed users: run the class `com.GoldenOpportunity.dbLogin.DbSeeder`.
+  - Example (from project root after packaging):
+    - `java -cp target/Golden_Opertunity-1.0-SNAPSHOT-jar-with-dependencies.jar com.GoldenOpportunity.dbLogin.DbSeeder`
+  - This creates `data/golden.db` and a `users` table with sample accounts:
+    - admin1 / adminpass (ADMIN)
+    - clerk1 / clerkpass (CLERK)
+    - guest1 / guestpass (GUEST)
+
+Code overview
+- `com.GoldenOpportunity.dbLogin.Database`: manages SQLite connection and schema creation.
+- `com.GoldenOpportunity.dbLogin.UserDao`: CRUD and login counters for `users`.
+- `com.GoldenOpportunity.dbLogin.PasswordHasher`: PBKDF2 hashing/verification.
+- `com.GoldenOpportunity.dbLogin.DbAuthenticationService`: login against SQLite (returns existing `LoginResult`/`Session`).
+- `com.GoldenOpportunity.dbLogin.DbSeeder`: one-off initializer and seeder.
+
+Using the DB-backed login in code
+- Instantiate `new com.GoldenOpportunity.dbLogin.DbAuthenticationService()` and call `logIn(username, password)`.
+- Returns the same `LoginResult` used elsewhere in the project.
+
+Notes
+- The database file is stored at `data/golden.db` relative to the project root.
+- Passwords are stored as PBKDF2 hashes; do not compare plaintext.
+
+Auth tester
+- Run a quick verification against the DB + AuthenticationController:
+  - `java -cp target/Golden_Opertunity-1.0-SNAPSHOT-jar-with-dependencies.jar com.GoldenOpportunity.tools.AuthTester`
+  - Prints PASS/FAIL for: success login, failed attempts increment, lock after 3, locked login rejection, reset behavior, unknown user.
+
+Runtime warnings
+- SLF4J: We include `slf4j-nop` to silence missing-binder messages that come from a transitive `slf4j-api` (1.7.36). If you prefer console logs, swap to `org.slf4j:slf4j-simple:1.7.36` in `pom.xml`.
+- JDK 21/22 native access: SQLite loads a native library and newer JDKs warn: `Use --enable-native-access=ALL-UNNAMED`. To suppress, add this JVM arg in your run config, e.g.:
+  - IntelliJ Run/Debug Config: `VM options` = `--enable-native-access=ALL-UNNAMED`
+  - Plain CLI: `java --enable-native-access=ALL-UNNAMED -cp ... com.GoldenOpportunity.tools.AuthTester`

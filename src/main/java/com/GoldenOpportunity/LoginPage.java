@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.GoldenOpportunity.Login.LoginResult;
+import com.GoldenOpportunity.Login.enums.Role;
+
 /**
  * LoginPage represents the UI where a user (Guest, Clerk, or Admin)
  * can enter credentials and request authentication.
@@ -24,6 +27,9 @@ public class LoginPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+
+    // Hook into the DB-backed authentication
+    private final AuthenticationController authController = new AuthenticationController();
 
     /**
      * Constructor: initializes the login window
@@ -84,6 +90,9 @@ public class LoginPage extends JPanel {
         });
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
+        });
+        buttonMap.get("Sign Up").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SIGNUP");
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -154,7 +163,7 @@ public class LoginPage extends JPanel {
         gbc.gridwidth = 2;
         formPanel.add(buttonPanel, gbc);
 
-        outerPanel.add(formPanel, BorderLayout.NORTH);
+        outerPanel.add(formPanel, BorderLayout.CENTER);
         return outerPanel;
     }
 
@@ -186,13 +195,28 @@ public class LoginPage extends JPanel {
             return;
         }
 
-        // Temporary success simulation
-        messageLabel.setForeground(new Color(0, 130, 0));
-        messageLabel.setText("Login request submitted successfully.");
+        // Authenticate via the controller
+        LoginResult result = authController.logIn(username, password);
+        if (!result.isSuccess()) {
+            messageLabel.setForeground(Color.RED);
+            messageLabel.setText(result.getMessage());
+            return;
+        }
 
+        // Success: update UI and optionally navigate
+        messageLabel.setForeground(new Color(0, 130, 0));
+        messageLabel.setText(result.getMessage());
+
+        Role role = result.getSession() != null ? result.getSession().getRole() : null;
+        String roleText = role != null ? ("Role: " + role.name()) : "";
         JOptionPane.showMessageDialog(this,
-                "Authentication successful. Open next page based on user role.",
+                "Authentication successful. " + roleText,
                 "Login Success",
                 JOptionPane.INFORMATION_MESSAGE);
+
+        // Simple navigation: return to HOME after successful login
+        if (cardLayout != null && mainPanel != null) {
+            cardLayout.show(mainPanel, "HOME");
+        }
     }
 }
