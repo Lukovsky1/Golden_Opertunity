@@ -1,7 +1,9 @@
 package com.GoldenOpportunity.Roles;
 
-import com.GoldenOpportunity.User;
+import com.GoldenOpportunity.*;
 import com.GoldenOpportunity.Login.enums.Role;
+
+import java.nio.file.Path;
 
 /**
  * Concrete user type representing a front-desk clerk.
@@ -18,5 +20,17 @@ public class Clerk extends User {
      */
     public Clerk(int id, String username, String password, String contactInfo) {
         super(id, username, password, contactInfo, Role.CLERK);
+    }
+
+    public void cancelReservation(String resID){
+        SearchController searchController = new SearchController(new RoomService(),
+                new ReservationService(Path.of("src/main/resources/testReservationData1.csv")));
+        searchController.getResService().deleteReservation(resID);
+    }
+
+    public void modifyRoom(Criteria criteria){
+        SearchController searchController = new SearchController(new RoomService(),
+                new ReservationService(Path.of("src/main/resources/testReservationData1.csv")));
+        searchController.getRoomService().modifyRoom(criteria);
     }
 }

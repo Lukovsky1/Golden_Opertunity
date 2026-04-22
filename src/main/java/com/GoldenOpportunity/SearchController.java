@@ -66,16 +66,23 @@ public class SearchController {
         return true;
     }
 
+    public ReservationService getResService() {
+        return resService;
+    }
+
+    public RoomService getRoomService() {
+        return roomService;
+    }
 
     /*
-    Testing and debug note: DO NOT use "new" when trying to create room objects!
-    They will create new objects in memory that, even if ostensibly identical,
-    are in different places in memory and are not equivalent to each other.
-     */
+            Testing and debug note: DO NOT use "new" when trying to create room objects!
+            They will create new objects in memory that, even if ostensibly identical,
+            are in different places in memory and are not equivalent to each other.
+             */
     public static void main(String [] args) throws FileNotFoundException {
         RoomService roomService = new RoomService();
         roomService.createTable();
-        roomService.loadRoomsFromCSV("src/main/resources/testRoomData1.csv");
+        //roomService.loadRoomsFromCSV("src/main/resources/testRoomData1.csv");
         SearchController searchController = new SearchController(roomService,
                 new ReservationService
                         (Path.of("src/main/resources/testReservationData1.csv")));
@@ -92,19 +99,21 @@ public class SearchController {
 
         Criteria criteria = new Criteria();
         criteria.setDateRange(null);
-        //criteria.setRoomNum(101);
+        criteria.setRoomNum(101);
         criteria.setFloorNum(3);
         criteria.setSmoking(true);
         criteria.setRoomType("Deluxe");
         criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
+
+        
         searchController.searchAvailableRooms(criteria);
 
         List<Room> availableRooms = searchController.searchAvailableRooms(criteria);
         availableRooms.forEach(r -> System.out.println(r.getRoomNo()));
 
 
-        //searchController.printRoomsAndReservations();
-        //searchController.printRoomsAndReservations();
+        searchController.printRoomsAndReservations();
+        searchController.printRoomsAndReservations();
     }
 
 

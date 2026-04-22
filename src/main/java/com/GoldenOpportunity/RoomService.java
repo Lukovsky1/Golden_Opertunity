@@ -236,70 +236,78 @@ public class RoomService {
     }
 
     /** Modify an existing room in DB */
-    public boolean modifyRoom(int floorNum, int rmNo, int numBeds, boolean smoke,
-                           String qlty, String rmType, double rate,
-                           Map<String, Integer> bedTypesInput,
-                           int capacity, String description, String image) {
+    public boolean modifyRoom(Criteria criteria) {
 
 
+        int MfloorNum = criteria.getFloorNum();
+        int MrmNo = criteria.getRoomNum();
+        int MnumBeds = criteria.getNumBeds();
+        boolean Msmoke = criteria.isSmoking();
+        String Mqlty = criteria.getQuality();
+        String MrmType = criteria.getRoomType();
+        double Mrate = criteria.getRate();
+        Map<String, Integer> MbedTypesInput = criteria.getBeds();
+        int Mcapacity = criteria.getCapacity();
+        String Mdescription = criteria.getDescription();
+        String Mimage = criteria.getImage();
         // --- VALIDATION SECTION ---
 
+        Room room = this.findRoom(MrmNo);
         // Floor must be 1–3
-        if (floorNum < 1 || floorNum > 3) {
-            System.out.println("Invalid floor number. Must be 1, 2, or 3.");
-            return false;
+        if (MfloorNum < 1 || MfloorNum > 3) {
+            MfloorNum = room.getFloorNum();
         }
 
         // Room number must start with floor number (e.g., 101, 203, 315)
-        int firstDigit = Integer.parseInt(Integer.toString(rmNo).substring(0, 1));
-        if (firstDigit != floorNum) {
-            System.out.println("Room number must start with the floor number.");
-            return false;
+        int firstDigit = Integer.parseInt(Integer.toString(MrmNo).substring(0, 1));
+        if (firstDigit != MfloorNum) {
+            MfloorNum = room.getFloorNum();
         }
 
         // Beds must be positive
-        if (numBeds <= 0) {
-            System.out.println("Number of beds must be positive.");
-            return false;
+        if (MnumBeds <= 0) {
+            MnumBeds = room.getBeds();
         }
 
         // Rate must be positive
-        if (rate <= 0) {
-            System.out.println("Rate must be positive.");
-            return false;
+        if (Mrate <= 0) {
+            Mrate = room.getRate();
         }
 
         // Quality and room type must not be blank
-        if (qlty == null || qlty.isBlank()) {
-            System.out.println("Quality level cannot be empty.");
-            return false;
+        if (Mqlty == null || Mqlty.isBlank()) {
+            Mqlty = room.getQLevel();
         }
-        if (rmType == null || rmType.isBlank()) {
-            System.out.println("Room type cannot be empty.");
-            return false;
+        if (MrmType == null || MrmType.isBlank()) {
+            MrmType = room.getRoomType();
         }
 
         // Bed types must not be empty and must match numBeds
-        if (bedTypesInput == null || bedTypesInput.isEmpty()) {
-            System.out.println("Bed types cannot be empty.");
-            return false;
+        if (MbedTypesInput == null || MbedTypesInput.isEmpty()) {
+            MbedTypesInput = room.getBedTypes();
         }
 
-        int bedTypeTotal = bedTypesInput.values().stream().mapToInt(i -> i).sum();
-        if (bedTypeTotal != numBeds) {
-            System.out.println("Sum of bed types must equal numBeds.");
-            return false;
+        int bedTypeTotal = MbedTypesInput.values().stream().mapToInt(i -> i).sum();
+        if (bedTypeTotal != MnumBeds) {
+            MnumBeds = room.getBeds();
         }
 
         // Capacity must be >= number of beds
-        if (capacity < numBeds) {
-            System.out.println("Capacity must be at least equal to number of beds.");
-            return false;
+        if (Mcapacity < MnumBeds) {
+            Mcapacity = room.getCapacity();
+        }
+
+        //Validate description
+        if(Mdescription.isBlank()){
+            Mdescription = room.getDescription();
         }
 
         // Validate image path exists
-        if (image != null && !image.isBlank()) {
-            File f = new File(image);
+        if(Mimage.isBlank()){
+            Mimage = room.getImage();
+        }
+        if (Mimage != null && !Mimage.isBlank()) {
+            File f = new File(Mimage);
             if (!f.exists()) {
                 System.out.println("Warning: Image file does not exist.");
                 return false;
@@ -313,17 +321,17 @@ public class RoomService {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, floorNum);
-            stmt.setInt(2, numBeds);
-            stmt.setBoolean(3, smoke);
-            stmt.setString(4, qlty);
-            stmt.setString(5, rmType);
-            stmt.setDouble(6, rate);
-            stmt.setString(7, serializeBedTypes(bedTypesInput));
-            stmt.setInt(8, capacity);
-            stmt.setString(9, description);
-            stmt.setString(10, description);
-            stmt.setInt(11, rmNo);
+            stmt.setInt(1, MfloorNum);
+            stmt.setInt(2, MnumBeds);
+            stmt.setBoolean(3, Msmoke);
+            stmt.setString(4, Mqlty);
+            stmt.setString(5, MrmType);
+            stmt.setDouble(6, Mrate);
+            stmt.setString(7, serializeBedTypes(MbedTypesInput));
+            stmt.setInt(8, Mcapacity);
+            stmt.setString(9, Mdescription);
+            stmt.setString(10, Mimage);
+            stmt.setInt(11, MrmNo);
 
             stmt.executeUpdate();
 
