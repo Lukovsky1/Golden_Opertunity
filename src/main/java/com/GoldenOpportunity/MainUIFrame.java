@@ -1,6 +1,7 @@
 package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Shop.ShopPage;
+import com.GoldenOpportunity.Shop.ShopDBInitializer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,6 +41,8 @@ public class MainUIFrame extends JFrame {
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
             try {
+                // load shop database
+                ShopDBInitializer.initializeDatabase();
                 new MainUIFrame().setVisible(true);
             } catch (IOException e) {
                 throw new RuntimeException(e);

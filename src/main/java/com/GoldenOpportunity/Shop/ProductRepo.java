@@ -1,9 +1,15 @@
 package com.GoldenOpportunity.Shop;
 
-import java.sql.*;
+import com.GoldenOpportunity.DBUtil;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+// this file is used to work w all the SQL stuff
 public class ProductRepo {
     private String dbURL;
 
@@ -11,64 +17,56 @@ public class ProductRepo {
         this.dbURL = dbURL;
     }
 
-    public List<Product> getAvailableProducts() {
-        List<Product> products = new ArrayList<>();
+    public List<ProductDescription> getAllProductDescriptions() {
+        List<ProductDescription> productDescriptions = new ArrayList<>();
 
-        String sql = "SELECT product_id, name, price, amount_in_stock, description, image_path " +
-                "FROM products " +
-                "WHERE amount_in_stock > 0";
+        String sql = "SELECT price, name, productID, image, description FROM products";
 
-        try (Connection connection = DriverManager.getConnection(dbURL);
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = DBUtil.getConnection(dbURL);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
 
             while (resultSet.next()) {
-                Product product = new Product(
-                        resultSet.getInt("product_id"),
-                        resultSet.getString("name"),
+                ProductDescription productDescription = new ProductDescription(
                         resultSet.getDouble("price"),
-                        resultSet.getInt("amount_in_stock"),
-                        resultSet.getString("description"),
-                        resultSet.getString("image_path")
+                        resultSet.getString("name"),
+                        resultSet.getInt("productID"),
+                        resultSet.getString("image"),
+                        resultSet.getString("description")
                 );
 
-                products.add(product);
+                productDescriptions.add(productDescription);
             }
         }
         catch (SQLException e) {
-            throw new RuntimeException("error getting available products", e);
+            throw new RuntimeException("error loading product descriptions from database", e);
         }
 
-        return products;
+        return productDescriptions;
     }
 
-    public Product findProductById(int productID) {
-        String sql = "SELECT product_id, name, price, amount_in_stock, description, image_path " +
-                "FROM products " +
-                "WHERE product_id = ?";
+    public List<ProductInventory> getAllProductInventory() {
+        List<ProductInventory> inventoryList = new ArrayList<>();
 
-        try (Connection connection = DriverManager.getConnection(dbURL);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        String sql = "SELECT productID, stock FROM products";
 
-            statement.setInt(1, productID);
+        try (Connection connection = DBUtil.getConnection(dbURL);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return new Product(
-                            resultSet.getInt("product_id"),
-                            resultSet.getString("name"),
-                            resultSet.getDouble("price"),
-                            resultSet.getInt("amount_in_stock"),
-                            resultSet.getString("description"),
-                            resultSet.getString("image_path")
-                    );
-                }
+            while (resultSet.next()) {
+                ProductInventory inventory = new ProductInventory(
+                        resultSet.getInt("productID"),
+                        resultSet.getInt("stock")
+                );
+
+                inventoryList.add(inventory);
             }
         }
         catch (SQLException e) {
-            throw new RuntimeException("error finding product by id", e);
+            throw new RuntimeException("error loading product inventory from database", e);
         }
 
-        return null;
+        return inventoryList;
     }
 }
