@@ -4,6 +4,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.io.File;
 import java.io.IOException;
@@ -187,7 +189,7 @@ public class CheckoutPage extends JPanel {
         panel.add(title);
 
         double sum = 0.0;
-        long nights = java.time.temporal.ChronoUnit.DAYS.between(uiState.startDate, uiState.endDate);
+        long nights = ChronoUnit.DAYS.between(uiState.startDate, uiState.endDate);
         if (nights < 0) {
             nights = 0;
         }
@@ -201,15 +203,25 @@ public class CheckoutPage extends JPanel {
             }
             String finalDesc = desc.substring(0,desc.length()-2);
             panel.add(leftLabel(finalDesc));
+            panel.add(leftLabel("Price: " + String.format("%.2f",room.getRate()) + " / night"));
 
             sum += room.getRate() * nights;
 
             panel.add(Box.createVerticalStrut(15));
         }
 
-        panel.add(leftLabel(uiState.startDate.toString() + " - " + uiState.endDate.toString()));
-        panel.add(leftLabel(uiState.numGuests + " Guests"));
-        panel.add(leftLabel("USD Total: $" + String.format("%.2f",sum)));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        JLabel dates = leftLabel(formatter.format(uiState.startDate) + " - " + formatter.format(uiState.endDate));
+        dates.setFont(new Font("SansSerif", Font.BOLD, 18));
+        JLabel numGuests = leftLabel(uiState.numGuests + " Guests");
+        numGuests.setFont(new Font("SansSerif", Font.BOLD, 18));
+        JLabel totalPrice = leftLabel("USD Total: $" + String.format("%.2f",sum));
+        totalPrice.setFont(new Font("SansSerif", Font.BOLD, 18));
+
+        panel.add(dates);
+        panel.add(numGuests);
+        panel.add(totalPrice);
 
         JButton bookBtn = new JButton("Book");
         bookBtn.setBackground(new Color(30, 170, 70));

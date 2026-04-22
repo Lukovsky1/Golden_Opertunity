@@ -1,5 +1,7 @@
 package com.GoldenOpportunity;
 
+import com.github.lgooddatepicker.components.DatePicker;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -15,8 +17,8 @@ public class ModifyReservationPage extends JPanel {
     private JTextField nameField;
     private JTextField emailField;
     private JTextField phoneField;
-    private JComboBox<String> startDateBox;
-    private JComboBox<String> endDateBox;
+    private DatePicker startDate;
+    private DatePicker endDate;
     private JTextField roomsField;
 
     public ModifyReservationPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
@@ -99,15 +101,8 @@ public class ModifyReservationPage extends JPanel {
                 new EmptyBorder(20, 20, 20, 20)
         ));
 
-        JButton homeButton = createSidebarButton("Home");
         JButton addRoomsButton = createSidebarButton("Add Rooms");
         JButton modifyRoomsButton = createSidebarButton("Modify Rooms");
-
-        homeButton.addActionListener(e -> {
-            if (cardLayout != null && mainPanel != null) {
-                cardLayout.show(mainPanel, "HOME");
-            }
-        });
 
         addRoomsButton.addActionListener(e -> {
             if (cardLayout != null && mainPanel != null) {
@@ -121,8 +116,6 @@ public class ModifyReservationPage extends JPanel {
             }
         });
 
-        sidebar.add(homeButton);
-        sidebar.add(Box.createVerticalStrut(18));
         sidebar.add(addRoomsButton);
         sidebar.add(Box.createVerticalStrut(18));
         sidebar.add(modifyRoomsButton);
@@ -182,16 +175,10 @@ public class ModifyReservationPage extends JPanel {
         phoneField = createTextField(24);
         roomsField = createTextField(18);
 
-        String[] dates = {
-                "", "01/01/2026", "01/02/2026", "01/03/2026", "01/04/2026",
-                "01/05/2026", "01/06/2026", "01/07/2026"
-        };
-
-        startDateBox = new JComboBox<>(dates);
-        endDateBox = new JComboBox<>(dates);
-
-        styleComboBox(startDateBox, 12);
-        styleComboBox(endDateBox, 12);
+        startDate = new DatePicker();
+        startDate.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        endDate = new DatePicker();
+        endDate.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -230,7 +217,7 @@ public class ModifyReservationPage extends JPanel {
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.gridwidth = 1;
-        form.add(startDateBox, gbc);
+        form.add(startDate, gbc);
 
         gbc.gridx = 2;
         gbc.gridy = 3;
@@ -238,7 +225,7 @@ public class ModifyReservationPage extends JPanel {
 
         gbc.gridx = 3;
         gbc.gridy = 3;
-        form.add(endDateBox, gbc);
+        form.add(endDate, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
@@ -312,7 +299,7 @@ public class ModifyReservationPage extends JPanel {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Reservation Manager");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(860, 860);
+            frame.setSize(1000, 860);
             frame.setLocationRelativeTo(null);
 
             CardLayout cardLayout = new CardLayout();
