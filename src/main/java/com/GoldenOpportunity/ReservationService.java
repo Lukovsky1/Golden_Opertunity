@@ -1,12 +1,11 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
+
 import javax.swing.*;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.Date;
 
 //TODO: Must edit so reservation objects hold information expert responsibilities
 //TODO: Make reservation take a randomly generated id, a string seems too extra and
@@ -27,7 +26,7 @@ public class ReservationService {
      * as an argument.
      */
     public ReservationService() {
-        reservationLoader.createTable();
+        //reservationLoader.createTable(); //TODO: Delete
         try {
             fillValidIDNums();
         } catch (SQLException e) {
@@ -90,8 +89,8 @@ public class ReservationService {
                 """;
 
         try (Connection conn = DBUtil.getConnection();
-                PreparedStatement reservePstmt = conn.prepareStatement(createReservation);
-                PreparedStatement reservedRoomsPstmt = conn.prepareStatement(createReservedRooms)) {
+             PreparedStatement reservePstmt = conn.prepareStatement(createReservation);
+             PreparedStatement reservedRoomsPstmt = conn.prepareStatement(createReservedRooms)) {
             conn.setAutoCommit(false);
 
             reservePstmt.setString(1, newResId);
@@ -258,8 +257,10 @@ public class ReservationService {
     }
 
 
+    //TODO: Must implement (Only need to get the date range and the checked in status)
     public boolean hasValidReservation(int guestID) {
-
+        //try (Connection conn = DBUtil.getConnection();)
+        //
 
         return false;
     }

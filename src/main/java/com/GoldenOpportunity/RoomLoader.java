@@ -1,6 +1,7 @@
 package com.GoldenOpportunity;
 
-import javax.swing.text.html.HTMLDocument;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,6 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+//TODO: Depreciated
 public class RoomLoader extends Loader {
     @Override
     public void createTable() {

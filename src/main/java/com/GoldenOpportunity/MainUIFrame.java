@@ -1,10 +1,12 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 import com.GoldenOpportunity.Shop.ShopPage;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.SQLException;
 
 // New main frame for all of the UI
 
@@ -42,7 +44,11 @@ public class MainUIFrame extends JFrame {
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
             try {
+                DBInitializer.initialize();
                 new MainUIFrame().setVisible(true);
+            } catch (SQLException e) {
+                System.out.println("Error initializing table: " + e.getMessage());
+                throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

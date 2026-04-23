@@ -1,16 +1,20 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.*;
 
 public class RoomService {
-    String database = "jdbc:sqlite:src/main/resources/Hotel.db";
+    //TODO: Delete repeating databaseZ
+    //String database = "jdbc:sqlite:src/main/resources/golden.db";
     public RoomService() {
         // No roomList, no roomMap — DB only
     }
 
+    //TODO: Depreciated, remove
     public void createTable() {
         String sql = """
                 CREATE TABLE IF NOT EXISTS rooms (
@@ -24,9 +28,6 @@ public class RoomService {
                     bedTypes   TEXT NOT NULL
                 );
                 """;
-
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
@@ -60,8 +61,6 @@ public class RoomService {
     /** Find a single room by room number */
     public Room findRoom(int roomNo) {
         String sql = "SELECT * FROM rooms WHERE roomNo = ?";
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -114,8 +113,6 @@ public class RoomService {
             sql.append(" AND rate <= ?");
             params.add(c.getRate());
         }
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
 
@@ -145,6 +142,7 @@ public class RoomService {
         return results;
     }
 
+    //TODO: Depreciated
     public void loadRoomsFromCSV(String filename) throws FileNotFoundException {
         File file = new File(filename);
         Scanner fileScanner = new Scanner(file);
@@ -173,6 +171,7 @@ public class RoomService {
         fileScanner.close();
     }
 
+    //TODO: Depreciated
     private String[] parseCSVLine(String line) {
         List<String> tokens = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -200,9 +199,6 @@ public class RoomService {
 
         String sql = "INSERT INTO rooms (floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -229,9 +225,6 @@ public class RoomService {
 
         String sql = "UPDATE rooms SET floorNum=?, numBeds=?, smoking=?, qLevel=?, roomType=?, rate=?, bedTypes=? " +
                 "WHERE roomNo=?";
-
-        DBUtil DBUtil = new DBUtil();
-        DBUtil.setUrl(database);
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
