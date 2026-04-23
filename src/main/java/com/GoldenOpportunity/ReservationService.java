@@ -61,7 +61,9 @@ public class ReservationService {
     } */
 
     /**
-     * //TODO: IF there are more than 999 reservations, how do we handle that edge case?
+     * TODO: IF there are more than 999 reservations, how do we handle that edge case?
+     * TODO: Account for exception throwing
+     * TODO: Create test cases
      * createReservation: Will create a new reservation and place it in both reserveList
      * and reservationMap.
      * @param roomList
@@ -69,7 +71,7 @@ public class ReservationService {
      * @param end
      * @param bill
      */
-    public void createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill) {
+    public void createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill)  {
         //Creates a new reservation ID from the set of all valid reservation ids
         String newResId = createResId();
         //Confirms that the two given dates are within a valid range
@@ -109,17 +111,18 @@ public class ReservationService {
             }
             reservedRoomsPstmt.executeBatch();
             conn.commit();
+            System.out.println("Reservation created successfully: " + newResId);
 
         }catch (SQLException e){
             System.err.println("Error creating reservation: " + e.getMessage());
         }
 
-        try {
+        /*try {
             assert newResId != null;
             //reservationMap.put(newResId.toUpperCase(), newRes);
-        }
+        }*/
         catch (NullPointerException e) {
-            System.err.println("Can not put reservation into map: " + e.getMessage());
+            System.err.println("Can not assign new reservation ID: " + e.getMessage());
         }
         //JOptionPane.showMessageDialog(null, "Go to Booking / Confirmation page");
     }

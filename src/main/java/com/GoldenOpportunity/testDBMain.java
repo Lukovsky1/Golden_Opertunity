@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 
+//TODO: Must add Alessandro's shop database and functions and see why createReservation() doesn't work.
 public class testDBMain {
     static RoomLoader roomLoader = new RoomLoader();
     static ReservationLoader reservationLoader = new ReservationLoader();
@@ -49,6 +50,9 @@ public class testDBMain {
 
         reservationService.createReservation(newRooms, LocalDate.now(),
                 LocalDate.parse("2027-11-20"), 1000.0);
+
+        /*reservationService.deleteReservation("R-027");
+        reservationService.deleteReservation("R-024");*/
 
         //reservationService.deleteReservation("R-023");
         try {
