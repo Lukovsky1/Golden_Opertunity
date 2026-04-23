@@ -20,6 +20,10 @@ public class ShopPage extends JPanel {
     private JPanel mainPanel;
     private Shop shop;
     private ShoppingCart shoppingCart;
+    private JPanel productGridPanel;
+    private JTextField searchTextField;
+    private java.util.List<Product> allProducts;
+    
 
     public ShopPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
         this.cardLayout = cardLayout;
@@ -27,6 +31,7 @@ public class ShopPage extends JPanel {
 
         shop = new Shop("src/main/resources/testProductData.csv");
         shoppingCart = new ShoppingCart();
+        allProducts = shop.getProducts();
 
         setLayout(new BorderLayout(10, 10));
 
@@ -37,13 +42,21 @@ public class ShopPage extends JPanel {
 
         centerPanel.add(createTopSection(), BorderLayout.NORTH);
 
-        JScrollPane scrollPane = new JScrollPane(createProductGrid());
+        productGridPanel = new JPanel(new GridLayout(0, 3, 25, 25));
+        productGridPanel.setBackground(Color.WHITE);
+        productGridPanel.setBorder(new EmptyBorder(10, 20, 20, 20));
+
+        // load all products initially
+        displayProducts(allProducts);
+
+        JScrollPane scrollPane = new JScrollPane(productGridPanel);
+        
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         centerPanel.add(scrollPane, BorderLayout.CENTER);
-
+        
         add(centerPanel, BorderLayout.CENTER);
         add(createFooter(), BorderLayout.SOUTH);
     }
@@ -112,10 +125,10 @@ public class ShopPage extends JPanel {
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;   // important: text field expands
-        JTextField searchTextField = new JTextField();
+        searchTextField = new JTextField();
         searchTextField.setPreferredSize(new Dimension(400, 30));
         search.add(searchTextField, gbc);
-
+        
         gbc.gridx = 2;
         gbc.weightx = 0;
         JButton searchBtn = new JButton("Search");
@@ -125,6 +138,29 @@ public class ShopPage extends JPanel {
         searchBtn.setPreferredSize(new Dimension(100, 30));
 
         search.add(searchBtn, gbc);
+        
+        searchBtn.addActionListener(e -> {
+            String text = searchTextField.getText().trim().toLowerCase();
+
+            if (text.isEmpty()) {
+                displayProducts(allProducts);
+                return;
+            }
+
+            java.util.List<Product> filteredProducts = new java.util.ArrayList<>();
+
+            for (Product product : allProducts) {
+                if (product.getName().toLowerCase().contains(text)) {
+                    filteredProducts.add(product);
+                }
+            }
+
+            displayProducts(filteredProducts);
+
+            if (filteredProducts.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No products matched your search.");
+            }
+        });
 
         return search;
     }
@@ -147,16 +183,19 @@ public class ShopPage extends JPanel {
         return topSection;
     }
 
-    private JPanel createProductGrid() throws IOException {
-        JPanel grid = new JPanel(new GridLayout(0, 3, 25, 25));
-        grid.setBackground(Color.WHITE);
-        grid.setBorder(new EmptyBorder(10, 20, 20, 20));
+    private void displayProducts(List<Product> products) {
+        productGridPanel.removeAll();
 
-        for (Product product : shop.getProducts()) {
-            grid.add(createProductCard(product));
+        for (Product product : products) {
+            try {
+                productGridPanel.add(createProductCard(product));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        return grid;
+        productGridPanel.revalidate();
+        productGridPanel.repaint();
     }
 
     private JPanel createProductCard(Product product) throws IOException {
@@ -189,13 +228,60 @@ public class ShopPage extends JPanel {
         addButton.setBackground(new Color(255, 204, 0));
         addButton.setFocusPainted(false);
 
+        JButton detailsButton = new JButton("View Details");
+        detailsButton.setBackground(new Color(50, 100, 230));
+        detailsButton.setForeground(Color.WHITE);
+        detailsButton.setFocusPainted(false);
+
+        addButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, product.getName() + " added to cart.");
+        });
+
+        detailsButton.addActionListener(e -> {
+            try {
+                String pageName = "PRODUCT_DETAILS_" + product.getProductID();
+
+                boolean pageExists = false;
+                for (Component component : mainPanel.getComponents()) {
+                    if (pageName.equals(component.getName())) {
+                        pageExists = true;
+                        break;
+                    }
+                }
+
+                if (!pageExists) {
+                    ProductDetailsPage detailsPage = new ProductDetailsPage(cardLayout, mainPanel, product);
+                    detailsPage.setName(pageName);
+                    mainPanel.add(detailsPage, pageName);
+                }
+
+                mainPanel.revalidate();
+                mainPanel.repaint();
+                cardLayout.show(mainPanel, pageName);
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error opening product details.");
+            }
+        });
+        
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(detailsButton);
+
         info.add(name);
         info.add(Box.createVerticalStrut(5));
         info.add(price);
         info.add(Box.createVerticalStrut(5));
         info.add(stock);
         info.add(Box.createVerticalStrut(10));
-        info.add(addButton);
+        info.add(buttonPanel);
+        
+        addButton.setPreferredSize(new Dimension(120, 35));
+        detailsButton.setPreferredSize(new Dimension(120, 35));
 
         card.add(image, BorderLayout.NORTH);
         card.add(info, BorderLayout.CENTER);
