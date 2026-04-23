@@ -72,7 +72,7 @@ public class ReservationLoader extends Loader{
                       roomNo INTEGER NOT NULL,
                       floorNum INTEGER NOT NULL,
                       PRIMARY KEY (resId, roomNo, floorNum),
-                      FOREIGN KEY (resId) REFERENCES Reservation(resId),
+                      FOREIGN KEY (resId) REFERENCES Reservations(resId),
                       FOREIGN KEY (roomNo, floorNum) REFERENCES Rooms(roomNo, floorNum)
                 );
                 """;
