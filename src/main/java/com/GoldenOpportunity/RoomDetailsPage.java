@@ -422,8 +422,8 @@ public class RoomDetailsPage extends JPanel {
             reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
 
             // Retrieve the newly created reservation
-            Reservation newReservation =
-                    reservationService.getReservations().get(reservationService.getReservations().size() - 1);
+            Reservation newReservation = reservationService.findReservation("")
+                   // reservationService.getReservations().get(reservationService.getReservations().size() - 1);
 
             // Save reservation to CSV file
             appendReservationToCsv(newReservation);

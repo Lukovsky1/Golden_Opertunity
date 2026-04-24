@@ -21,7 +21,7 @@ public class DBLoader {
             st.executeUpdate(Files.readString(Path.of(fileName)));
             con.commit();
         } catch (SQLException ex) {
-            System.err.println("Error loading file");
+            System.err.println("SQL Error reading file");
             throw ex;
         } catch (IOException ex) {
             System.err.println("Error reading room insert file: " + fileName );

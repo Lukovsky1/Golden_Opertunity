@@ -9,8 +9,22 @@ import java.util.Arrays;
 import java.util.List;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 
+import static java.lang.System.exit;
+
 //TODO: Must add Alessandro's shop database and functions and see why createReservation() doesn't work.
 public class testDBMain {
+
+    static {
+        try {
+            DBInitializer.initialize();
+        } catch (SQLException e) {
+            System.err.println("Error initializing DB: Quitting program");
+            exit(1);
+        } catch (IOException e) {
+            System.err.println("Error reading DB Files: Quitting program");
+            exit(1);
+        }
+    }
     static RoomLoader roomLoader = new RoomLoader();
     static ReservationLoader reservationLoader = new ReservationLoader();
     static ReservationService reservationService = new ReservationService();

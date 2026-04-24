@@ -11,7 +11,7 @@ import java.util.*;
 //TODO: Make reservation take a randomly generated id, a string seems too extra and
 //TODO: unnecessary
 public class ReservationService {
-    private List<Reservation> reserveList = new ArrayList<>();
+    //private List<Reservation> reserveList = new ArrayList<>();
     private ReservationLoader reservationLoader =  new ReservationLoader();
     //ReservationId mapped to its reservation object
     private Map<String, Reservation> reservationMap = new HashMap<>();
@@ -63,7 +63,7 @@ public class ReservationService {
     /**
      * TODO: IF there are more than 999 reservations, how do we handle that edge case?
      * TODO: Account for exception throwing
-     * TODO: Create test cases
+     * TODO: Create test cases for if a new reservation is invalid, what does that mean for validIdNums
      * createReservation: Will create a new reservation and place it in both reserveList
      * and reservationMap.
      * @param roomList

@@ -12,6 +12,19 @@ import java.sql.SQLException;
 
 public class MainUIFrame extends JFrame {
 
+    //Must load database before all other operations
+    static {
+        try {
+            DBInitializer.initialize();
+        } catch (SQLException e) {
+            System.err.println("Error initializing DB, exiting program");
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Error reading DB Files, exiting program");
+            throw new RuntimeException(e);
+        }
+    }
+
     public MainUIFrame() throws IOException {
         CardLayout cardLayout = new CardLayout();
         JPanel mainPanel = new JPanel(cardLayout);
@@ -44,11 +57,7 @@ public class MainUIFrame extends JFrame {
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
             try {
-                DBInitializer.initialize();
                 new MainUIFrame().setVisible(true);
-            } catch (SQLException e) {
-                System.out.println("Error initializing table: " + e.getMessage());
-                throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
