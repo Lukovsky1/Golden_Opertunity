@@ -16,6 +16,8 @@ public class MainUIFrame extends JFrame {
     private LoginPage loginPage;
     private ShopPage shopPage;
     private ProfilePage profilePage;
+    private AdminPage adminPage;
+    private ClerkHomePage clerkHomePage;
 
     public MainUIFrame() throws IOException {
         CardLayout cardLayout = new CardLayout();
@@ -28,12 +30,16 @@ public class MainUIFrame extends JFrame {
         loginPage = new LoginPage(cardLayout,mainPanel,uiState);
         shopPage = new ShopPage(cardLayout,mainPanel,uiState);
         profilePage = new ProfilePage(cardLayout, mainPanel,uiState);
+        adminPage = new AdminPage(cardLayout, mainPanel, uiState);
+        clerkHomePage = new ClerkHomePage(cardLayout, mainPanel);
 
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
         mainPanel.add(loginPage,"LOGIN");
         mainPanel.add(shopPage,"SHOP");
         mainPanel.add(profilePage, "PROFILE");
+        mainPanel.add(adminPage, "ADMIN");
+        mainPanel.add(clerkHomePage, "CLERK_HOME");
 
         add(mainPanel);
 

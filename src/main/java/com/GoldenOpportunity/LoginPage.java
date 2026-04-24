@@ -1,5 +1,8 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Login.LoginResult;
+import com.GoldenOpportunity.Login.enums.Role;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -21,6 +24,8 @@ public class LoginPage extends JPanel {
 
     // Label used to display feedback messages
     private JLabel messageLabel;
+
+    private final AuthenticationController authController = new AuthenticationController();
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
@@ -85,6 +90,8 @@ public class LoginPage extends JPanel {
             buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
             nav.add(buttonMap.get(item));
         }
+
+        uiState.registerLoginButton(buttonMap.get("Login"));
 
         buttonMap.get("Home").addActionListener(e -> {
             cardLayout.show(mainPanel,"HOME");
@@ -222,16 +229,47 @@ public class LoginPage extends JPanel {
         String password = new String(passwordField.getPassword()).trim();
 
         if (username.isEmpty() || password.isEmpty()) {
+            messageLabel.setForeground(Color.RED);
             messageLabel.setText("Please enter both username/email and password.");
             return;
         }
 
-        // Temporary success simulation
+        LoginResult result = authController.logIn(username, password);
+        if (!result.isSuccess()) {
+            messageLabel.setForeground(Color.RED);
+            messageLabel.setText(result.getMessage());
+            passwordField.setText("");
+            messageLabel.setText(" ");
+            return;
+        }
+
         messageLabel.setForeground(new Color(0, 130, 0));
-        messageLabel.setText("Login request submitted successfully.");
+        messageLabel.setText(result.getMessage());
+        usernameField.setText("");
+        passwordField.setText("");
+        messageLabel.setText(" ");
+
+        Role role = result.getSession().getRole();
+        if (role == Role.GUEST) {
+            uiState.setLoggedIn(true);
+            cardLayout.show(mainPanel, "HOME");
+            return;
+        }
+
+        if (role == Role.ADMIN) {
+            uiState.setLoggedIn(true);
+            cardLayout.show(mainPanel, "ADMIN");
+            return;
+        }
+
+        if (role == Role.CLERK) {
+            uiState.setLoggedIn(true);
+            cardLayout.show(mainPanel, "CLERK_HOME");
+            return;
+        }
 
         JOptionPane.showMessageDialog(this,
-                "Authentication successful. Open next page based on user role.",
+                "Authentication successful for role: " + role,
                 "Login Success",
                 JOptionPane.INFORMATION_MESSAGE);
     }

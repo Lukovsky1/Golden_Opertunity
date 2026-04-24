@@ -61,6 +61,8 @@ public class ProfilePage extends JPanel {
             nav.add(buttonMap.get(item));
         }
 
+        uiState.registerLoginButton(buttonMap.get("Login"));
+
         buttonMap.get("Home").addActionListener(e -> {
             cardLayout.show(mainPanel,"HOME");
         });
