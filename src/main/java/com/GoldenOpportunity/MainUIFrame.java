@@ -1,11 +1,12 @@
 package com.GoldenOpportunity;
 
-//import com.GoldenOpportunity.Shop.ShopPage;
-import com.GoldenOpportunity.Shop.ShopDBInitializer;
+import com.GoldenOpportunity.DatabaseTools.DBInitializer;
+import com.GoldenOpportunity.Shop.ShopPage;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.SQLException;
 
 // New main frame for all of the UI
 
@@ -19,12 +20,14 @@ public class MainUIFrame extends JFrame {
         HotelBookingUI hotelBookingUI = new HotelBookingUI(cardLayout,mainPanel,
                 hotelHomePageUI.getRoomService(),hotelHomePageUI.getReservationService());
         LoginPage loginPage = new LoginPage(cardLayout,mainPanel);
-        //ShopPage shopPage = new ShopPage(cardLayout,mainPanel);
+        SignUpPage signUpPage = new SignUpPage(cardLayout, mainPanel);
+        ShopPage shopPage = new ShopPage(cardLayout,mainPanel);
 
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
         mainPanel.add(loginPage,"LOGIN");
-        //mainPanel.add(shopPage,"SHOP");
+        mainPanel.add(signUpPage, "SIGNUP");
+        mainPanel.add(shopPage,"SHOP");
 
         add(mainPanel);
 
@@ -41,9 +44,11 @@ public class MainUIFrame extends JFrame {
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
             try {
-                // load shop database
-                ShopDBInitializer.initializeDatabase();
+                DBInitializer.initialize();
                 new MainUIFrame().setVisible(true);
+            } catch (SQLException e) {
+                System.out.println("Error initializing table: " + e.getMessage());
+                throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

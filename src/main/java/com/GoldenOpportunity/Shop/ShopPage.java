@@ -1,13 +1,17 @@
-// commented all this out because i redid the whole product in order to have description and inventory separately
-/*package com.GoldenOpportunity.Shop;
+package com.GoldenOpportunity.Shop;
+
+import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ShopPage extends JPanel {
@@ -21,10 +25,7 @@ public class ShopPage extends JPanel {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
 
-        //shop = new Shop("src/main/resources/testProductData.csv");
-        // this is only to get it to run, im not touching anything else here
-        ProductRepo productRepo = new ProductRepo("jdbc:sqlite:src/main/resources/shop.db");
-        shop = new Shop(productRepo);
+        shop = new Shop("src/main/resources/testProductData.csv");
         shoppingCart = new ShoppingCart();
 
         setLayout(new BorderLayout(10, 10));
@@ -90,6 +91,9 @@ public class ShopPage extends JPanel {
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
         });
+        buttonMap.get("Sign Up").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SIGNUP");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -151,14 +155,14 @@ public class ShopPage extends JPanel {
         grid.setBackground(Color.WHITE);
         grid.setBorder(new EmptyBorder(10, 20, 20, 20));
 
-        for (ProductDescription productDescription : shop.getProducts()) {
-            grid.add(createProductCard(productDescription));
+        for (Product product : shop.getProducts()) {
+            grid.add(createProductCard(product));
         }
 
         return grid;
     }
 
-    private JPanel createProductCard(ProductDescription productDescription) throws IOException {
+    private JPanel createProductCard(Product product) throws IOException {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
         card.setBackground(Color.WHITE);
@@ -166,7 +170,7 @@ public class ShopPage extends JPanel {
         card.setPreferredSize(new Dimension(280, 320));
 
         // Image placeholder
-        Image productImage = ImageIO.read(new File(productDescription.getImage()));
+        Image productImage = ImageIO.read(new File(product.getImage()));
         Image scaledRoom = productImage.getScaledInstance(180, 200, Image.SCALE_SMOOTH);
 
         JLabel image = new JLabel(new ImageIcon(scaledRoom));
@@ -177,12 +181,12 @@ public class ShopPage extends JPanel {
         info.setBackground(Color.WHITE);
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JLabel name = new JLabel(productDescription.getName());
+        JLabel name = new JLabel(product.getName());
         name.setFont(new Font("Arial", Font.BOLD, 14));
 
-        JLabel price = new JLabel("Price: $" + String.format("%.2f", productDescription.getPrice()));
+        JLabel price = new JLabel("Price: $" + String.format("%.2f",product.getPrice()));
 
-        JLabel stock = new JLabel("Stock: " + productDescription.getStock());
+        JLabel stock = new JLabel("Stock: " + product.getStock());
 
         JButton addButton = new JButton("Add to Cart");
         addButton.setBackground(new Color(255, 204, 0));
@@ -215,4 +219,4 @@ public class ShopPage extends JPanel {
 
         return footer;
     }
-}*/
+}
