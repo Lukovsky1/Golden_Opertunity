@@ -1,5 +1,7 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Roles.RolePermissions;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -7,8 +9,6 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClerkHomePage extends JPanel {
 

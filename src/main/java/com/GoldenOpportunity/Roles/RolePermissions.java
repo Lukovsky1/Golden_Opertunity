@@ -1,6 +1,7 @@
-package com.GoldenOpportunity;
+package com.GoldenOpportunity.Roles;
 
 import com.GoldenOpportunity.Login.enums.Role;
+import com.GoldenOpportunity.UIState;
 
 import javax.swing.*;
 import java.awt.*;

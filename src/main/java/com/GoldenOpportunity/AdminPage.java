@@ -2,6 +2,7 @@ package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Login.AuthResult;
 import com.GoldenOpportunity.Login.enums.Role;
+import com.GoldenOpportunity.Roles.RolePermissions;
 import com.GoldenOpportunity.dbLogin.DbUser;
 import com.GoldenOpportunity.dbLogin.UserDao;
 

@@ -1,5 +1,6 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Roles.RolePermissions;
 import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.imageio.ImageIO;

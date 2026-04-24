@@ -1,5 +1,7 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Roles.RolePermissions;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
