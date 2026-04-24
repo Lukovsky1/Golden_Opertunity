@@ -6,6 +6,7 @@ com/GoldenOpportunity/AddRoomPage.class
 com/GoldenOpportunity/HotelHomePageUI.class
 com/GoldenOpportunity/Criteria.class
 com/GoldenOpportunity/Shop/Shop.class
+com/GoldenOpportunity/RolePermissions.class
 com/GoldenOpportunity/Shop/ShoppingCart.class
 com/GoldenOpportunity/Shop/ShopPage.class
 com/GoldenOpportunity/Login/LoginResult.class

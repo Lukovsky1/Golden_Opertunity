@@ -12,18 +12,29 @@ import java.util.Map;
 
 public class ClerkHomePage extends JPanel {
 
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
+    private final CardLayout cardLayout;
+    private final JPanel mainPanel;
+    private final UIState uiState;
 
-    public ClerkHomePage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public ClerkHomePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         setLayout(new BorderLayout());
         setBackground(new Color(240, 243, 247));
 
         add(createHeader(), BorderLayout.NORTH);
         add(createBody(), BorderLayout.CENTER);
+    }
+
+    @Override
+    public void setVisible(boolean aFlag) {
+        if (aFlag && !RolePermissions.requireRole(this, uiState, "Viewing clerk tools", "HOME", cardLayout, mainPanel, com.GoldenOpportunity.Login.enums.Role.CLERK)) {
+            super.setVisible(false);
+            return;
+        }
+        super.setVisible(aFlag);
     }
 
     // =========================
@@ -316,7 +327,7 @@ public class ClerkHomePage extends JPanel {
 
             ClerkHomePage page = null;
             try {
-                page = new ClerkHomePage(cardLayout, mainPanel);
+                page = new ClerkHomePage(cardLayout, mainPanel, new UIState());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

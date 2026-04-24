@@ -11,8 +11,9 @@ import java.io.IOException;
 
 public class ModifyReservationPage extends JPanel {
 
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
+    private final CardLayout cardLayout;
+    private final JPanel mainPanel;
+    private final UIState uiState;
 
     private JTextField nameField;
     private JTextField emailField;
@@ -21,9 +22,10 @@ public class ModifyReservationPage extends JPanel {
     private DatePicker endDate;
     private JTextField roomsField;
 
-    public ModifyReservationPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public ModifyReservationPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         setLayout(new BorderLayout());
         setBackground(new Color(240, 242, 245));
@@ -31,6 +33,15 @@ public class ModifyReservationPage extends JPanel {
 
         add(createHeader(), BorderLayout.NORTH);
         add(createBody(), BorderLayout.CENTER);
+    }
+
+    @Override
+    public void setVisible(boolean aFlag) {
+        if (aFlag && !RolePermissions.requireRole(this, uiState, "Modifying reservations", "HOME", cardLayout, mainPanel, com.GoldenOpportunity.Login.enums.Role.CLERK)) {
+            super.setVisible(false);
+            return;
+        }
+        super.setVisible(aFlag);
     }
 
     private JPanel createHeader() throws IOException {
@@ -307,7 +318,7 @@ public class ModifyReservationPage extends JPanel {
 
             ModifyReservationPage page = null;
             try {
-                page = new ModifyReservationPage(cardLayout, mainPanel);
+                page = new ModifyReservationPage(cardLayout, mainPanel, new UIState());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

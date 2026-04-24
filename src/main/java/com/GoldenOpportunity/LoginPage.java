@@ -249,21 +249,19 @@ public class LoginPage extends JPanel {
         passwordField.setText("");
         messageLabel.setText(" ");
 
+        uiState.setCurrentSession(result.getSession());
         Role role = result.getSession().getRole();
         if (role == Role.GUEST) {
-            uiState.setLoggedIn(true);
             cardLayout.show(mainPanel, "HOME");
             return;
         }
 
         if (role == Role.ADMIN) {
-            uiState.setLoggedIn(true);
             cardLayout.show(mainPanel, "ADMIN");
             return;
         }
 
         if (role == Role.CLERK) {
-            uiState.setLoggedIn(true);
             cardLayout.show(mainPanel, "CLERK_HOME");
             return;
         }

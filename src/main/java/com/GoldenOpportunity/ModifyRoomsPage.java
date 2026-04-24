@@ -13,18 +13,29 @@ public class ModifyRoomsPage extends JPanel {
 
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
+    private final UIState uiState;
 
     private JTable roomsTable;
 
-    public ModifyRoomsPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public ModifyRoomsPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         setLayout(new BorderLayout());
         setBackground(new Color(243, 246, 249));
 
         add(createHeader(), BorderLayout.NORTH);
         add(createMainContent(), BorderLayout.CENTER);
+    }
+
+    @Override
+    public void setVisible(boolean aFlag) {
+        if (aFlag && !RolePermissions.requireRole(this, uiState, "Managing rooms", "HOME", cardLayout, mainPanel, com.GoldenOpportunity.Login.enums.Role.CLERK)) {
+            super.setVisible(false);
+            return;
+        }
+        super.setVisible(aFlag);
     }
 
     // =========================
@@ -237,7 +248,7 @@ public class ModifyRoomsPage extends JPanel {
 
             ModifyRoomsPage modifyRoomsPage = null;
             try {
-                modifyRoomsPage = new ModifyRoomsPage(cardLayout, mainPanel);
+                modifyRoomsPage = new ModifyRoomsPage(cardLayout, mainPanel, new UIState());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

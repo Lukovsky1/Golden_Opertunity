@@ -1,5 +1,8 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Login.Session;
+import com.GoldenOpportunity.Login.enums.Role;
+
 import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +18,7 @@ public class UIState {
     public RoomService roomService;
     public List<Room> potentialRooms = new ArrayList<>();
     public boolean isLoggedIn;
+    private Session currentSession;
     private final List<JButton> loginButtons = new ArrayList<>();
 
     public void registerLoginButton(JButton loginButton) {
@@ -27,6 +31,9 @@ public class UIState {
 
     public void setLoggedIn(boolean loggedIn) {
         isLoggedIn = loggedIn;
+        if (!loggedIn) {
+            currentSession = null;
+        }
         for (JButton loginButton : loginButtons) {
             loginButton.setVisible(!loggedIn);
             if (loginButton.getParent() != null) {
@@ -34,5 +41,22 @@ public class UIState {
                 loginButton.getParent().repaint();
             }
         }
+    }
+
+    public void setCurrentSession(Session currentSession) {
+        this.currentSession = currentSession;
+        setLoggedIn(currentSession != null);
+    }
+
+    public Session getCurrentSession() {
+        return currentSession;
+    }
+
+    public Role getCurrentRole() {
+        return currentSession == null ? null : currentSession.getRole();
+    }
+
+    public boolean hasRole(Role role) {
+        return role != null && role == getCurrentRole();
     }
 }
