@@ -1,7 +1,7 @@
 package com.GoldenOpportunity.Roles;
 
+import com.GoldenOpportunity.*;
 import com.GoldenOpportunity.Shop.Order;
-import com.GoldenOpportunity.User;
 import com.GoldenOpportunity.Login.enums.Role;
 
 import java.nio.file.Path;
