@@ -88,4 +88,14 @@ public class AuthenticationController {
         }
         return null;
     }
+
+    // used for adding product to guest's cart
+    public boolean isAuthenticated(int guestID) {
+        for (User user : users) {
+            if (user.getUserId() == guestID) {
+                return user.isActive();
+            }
+        }
+        return false;
+    }
 }

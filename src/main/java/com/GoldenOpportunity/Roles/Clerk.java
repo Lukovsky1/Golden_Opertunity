@@ -1,6 +1,7 @@
 package com.GoldenOpportunity.Roles;
 
-import com.GoldenOpportunity.*;
+import com.GoldenOpportunity.Shop.Order;
+import com.GoldenOpportunity.User;
 import com.GoldenOpportunity.Login.enums.Role;
 
 import java.nio.file.Path;
@@ -20,6 +21,11 @@ public class Clerk extends User {
      */
     public Clerk(int id, String username, String password, String contactInfo) {
         super(id, username, password, contactInfo, Role.CLERK);
+    }
+
+    // used for valid store purchase use case, minimal for now
+    public void notifyOrder(Order order) {
+        System.out.println("Clerk notified for order #" + order.getOrderID());
     }
 
     public void cancelReservation(String resID){
