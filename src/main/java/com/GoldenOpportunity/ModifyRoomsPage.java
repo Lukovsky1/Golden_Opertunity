@@ -141,11 +141,24 @@ public class ModifyRoomsPage extends JPanel {
     // CENTER AREA
     // =========================
     private JPanel createCenterArea() {
-        JPanel centerArea = new JPanel(new GridLayout(1, 2, 22, 0));
+        JPanel centerArea = new JPanel(new GridBagLayout());
         centerArea.setOpaque(false);
 
-        centerArea.add(createRoomsPanel());
-        centerArea.add(new EditRoomPanel("Modify Room"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        // LEFT (table) → wider
+        gbc.gridx = 0;
+        gbc.weightx = 0.65;
+        gbc.insets = new Insets(0, 0, 0, 20); // ← RIGHT GAP
+        centerArea.add(createRoomsPanel(), gbc);
+
+        // RIGHT (form) → smaller
+        gbc.gridx = 1;
+        gbc.weightx = 0.35;
+        gbc.insets = new Insets(0, 0, 0, 0); // no gap needed here
+        centerArea.add(new EditRoomPanel("Modify Room"), gbc);
 
         return centerArea;
     }
@@ -166,15 +179,15 @@ public class ModifyRoomsPage extends JPanel {
         title.setForeground(new Color(52, 66, 80));
         title.setBorder(new EmptyBorder(0, 0, 12, 0));
 
-        String[] columns = {"", "", "", "", ""};
+        String[] columns = {"Floor Number","Room Number","Room Type","Quality","Number of Beds","Type of Beds","Smoking Status","Rate/per Night"};
         Object[][] data = {
-                {"", "", "", "", ""},
-                {"", "", "", "", ""},
-                {"", "", "", "", ""},
-                {"", "", "", "", ""},
-                {"", "", "", "", ""},
-                {"", "", "", "", ""},
-                {"", "", "", "", ""}
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""}
         };
 
         DefaultTableModel model = new DefaultTableModel(data, columns) {

@@ -157,8 +157,12 @@ public class ProfilePage extends JPanel {
         paymentRow.setOpaque(false);
         paymentRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        JPanel paymentWrapper = new JPanel();
+        paymentWrapper.setLayout(new BoxLayout(paymentWrapper, BoxLayout.Y_AXIS));
+        paymentWrapper.setOpaque(false);
+        paymentWrapper.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         JLabel paymentField = new JLabel("****XXXX");
-        paymentField.setPreferredSize(new Dimension(200, 48));
         paymentField.setFont(new Font("SansSerif", Font.PLAIN, 15));
         paymentField.setOpaque(true);
         paymentField.setBackground(Color.WHITE);
@@ -166,13 +170,37 @@ public class ProfilePage extends JPanel {
                 new LineBorder(new Color(190, 200, 210), 2, true),
                 new EmptyBorder(10, 10, 10, 10)
         ));
+        paymentField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        paymentField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JButton editPaymentBtn = createBlackButton("Edit Payment Info", 210, 48);
+        editPaymentBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        paymentRow.add(paymentField);
-        paymentRow.add(editPaymentBtn);
+        paymentWrapper.add(paymentField);
+        paymentWrapper.add(Box.createVerticalStrut(10));
+        paymentWrapper.add(editPaymentBtn);
 
-        panel.add(paymentRow);
+        panel.add(paymentWrapper);
+
+        panel.add(Box.createVerticalStrut(30));
+
+        JButton logoutBtn = createRedButton("Logout", 150, 50);
+        logoutBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        logoutBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure you want to logout?",
+                    "Logout",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                cardLayout.show(mainPanel, "LOGIN");
+            }
+        });
+
+        panel.add(logoutBtn);
 
         return panel;
     }
