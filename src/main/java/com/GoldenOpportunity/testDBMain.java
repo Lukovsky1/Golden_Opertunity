@@ -11,7 +11,6 @@ import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 
 import static java.lang.System.exit;
 
-//TODO: Must add Alessandro's shop database and functions and see why createReservation() doesn't work.
 public class testDBMain {
 
     static {
@@ -58,7 +57,7 @@ public class testDBMain {
         reservationLoader.loadData();
 
 */
-        List<Room> newRooms = roomService.getAllRooms();
+        /*List<Room> newRooms = roomService.getAllRooms();
         newRooms.remove(10);
         newRooms.remove(5);
 

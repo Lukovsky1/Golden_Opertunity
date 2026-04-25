@@ -1,3 +1,4 @@
+//TODO: Class is depreciated with DatabaseTools.DBUtil
 package com.GoldenOpportunity;
 
 import java.sql.Connection;
@@ -5,7 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBUtil {
-    private static String url = "jdbc:sqlite:src/main/resources/Hotel.db";
+    /*private static String url = "jdbc:sqlite:src/main/resources/Hotel.db";
 
     private DBUtil() {
     }
@@ -30,4 +31,5 @@ public class DBUtil {
     // add initializeDatabase
     // add isProductsTableEmpty
     // add runInsertStatements
+    */
 }

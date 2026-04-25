@@ -1,7 +1,11 @@
 package com.GoldenOpportunity.dbLogin;
 
+import com.GoldenOpportunity.User;
+
 import java.sql.*;
 import java.time.Instant;
+
+import static com.GoldenOpportunity.Login.enums.AccountStatus.ACTIVE;
 
 /**
  * Data Access Object focused on the {@code users} table.
@@ -29,6 +33,13 @@ public class UserDao {
         return findOneByField(sql, email);
     }
 
+    /** Lookup a user by their given id */
+    public DbUser findById(int id) throws SQLException {
+        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info " +
+                "FROM users WHERE id = ?";
+        return findOneByField(sql, String.valueOf(id));
+    }
+
     private DbUser findOneByField(String sql, String value) throws SQLException {
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -46,6 +57,24 @@ public class UserDao {
                         rs.getString("contact_info")
                 );
             }
+        }
+    }
+
+    /** Cgheused for adding product to guest's cart
+     *
+     * @param guestID
+     * @return
+     * @throws SQLException
+     */
+    public boolean isAuthenticated(int guestID) throws SQLException {
+        try {
+            DbUser guest = findById(guestID);
+            if (guest == null) return false;
+            if (guest.accountStatus.equals(ACTIVE)) return true;
+            return false;
+        } catch (SQLException e) {
+            System.err.println("Error checking authentication from guest database");
+            throw e;
         }
     }
 

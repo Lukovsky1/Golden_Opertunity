@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.GoldenOpportunity.DatabaseTools.DBUtil.*;
 
@@ -32,10 +34,22 @@ public class DBInitializer {
      */
         /** Folder that contains the SQLite file. Relative to the project run directory. */
 
-        private static final String roomFile = "src/main/resources/room_insertWBedTypes.sql";
+    /**
+     * These are all the valid input files which are to be referenced upon
+     * initialization of the database. They use they
+     */
+
+    private static final String roomFile = "src/main/resources/room_insertWBedTypes.sql";
         private static final String reservationFile = "src/main/resources/reservation_insert.sql";
         private static final String reservedRoomsFile = "src/main/resources/reservedRooms_insert.sql";
+        private static final String shopFile = "src/main/resources/shop.sql";
 
+
+    /**
+     * A list of all valid table names.
+     */
+    private static final List<String> tableNames =  List.of("users", "Rooms", "Reservations", "ReservedRooms",
+                "ProductDescriptions");
 
         private DBInitializer() {}
 
@@ -68,7 +82,7 @@ public class DBInitializer {
             }
         }
 
-        //TODO: Deprecated
+        //TODO: Depreciated, moved to DBUtil
         /** Create the data folder and an empty DB file path if needed. */
         /*
         private static void ensureDbFolder() {
@@ -87,7 +101,7 @@ public class DBInitializer {
             }
         } */
 
-        /** Create tables needed for authentication if they do not already exist. */
+        /** Creates all tables for the table do not already exist. */
         private static void createSchema(Connection conn) throws SQLException {
             // Users table stores credentials (hashed), role, and lockout metadata.
             String createUsers = """
@@ -123,7 +137,7 @@ public class DBInitializer {
                 );
                 """;
 
-            String createReservation = """
+            String createReservations = """
                 CREATE TABLE IF NOT EXISTS Reservations (
                       resId TEXT PRIMARY KEY,
                       startDate TEXT NOT NULL,
@@ -143,19 +157,37 @@ public class DBInitializer {
                       FOREIGN KEY (roomNo) REFERENCES Rooms(roomNo)
                 );
                 """;
+            String createProductDescriptions = """
+                    CREATE TABLE IF NOT EXISTS ProductDescriptions (
+                        productID INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL,
+                        price REAL NOT NULL,
+                        stock INTEGER NOT NULL,
+                        image TEXT NOT NULL,
+                        description TEXT
+                    );
+                    """;
 
             try (Statement st = conn.createStatement()) {
                 st.execute(createUsers);
                 st.execute(createUniqueEmailIndex);
                 st.execute(createRooms);
-                st.execute(createReservation);
+                st.execute(createReservations);
                 st.execute(createReservedRooms);
+                st.execute(createProductDescriptions);
             }
         }
 
-        private static void loadData(Connection conn) throws SQLException, IOException {
-                DBLoader.loadData(conn, roomFile);
-                DBLoader.loadData(conn, reservationFile);
-                DBLoader.loadData(conn, reservedRoomsFile);
+    /**
+     * Loads all the data from the input files into the created tables
+     * @param conn
+     * @throws SQLException
+     * @throws IOException
+     */
+    private static void loadData(Connection conn) throws SQLException, IOException {
+                DBLoader.loadData(conn, roomFile, tableNames.get(tableNames.indexOf("Rooms")));
+                DBLoader.loadData(conn, reservationFile, tableNames.get(tableNames.indexOf("Reservations")));
+                DBLoader.loadData(conn, reservedRoomsFile, tableNames.get(tableNames.indexOf("ReservedRooms")));
+                DBLoader.loadData(conn, shopFile, tableNames.get(tableNames.indexOf("ProductDescriptions")));
         }
     }

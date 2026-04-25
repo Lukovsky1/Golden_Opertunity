@@ -147,8 +147,8 @@ public class ReservationService {
         PreparedStatement dReservedRooms = conn.prepareStatement(deleteReservedRooms)) {
             int resOrigSize, resRoomOrigSize, resNewSize, resRoomNewSize;
 
-            resOrigSize = getCountOfAllInTable("Reservations");
-            resRoomOrigSize = getCountOfAllInTable("ReservedRooms");
+            resOrigSize = DBUtil.getCountOfAllInTable("Reservations");
+            resRoomOrigSize = DBUtil.getCountOfAllInTable("ReservedRooms");
 
             conn.setAutoCommit(false);
 
@@ -158,8 +158,8 @@ public class ReservationService {
             dReserve.executeUpdate();
             conn.commit();
 
-            resNewSize = getCountOfAllInTable("Reservations");
-            resRoomNewSize = getCountOfAllInTable("ReservedRooms");
+            resNewSize = DBUtil.getCountOfAllInTable("Reservations");
+            resRoomNewSize = DBUtil.getCountOfAllInTable("ReservedRooms");
             if (resNewSize >= resOrigSize && resRoomNewSize >= resRoomOrigSize) {
                 System.out.println("Reservation not found: " + reservationId);
             }
@@ -194,27 +194,6 @@ public class ReservationService {
         String deleteReservedRoom = """
                 DELETE FROM Reservations WHERE resId = ? AND roomNo = ?;
         """;
-    }
-
-    /**
-     * Given the desired table name, this function will return the number
-     * of rows in the selected table.
-     *
-     * @param tableName
-     * @return
-     */
-    public int getCountOfAllInTable(String tableName) {
-        String getCount = """
-                SELECT COUNT (*) FROM
-                """ +  tableName;
-        try (Connection conn = DBUtil.getConnection()) {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(getCount);
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            System.err.println("Error getting count of table: " + tableName + e.getMessage());
-        }
-        return 0;
     }
 
     /**
@@ -379,13 +358,6 @@ public class ReservationService {
         return reserveList.stream().filter(r -> r.getRooms().contains(room))
                 .toList();
     }
-
-    // this is a stub for now, im not sure how we are going to reservations to a guestID,
-    // so validation by guest cannot be implemented safely yet
-    public boolean hasValidReservation(int guestID) {
-        return true;
-    }
-
     //TODO: Delete test
     /*public static void main (String[] args) {
         ReservationService reservationService =

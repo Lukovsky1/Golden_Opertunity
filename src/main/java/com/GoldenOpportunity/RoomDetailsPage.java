@@ -393,6 +393,7 @@ public class RoomDetailsPage extends JPanel {
      * - Saves the reservation to the CSV file
      * - Updates the UI and shows confirmation
      */
+    //TODO: Edit isAvailable to work with database
     private void handleBooking() {
         try {
             LocalDate checkInDate = checkInPicker.getDate();

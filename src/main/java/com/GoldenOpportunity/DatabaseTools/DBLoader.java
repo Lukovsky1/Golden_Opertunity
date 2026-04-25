@@ -7,24 +7,36 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * This class is used to initialize our database with all files in the resources
- * folder
- */
 public class DBLoader {
-    public DBLoader() {}
 
-    public static void loadData(Connection con, String fileName) throws SQLException, IOException {
-        con.setAutoCommit(false);
-        Statement st = con.createStatement();
-        try {
-            st.executeUpdate(Files.readString(Path.of(fileName)));
-            con.commit();
+    private DBLoader() {
+        // Utility class — prevent instantiation
+    }
+
+    /**
+     * Loads SQL statements from a .sql file and executes them sequentially.
+     * Supports multiple statements separated by semicolons.
+     *
+     * @param conn      Active JDBC connection
+     * @param filePath  Path to the .sql file
+     */
+    public static void loadData(Connection conn, String filePath, String table) throws SQLException, IOException {
+        String load = Files.readString(Path.of(filePath));
+
+
+        conn.setAutoCommit(false);
+
+        try (Statement stmt = conn.createStatement()) {
+            if (DBUtil.isTableEmpty(conn, table)) {
+                stmt.executeUpdate(load);
+            }
+            // Execute the SQL statement
+
+            conn.commit();
+
         } catch (SQLException ex) {
-            System.err.println("SQL Error reading file");
-            throw ex;
-        } catch (IOException ex) {
-            System.err.println("Error reading room insert file: " + fileName );
+            conn.rollback();
+            System.err.println("Error executing SQL file: " + filePath);
             throw ex;
         }
     }

@@ -215,5 +215,5 @@ public class ShopPage extends JPanel {
 
         return footer;
     }
-}*/
 }
+}*/
