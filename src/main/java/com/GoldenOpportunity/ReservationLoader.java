@@ -48,7 +48,7 @@ public class ReservationLoader extends Loader{
 
 
             // Bill is unknown → set to 0 for now
-            reservations.add(new Reservation(ID, roomsList, range, 0.0));
+            reservations.add(new Reservation(ID, roomsList, range, 0.0, false));
         }
 
         return reservations;
@@ -74,7 +74,7 @@ public class ReservationLoader extends Loader{
                       roomNo INTEGER NOT NULL,
                       floorNum INTEGER NOT NULL,
                       PRIMARY KEY (resId, roomNo, floorNum),
-                      FOREIGN KEY (resId) REFERENCES Reservation(resId),
+                      FOREIGN KEY (resId) REFERENCES Reservations(resId),
                       FOREIGN KEY (roomNo, floorNum) REFERENCES Rooms(roomNo, floorNum)
                 );
                 """;

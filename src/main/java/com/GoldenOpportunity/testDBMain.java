@@ -33,7 +33,7 @@ public class testDBMain {
     public static void main (String[] args) {
         try {
             DBInitializer.initialize();
-        }  catch (SQLException ex) {
+        } catch (SQLException ex) {
             System.err.println("Error initializing DB");
             throw new RuntimeException(ex);
         } catch (IOException e) {
@@ -59,7 +59,7 @@ public class testDBMain {
 
 */
         List<Room> newRooms = roomService.getAllRooms();
-        newRooms.remove(3);
+        newRooms.remove(10);
         newRooms.remove(5);
 
         reservationService.createReservation(newRooms, LocalDate.now(),
@@ -77,6 +77,5 @@ public class testDBMain {
             System.err.println("Error finding reservation: " + e.getMessage());
         }
     }
-
 
 }

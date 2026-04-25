@@ -1,5 +1,9 @@
 package com.GoldenOpportunity.DatabaseTools;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -33,5 +37,21 @@ public class DBUtil {
         return conn;
     }
 
+
+    public static void ensureDbFolder() {
+        try {
+            Path dir = Paths.get(DB_DIR);
+            if (!Files.exists(dir)) {
+                Files.createDirectories(dir);
+            }
+            // Touch the DB file path so that the location exists and is visible to the user.
+            File dbFile = dir.resolve(DB_FILE).toFile();
+            if (!dbFile.exists()) {
+                dbFile.createNewFile();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to prepare database directory", e);
+        }
+    }
 
 }

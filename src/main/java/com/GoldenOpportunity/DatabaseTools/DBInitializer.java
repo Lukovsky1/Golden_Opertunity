@@ -58,6 +58,7 @@ public class DBInitializer {
             //TODO: created regardless
             // Opening a connection will also create the file on first use.
             try (Connection conn = getConnection()) {
+                DBUtil.ensureDbFolder();
                 createSchema(conn);
                 loadData(conn);
             } catch (SQLException ex) {
@@ -127,7 +128,8 @@ public class DBInitializer {
                       resId TEXT PRIMARY KEY,
                       startDate TEXT NOT NULL,
                       endDate TEXT NOT NULL,
-                      bill REAL NOT NULL
+                      bill REAL NOT NULL,
+                      checkedIn BOOLEAN NOT NULL
                   );
                 """;
 

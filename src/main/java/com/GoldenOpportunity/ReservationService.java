@@ -7,11 +7,14 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
 
-//TODO: Must edit so reservation objects hold information expert responsibilities
+//TODO: Add checkedIn checking for the database
+//TODO: Add getAllReservations();
 //TODO: Make reservation take a randomly generated id, a string seems too extra and
 //TODO: unnecessary
+
 public class ReservationService {
-    //private List<Reservation> reserveList = new ArrayList<>();
+    //TODO: Remove
+    private List<Reservation> reserveList = new ArrayList<>();
     private ReservationLoader reservationLoader =  new ReservationLoader();
     //ReservationId mapped to its reservation object
     private Map<String, Reservation> reservationMap = new HashMap<>();
@@ -83,7 +86,7 @@ public class ReservationService {
         //Reservation newRes = new Reservation(newResId, roomList, new DateRange(start, end), bill);
         //reserveList.add(newRes);
         String createReservation = """
-                INSERT INTO Reservations (resId, startDate, endDate, bill) VALUES (?,?,?,?);
+                INSERT INTO Reservations (resId, startDate, endDate, bill, checkedIn) VALUES (?,?,?,?,?);
                 """;
 
         String createReservedRooms = """
@@ -99,6 +102,8 @@ public class ReservationService {
             reservePstmt.setString(2, String.valueOf(start));
             reservePstmt.setString(3, String.valueOf(end));
             reservePstmt.setDouble(4, bill);
+            //TODO: Ensure works
+            reservePstmt.setBoolean(5, false);
             reservePstmt.executeUpdate();
             conn.commit();
 
@@ -331,6 +336,7 @@ public class ReservationService {
         LocalDate startDate = LocalDate.parse(resRS.getString("startDate"));
         LocalDate endDate = LocalDate.parse(resRS.getString("endDate"));
         double bill = resRS.getDouble("bill");
+        boolean checkedIn = resRS.getBoolean("checkedIn");
 
         List<Room> roomList = new ArrayList<>();
 
@@ -345,7 +351,7 @@ public class ReservationService {
             System.err.println("Error building reservation: " + e.getMessage());
             throw e;
         }
-        return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill);
+        return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill, checkedIn);
     }
 
     //Find all rooms in the list that overlap with the given dateRange
