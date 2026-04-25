@@ -6,8 +6,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Vector;
 
 public class ModifyRoomsPage extends JPanel {
 
@@ -15,10 +21,14 @@ public class ModifyRoomsPage extends JPanel {
     private final JPanel mainPanel;
 
     private JTable roomsTable;
+    private EditRoomPanel editRoomPanel;
+    private DefaultTableModel model;
+    private UIState uiState;
 
-    public ModifyRoomsPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public ModifyRoomsPage(CardLayout cardLayout, JPanel mainPanel,UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         setLayout(new BorderLayout());
         setBackground(new Color(243, 246, 249));
@@ -158,7 +168,8 @@ public class ModifyRoomsPage extends JPanel {
         gbc.gridx = 1;
         gbc.weightx = 0.35;
         gbc.insets = new Insets(0, 0, 0, 0); // no gap needed here
-        centerArea.add(new EditRoomPanel("Modify Room"), gbc);
+        editRoomPanel = new EditRoomPanel("Modify Room");
+        centerArea.add(editRoomPanel, gbc);
 
         return centerArea;
     }
@@ -180,24 +191,26 @@ public class ModifyRoomsPage extends JPanel {
         title.setBorder(new EmptyBorder(0, 0, 12, 0));
 
         String[] columns = {"Floor Number","Room Number","Room Type","Quality","Number of Beds","Type of Beds","Smoking Status","Rate/per Night"};
-        Object[][] data = {
-                {"", "", "", "", "", "", "", ""},
-                {"", "", "", "", "", "", "", ""},
-                {"", "", "", "", "", "", "", ""},
-                {"", "", "", "", "", "", "", ""},
-                {"", "", "", "", "", "", "", ""},
-                {"", "", "", "", "", "", "", ""},
-                {"", "", "", "", "", "", "", ""}
-        };
 
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
+        model = new DefaultTableModel(columns,0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
+        for(Room room : uiState.roomService.getRoomList()){
+            String desc = "";
+            for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+                desc = desc.concat(entry.getValue() + " ");
+                desc = desc.concat(entry.getKey() + ", ");
+            }
+            String finalDesc = desc.substring(0,desc.length()-2);
+            model.addRow(new Object[]{room.getFloorNum(),room.getRoomNo(),room.getRoomType(),room.getQLevel(),room.getBeds(),finalDesc,room.isSmoking(),room.getRate()});
+        }
+
         roomsTable = new JTable(model);
+        roomsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         roomsTable.setRowHeight(38);
         roomsTable.setShowGrid(true);
         roomsTable.setGridColor(new Color(210, 218, 226));
@@ -224,6 +237,20 @@ public class ModifyRoomsPage extends JPanel {
         selectButton.setOpaque(true);
         selectButton.setContentAreaFilled(true);
 
+        selectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = roomsTable.getSelectedRow();
+                if(row != -1){
+                    int modelRow = roomsTable.convertRowIndexToModel(row);
+                    Vector<Object> data = model.getDataVector().get(modelRow);
+                    editRoomPanel.updateInfo(data);
+                    editRoomPanel.revalidate();
+                    editRoomPanel.repaint();
+                }
+            }
+        });
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 14));
         buttonPanel.setOpaque(false);
         buttonPanel.add(selectButton);
@@ -249,8 +276,15 @@ public class ModifyRoomsPage extends JPanel {
             JPanel mainPanel = new JPanel(cardLayout);
 
             ModifyRoomsPage modifyRoomsPage = null;
+            UIState uiState1 = new UIState();
+            uiState1.reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
             try {
-                modifyRoomsPage = new ModifyRoomsPage(cardLayout, mainPanel);
+                uiState1.roomService = new RoomService("src/main/resources/testRoomData1.csv");
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                modifyRoomsPage = new ModifyRoomsPage(cardLayout, mainPanel,uiState1);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

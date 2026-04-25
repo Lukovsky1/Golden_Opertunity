@@ -5,6 +5,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * This page allows a clerk to:
@@ -351,5 +352,39 @@ public class EditRoomPanel extends JPanel {
         rateField.setText("");
         bedsSpinner.setValue(1);
         updateBedTypeFields();
+    }
+
+    public void updateInfo(Vector<Object> data){
+        //String[] columns = {"Floor Number","Room Number","Room Type","Quality","Number of Beds","Type of Beds","Smoking Status","Rate/per Night"};
+        floorComboBox.setSelectedItem(data.elementAt(0));
+        roomNumberField.setText(data.elementAt(1).toString());
+        roomTypeComboBox.setSelectedItem(data.elementAt(2));
+        qualityComboBox.setSelectedItem(data.elementAt(3));
+        bedsSpinner.setValue(data.elementAt(4));
+        smokingCheckBox.setSelected((Boolean) data.elementAt(6));
+        rateField.setText(String.valueOf(data.elementAt(7)));
+        updateBedTypeFields();
+        List<String> beds = processBedTypes(data.elementAt(5));
+        for(int i = 0; i < bedTypeComboBoxes.size(); i++){
+            bedTypeComboBoxes.get(i).setSelectedItem(beds.get(i));
+        }
+    }
+
+    private List<String> processBedTypes(Object data){
+        String full = data.toString();
+        String[] types = full.replaceAll(",","").split(" ");
+        List<String> result = new ArrayList<>();
+
+        for(int i = 0; i < types.length; i++){
+            int num = Integer.parseInt(types[i]);
+
+            for(int j = 0; j < num; j++){
+                result.add(types[i+1]);
+            }
+
+            i++;
+        }
+
+        return result;
     }
 }
