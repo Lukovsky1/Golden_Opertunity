@@ -32,4 +32,14 @@ public class AuthenticationController {
     public AuthResult signUp(String username, String email, String password) {
         return authService.signUp(username, email, password);
     }
+
+    // used for adding product to guest's cart
+    public boolean isAuthenticated(int guestID) {
+        for (User user : users) {
+            if (user.getUserId() == guestID) {
+                return user.isActive();
+            }
+        }
+        return false;
+    }
 }

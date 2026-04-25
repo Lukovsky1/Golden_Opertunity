@@ -380,6 +380,12 @@ public class ReservationService {
                 .toList();
     }
 
+    // this is a stub for now, im not sure how we are going to reservations to a guestID,
+    // so validation by guest cannot be implemented safely yet
+    public boolean hasValidReservation(int guestID) {
+        return true;
+    }
+
     //TODO: Delete test
     /*public static void main (String[] args) {
         ReservationService reservationService =
