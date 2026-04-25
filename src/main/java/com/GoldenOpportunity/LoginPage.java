@@ -116,7 +116,14 @@ public class LoginPage extends JPanel {
             }
         });
         buttonMap.get("👤").addActionListener(e -> {
-            cardLayout.show(mainPanel,"PROFILE");
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
 
         header.add(logoLabel, BorderLayout.WEST);

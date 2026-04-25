@@ -91,7 +91,14 @@ public class ProfilePage extends JPanel {
             }
         });
         buttonMap.get("👤").addActionListener(e -> {
-            cardLayout.show(mainPanel,"PROFILE");
+            if(true){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
 
         header.add(logoLabel, BorderLayout.WEST);
