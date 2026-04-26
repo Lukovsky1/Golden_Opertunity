@@ -34,7 +34,7 @@ public class MainUIFrame extends JFrame {
         profilePage = new ProfilePage(cardLayout, mainPanel,uiState);
         adminPage = new AdminPage(cardLayout, mainPanel, uiState);
         clerkHomePage = new ClerkHomePage(cardLayout, mainPanel, uiState);
-        addRoomPage = new AddRoomPage(cardLayout,mainPanel);
+        addRoomPage = new AddRoomPage(cardLayout,mainPanel,uiState);
         modifyRoomsPage = new ModifyRoomsPage(cardLayout,mainPanel,uiState);
 
         mainPanel.add(hotelHomePageUI, "HOME");
