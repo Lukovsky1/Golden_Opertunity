@@ -40,6 +40,8 @@ public class Room {
     public double getRate() { return rate; }
     public Map<String, Integer> getBedTypes(){return bedTypes;}
 
+    public void setFloorNum(int floorNum) {this.floorNum = floorNum;}
+    public void setRoomNo(int roomNo) {this.roomNo = roomNo; }
     public void setBeds(int beds) { this.beds = beds; }
     public void setSmoking(boolean smoking) { this.smoking = smoking; }
     public void setQLevel(String qLevel) { this.qLevel = qLevel; }
@@ -63,14 +65,14 @@ public class Room {
      * @param reservations - The list of reservations to be checked against
      */
     public boolean isAvailable(DateRange range, List<Reservation> reservations) {
-        return reservations.stream().filter(r -> r.getRoom().equals(this))
+        return reservations.stream().filter(r -> r.getRooms().contains(this))
                 .noneMatch(r -> r.getDateRange().overlaps(range));
     }
 
     boolean isRoomAvailable(DateRange range) {
-        ReservationService resService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+        ReservationService resService = new ReservationService();
         for (Reservation r : resService.getReservations()) {
-            if (r.getRoom().equals(this) &&
+            if (r.getRooms().contains(this) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
             }

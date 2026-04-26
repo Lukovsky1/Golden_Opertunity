@@ -2,10 +2,14 @@ package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Shop.Product;
 import com.GoldenOpportunity.Shop.ShopPage;
+import com.GoldenOpportunity.DatabaseTools.DBInitializer;
+//import com.GoldenOpportunity.Shop.ShopPage;
+import com.GoldenOpportunity.Shop.ShopDBInitializer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.SQLException;
 
 // New main frame for all of the UI
 
@@ -20,6 +24,19 @@ public class MainUIFrame extends JFrame {
     private AddRoomPage addRoomPage;
     private ModifyRoomsPage modifyRoomsPage;
     private AdminPage adminPage;
+
+    //Must load database before all other operations
+    static {
+        try {
+            DBInitializer.initialize();
+        } catch (SQLException e) {
+            System.err.println("Error initializing DB, exiting program");
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Error reading DB Files, exiting program");
+            throw new RuntimeException(e);
+        }
+    }
 
     public MainUIFrame() throws IOException {
         CardLayout cardLayout = new CardLayout();
@@ -62,6 +79,8 @@ public class MainUIFrame extends JFrame {
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
             try {
+                // load shop database
+                //ShopDBInitializer.initializeDatabase();
                 new MainUIFrame().setVisible(true);
             } catch (IOException e) {
                 throw new RuntimeException(e);

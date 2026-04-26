@@ -7,6 +7,10 @@ import java.nio.file.Paths;
 import java.sql.*;
 
 /**
+ * Guest must have their reservations either in the User Database or a separate database
+ */
+
+/**
  * Responsibilities:
  * - Define where the database file lives on disk (relative path under {@code data/}).
  * - Provide a JDBC {@link Connection} configured with sane defaults (e.g., foreign keys ON).
@@ -17,7 +21,7 @@ import java.sql.*;
  */
 public final class Database {
     /** Folder that contains the SQLite file. Relative to the project run directory. */
-    private static final String DB_DIR = "data";
+    private static final String DB_DIR = "src/main/resources"; //TODO: This was edited from data
     /** Database filename. The full path will be {@code data/golden.db}. */
     private static final String DB_FILE = "golden.db";
     /** JDBC URL for the SQLite driver. */
@@ -93,9 +97,46 @@ public final class Database {
             WHERE contact_info IS NOT NULL AND contact_info <> '';
         """;
 
+        String createRooms = """
+                CREATE TABLE IF NOT EXISTS Rooms (
+                    floorNum   INTEGER NOT NULL,
+                    roomNo     INTEGER PRIMARY KEY,
+                    numBeds    INTEGER NOT NULL,
+                    smoking    BOOLEAN NOT NULL,
+                    qLevel     TEXT NOT NULL,
+                    roomType   TEXT NOT NULL,
+                    rate       REAL NOT NULL,
+                    bedTypes   TEXT NOT NULL
+                );
+                """;
+
+        String createReservation = """
+                CREATE TABLE IF NOT EXISTS Reservations (
+                      resId TEXT PRIMARY KEY,
+                      startDate TEXT NOT NULL,
+                      endDate TEXT NOT NULL,
+                      bill REAL NOT NULL
+                  );
+
+                """;
+
+        String createReservedRooms = """
+                CREATE TABLE IF NOT EXISTS ReservedRooms (
+                      resId TEXT NOT NULL,
+                      roomNo INTEGER NOT NULL,
+                      floorNum INTEGER NOT NULL,
+                      PRIMARY KEY (resId, roomNo, floorNum),
+                      FOREIGN KEY (resId) REFERENCES Reservation(resId),
+                      FOREIGN KEY (roomNo, floorNum) REFERENCES Rooms(roomNo, floorNum)
+                );
+                """;
+
         try (Statement st = conn.createStatement()) {
             st.execute(createUsers);
             st.execute(createUniqueEmailIndex);
+            st.execute(createRooms);
+            st.execute(createReservation);
+            st.execute(createReservedRooms);
         }
     }
 }

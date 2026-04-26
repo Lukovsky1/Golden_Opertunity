@@ -1,5 +1,8 @@
 package com.GoldenOpportunity.dbLogin;
 
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
+
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -16,6 +19,18 @@ public class DbSeeder {
         seedIfMissing(dao, "admin1", "adminpass", "ADMIN", "admin@golden.com");
         seedIfMissing(dao, "clerk1", "clerkpass", "CLERK", "clerk@golden.com");
         seedIfMissing(dao, "guest1", "guestpass", "GUEST", "guest@golden.com");
+
+        try {
+            LoadingInserts.createRooms(DBUtil.getConnection());
+            LoadingInserts.createReservations(DBUtil.getConnection());
+            LoadingInserts.createReservedRooms(DBUtil.getConnection());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return;
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
 
         System.out.println("SQLite database initialized and sample users ensured.");
     }
