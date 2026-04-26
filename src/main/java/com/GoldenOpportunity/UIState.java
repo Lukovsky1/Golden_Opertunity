@@ -13,4 +13,5 @@ public class UIState {
     public ReservationService reservationService;
     public RoomService roomService;
     public List<Room> potentialRooms = new ArrayList<>();
+    public boolean isLoggedIn = true;
 }

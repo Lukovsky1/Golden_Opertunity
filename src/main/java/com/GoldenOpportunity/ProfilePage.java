@@ -17,6 +17,15 @@ public class ProfilePage extends JPanel {
     private final JPanel mainPanel;
     private UIState uiState;
 
+    private JPanel name;
+    private JPanel email;
+    private JPanel phone;
+    private JPanel username;
+    private JPanel password;
+    private JButton editProfileBtn;
+    private JPanel fieldsPanel;
+    private JPanel profilePanel;
+
     public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
@@ -91,7 +100,7 @@ public class ProfilePage extends JPanel {
             }
         });
         buttonMap.get("👤").addActionListener(e -> {
-            if(true){
+            if(!uiState.isLoggedIn){
                 cardLayout.show(mainPanel,"LOGIN");
             }
             else{
@@ -115,7 +124,9 @@ public class ProfilePage extends JPanel {
         JPanel content = new JPanel(new GridLayout(1, 2, 14, 0));
         content.setBackground(new Color(245, 245, 245));
 
-        content.add(createProfilePanel());
+        profilePanel = createProfilePanel();
+
+        content.add(profilePanel);
         content.add(createReservationsPanel());
 
         outer.add(content, BorderLayout.NORTH);
@@ -138,20 +149,25 @@ public class ProfilePage extends JPanel {
                 new EmptyBorder(14, 14, 14, 14)
         ));
 
-        panel.add(createField("Name", "XXXXXXX"));
-        panel.add(Box.createVerticalStrut(8));
-        panel.add(createField("Email", "XXXXXXX"));
-        panel.add(Box.createVerticalStrut(8));
-        panel.add(createField("Phone Number", "XXXXXXX"));
-        panel.add(Box.createVerticalStrut(8));
-        panel.add(createField("Username", "XXXXXXX"));
-        panel.add(Box.createVerticalStrut(8));
-        panel.add(createField("Password", "**********"));
-        panel.add(Box.createVerticalStrut(28));
+        fieldsPanel = new JPanel();
+        fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
+        fieldsPanel.setOpaque(false);
 
-        JButton editProfileBtn = createBlackButton("Edit Profile", 150, 50);
+        name = createLabelField("Name", "XXXXXXX");
+        email = createLabelField("Email", "XXXXXXX");
+        phone = createLabelField("Phone Number", "XXXXXXX");
+        username = createLabelField("Username", "XXXXXXX");
+        password = createLabelField("Password", "**********");
+
+        addFieldsToPanel();
+
+        panel.add(fieldsPanel);
+
+        editProfileBtn = createBlackButton("Edit Profile", 150, 50);
         panel.add(editProfileBtn);
         panel.add(Box.createVerticalStrut(28));
+
+        editProfileBtn.addActionListener(e -> updateProfileToEdit());
 
         JLabel paymentLabel = new JLabel("Payment Information");
         paymentLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
@@ -212,7 +228,38 @@ public class ProfilePage extends JPanel {
         return panel;
     }
 
-    private JPanel createField(String labelText, String value) {
+    private JPanel createTextField(String labelText, String value) {
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+        wrapper.setOpaque(false);
+        wrapper.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("SansSerif", Font.BOLD, 15));
+        label.setForeground(new Color(45, 55, 70));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JTextField valueLabel = new JTextField(value);
+        valueLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        valueLabel.setForeground(Color.BLACK);
+        valueLabel.setOpaque(true);
+        valueLabel.setBackground(Color.WHITE);
+        valueLabel.setBorder(new CompoundBorder(
+                new LineBorder(new Color(190, 200, 210), 2, true),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+        valueLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        valueLabel.setPreferredSize(new Dimension(300, 48));
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        wrapper.add(label);
+        wrapper.add(Box.createVerticalStrut(4));
+        wrapper.add(valueLabel);
+
+        return wrapper;
+    }
+
+    private JPanel createLabelField(String labelText, String value) {
         JPanel wrapper = new JPanel();
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
         wrapper.setOpaque(false);
@@ -342,5 +389,55 @@ public class ProfilePage extends JPanel {
         button.setOpaque(true);
         button.setContentAreaFilled(true);
         return button;
+    }
+
+    private void addFieldsToPanel() {
+        fieldsPanel.add(name);
+        fieldsPanel.add(Box.createVerticalStrut(8));
+        fieldsPanel.add(email);
+        fieldsPanel.add(Box.createVerticalStrut(8));
+        fieldsPanel.add(phone);
+        fieldsPanel.add(Box.createVerticalStrut(8));
+        fieldsPanel.add(username);
+        fieldsPanel.add(Box.createVerticalStrut(8));
+        fieldsPanel.add(password);
+        fieldsPanel.add(Box.createVerticalStrut(28));
+    }
+
+    private void handleEdit(){
+
+    }
+
+    private void updateProfileToEdit(){
+        fieldsPanel.removeAll();
+
+        if(editProfileBtn.getText().equals("Edit Profile")){
+            name = createTextField("Name", "XXXXXXX");
+            email = createTextField("Email", "XXXXXXX");
+            phone = createTextField("Phone Number", "XXXXXXX");
+            username = createTextField("Username", "XXXXXXX");
+            password = createTextField("Password", "**********");
+
+            editProfileBtn.setText("Save Profile");
+        }
+        else{
+            name = createLabelField("Name", "XXXXXXX");
+            email = createLabelField("Email", "XXXXXXX");
+            phone = createLabelField("Phone Number", "XXXXXXX");
+            username = createLabelField("Username", "XXXXXXX");
+            password = createLabelField("Password", "**********");
+
+            editProfileBtn.setText("Edit Profile");
+
+            handleEdit();
+        }
+
+        addFieldsToPanel();
+
+        fieldsPanel.revalidate();
+        fieldsPanel.repaint();
+
+        profilePanel.revalidate();
+        profilePanel.repaint();
     }
 }
