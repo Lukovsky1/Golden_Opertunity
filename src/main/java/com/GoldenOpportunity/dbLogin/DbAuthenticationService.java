@@ -70,6 +70,25 @@ public class DbAuthenticationService {
     }
 
     public AuthResult signUp(String username, String email, String password) {
+        return createUserWithRole(username, email, password, "GUEST", "Account created successfully. Please log in.");
+    }
+
+    public AuthResult createPrivilegedUser(String username, String email, String password, String role) {
+        String normalizedRole = role == null ? "" : role.trim().toUpperCase();
+        if (!"ADMIN".equals(normalizedRole) && !"CLERK".equals(normalizedRole)) {
+            return new AuthResult(false, "Only ADMIN and CLERK accounts can be created from the admin page.");
+        }
+
+        return createUserWithRole(
+                username,
+                email,
+                password,
+                normalizedRole,
+                normalizedRole + " account created successfully."
+        );
+    }
+
+    private AuthResult createUserWithRole(String username, String email, String password, String role, String successMessage) {
         String normalizedUsername = username == null ? "" : username.trim();
         String normalizedEmail = email == null ? "" : email.trim().toLowerCase();
 
@@ -85,12 +104,12 @@ public class DbAuthenticationService {
                 return new AuthResult(false, "That email is already in use.");
             }
 
-            int userId = userDao.createUser(normalizedUsername, password, "GUEST", normalizedEmail);
+            int userId = userDao.createUser(normalizedUsername, password, role, normalizedEmail);
             if (userId < 0) {
                 return new AuthResult(false, "Unable to create account.");
             }
 
-            return new AuthResult(true, "Account created successfully. Please log in.");
+            return new AuthResult(true, successMessage);
         } catch (SQLIntegrityConstraintViolationException e) {
             return new AuthResult(false, "That username or email is already in use.");
         } catch (SQLException e) {

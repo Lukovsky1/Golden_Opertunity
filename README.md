@@ -25,6 +25,15 @@ Notes
 - The database file is stored at `data/golden.db` relative to the project root.
 - Passwords are stored as PBKDF2 hashes; do not compare plaintext.
 
+Role capabilities
+- `GUEST`: browse hotel pages, search/book rooms, use checkout/shop flows, and access normal login/profile screens.
+- `CLERK`: all guest-facing capabilities plus operational tools such as room management and reservation management.
+- `ADMIN`: administrative user-directory access, privileged account creation, role filtering, and credential reset actions.
+
+Centralized role checks
+- `src/main/java/com/GoldenOpportunity/RolePermissions.java` documents the current role-to-action mapping in one place.
+- `UIState` now carries the active authenticated session so screens can check the current role before allowing sensitive actions.
+
 Auth tester
 - Run a quick verification against the DB + AuthenticationController:
   - `java -cp target/Golden_Opertunity-1.0-SNAPSHOT-jar-with-dependencies.jar com.GoldenOpportunity.tools.AuthTester`

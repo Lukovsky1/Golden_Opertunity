@@ -2,6 +2,8 @@ package com.GoldenOpportunity.dbLogin;
 
 import java.sql.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Data Access Object focused on the {@code users} table.
@@ -49,6 +51,31 @@ public class UserDao {
         }
     }
 
+    /** Return all users for administrative display. */
+    public List<DbUser> findAllUsers() throws SQLException {
+        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info " +
+                "FROM users ORDER BY username";
+        List<DbUser> users = new ArrayList<>();
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                users.add(new DbUser(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password_hash"),
+                        rs.getString("role"),
+                        rs.getString("account_status"),
+                        rs.getInt("failed_login_count"),
+                        rs.getString("contact_info")
+                ));
+            }
+        }
+
+        return users;
+    }
+
     /** Create a new user with a freshly hashed password. Returns generated ID or -1 on failure. */
     public int createUser(String username, String rawPassword, String role, String contactInfo) throws SQLException {
         String now = Instant.now().toString();
@@ -79,6 +106,19 @@ public class UserDao {
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, hash);
+            ps.setString(2, now);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    /** Update a user's username. */
+    public void updateUsername(int userId, String newUsername) throws SQLException {
+        String now = Instant.now().toString();
+        String sql = "UPDATE users SET username = ?, updated_at = ? WHERE id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newUsername);
             ps.setString(2, now);
             ps.setInt(3, userId);
             ps.executeUpdate();

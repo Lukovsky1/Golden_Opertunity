@@ -1,5 +1,7 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Roles.RolePermissions;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,11 +21,11 @@ public class ModifyRoomsPage extends JPanel {
 
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
+    private final UIState uiState;
 
     private JTable roomsTable;
     private EditRoomPanel editRoomPanel;
     private DefaultTableModel model;
-    private UIState uiState;
 
     public ModifyRoomsPage(CardLayout cardLayout, JPanel mainPanel,UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
@@ -35,6 +37,15 @@ public class ModifyRoomsPage extends JPanel {
 
         add(createHeader(), BorderLayout.NORTH);
         add(createMainContent(), BorderLayout.CENTER);
+    }
+
+    @Override
+    public void setVisible(boolean aFlag) {
+        if (aFlag && !RolePermissions.requireRole(this, uiState, "Managing rooms", "HOME", cardLayout, mainPanel, com.GoldenOpportunity.Login.enums.Role.CLERK)) {
+            super.setVisible(false);
+            return;
+        }
+        super.setVisible(aFlag);
     }
 
     // =========================
