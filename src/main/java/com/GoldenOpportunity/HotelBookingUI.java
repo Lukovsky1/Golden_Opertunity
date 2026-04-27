@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
@@ -269,7 +270,12 @@ public class HotelBookingUI extends JPanel {
         gbc.gridheight = 1;
 
         searchBtn.addActionListener(e -> {
-            List<Room> roomList = uiState.searchController.searchAvailableRooms(search());
+            List<Room> roomList = null;
+            try {
+                roomList = uiState.searchController.searchAvailableRooms(search());
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             updateRooms(roomList);
         });
 
