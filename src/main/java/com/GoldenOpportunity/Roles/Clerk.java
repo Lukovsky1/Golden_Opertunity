@@ -1,10 +1,17 @@
 package com.GoldenOpportunity.Roles;
 
 import com.GoldenOpportunity.*;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
 import com.GoldenOpportunity.Shop.Order;
 import com.GoldenOpportunity.Login.enums.Role;
 
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Concrete user type representing a front-desk clerk.
@@ -23,20 +30,126 @@ public class Clerk extends User {
         super(id, username, password, contactInfo, Role.CLERK);
     }
 
+
+    public boolean modifyInfo(int id, String username, String password, String contactInfo){
+        String sql = "UPDATE users SET username=?, password=?," +
+                "contact_info=?, updated_at=?" +
+                "WHERE id=?";
+
+        Clerk clerk = findClerk(id);
+        LocalDate currentDate = LocalDate.now();
+        String updatedAt = currentDate.toString();
+        if(username.isBlank()){
+            username = clerk.getUsername();
+        }
+        if(password.isBlank()){
+            password = clerk.getPassword();
+        }
+        if(contactInfo.isBlank()){
+            contactInfo = clerk.getContactInfo();
+        }
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.setString(3, contactInfo);
+            stmt.setString(4, updatedAt);
+            stmt.setInt(5, id);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+
     // used for valid store purchase use case, minimal for now
     public void notifyOrder(Order order) {
         System.out.println("Clerk notified for order #" + order.getOrderID());
     }
 
-    public void cancelReservation(String resID){
-        SearchController searchController = new SearchController(new RoomService(),
-                new ReservationService(Path.of("src/main/resources/testReservationData1.csv")));
-        searchController.getResService().deleteReservation(resID);
-    }
-
     public void modifyRoom(Criteria criteria){
         SearchController searchController = new SearchController(new RoomService(),
-                new ReservationService(Path.of("src/main/resources/testReservationData1.csv")));
+                new ReservationService());
         searchController.getRoomService().modifyRoom(criteria);
+    }
+
+    public Receipt cancelReservation(String resID) throws SQLException {
+        SearchController searchController = new SearchController(new RoomService(), new ReservationService());
+        Reservation reservation = searchController.getResService().findReservation(resID);
+        LocalDate current = LocalDate.now();
+        LocalDate startDate = reservation.getDateRange().startDate();
+        LocalDate twoDays = startDate.minusDays(2);
+        double total = 0.0;
+        Receipt receipt = reservation.getReceipt();
+        if(!current.isBefore(twoDays)){
+            for(Room room: reservation.getRooms()){
+                total = total + room.getRate();
+            }
+            total = total * 0.8;
+            receipt.setPenalty(total);
+            receipt.addOnTotal(total);
+        }
+        searchController.getResService().deleteReservation(resID);
+        return receipt;
+    }
+
+    public Receipt generateBilling(String resID) throws SQLException {
+        SearchController searchController = new SearchController(new RoomService(), new ReservationService());
+        LocalDate endDate = searchController.getResService().findReservation(resID).getDateRange().endDate();
+        LocalDate currentDate = LocalDate.now();
+        double penalty = 0.0;
+        Receipt receipt = searchController.getResService().findReservation(resID).getReceipt();
+        if(currentDate.isBefore(endDate)){
+            List<Room> roomsList = searchController.getResService().findReservation(resID).getRooms();
+            for(Room room: roomsList){
+                penalty = penalty + room.getRate();
+            }
+            penalty = penalty * 0.8;
+            receipt.setPenalty(penalty);
+        }
+        return receipt;
+    }
+
+    public boolean checkout(String resID) throws SQLException {
+        boolean checkout = false;
+        SearchController searchController = new SearchController(new RoomService(), new ReservationService());
+        if(searchController.getResService().findReservation(resID).isCheckedIn()){
+            searchController.getResService().deleteReservation(resID);
+            checkout = true;
+        }
+        return checkout;
+    }
+
+    public Clerk findClerk(int id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return buildClerkFromResultSet(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private Clerk buildClerkFromResultSet(ResultSet rs) throws SQLException{
+        int id = rs.getInt("id");
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        String contactInfo = rs.getString("contact_info");
+
+        return new Clerk(id, username, password, contactInfo);
     }
 }

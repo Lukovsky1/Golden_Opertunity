@@ -110,7 +110,7 @@ public class DBInitializer {
         """;
 
             String createRooms = """
-                CREATE TABLE IF NOT EXISTS Rooms (
+                CREATE TABLE IF NOT EXISTS rooms (
                     floorNum   INTEGER NOT NULL,
                     roomNo     INTEGER PRIMARY KEY,
                     numBeds    INTEGER NOT NULL,
@@ -118,7 +118,10 @@ public class DBInitializer {
                     qLevel     TEXT NOT NULL,
                     roomType   TEXT NOT NULL,
                     rate       REAL NOT NULL,
-                    bedTypes   TEXT NOT NULL
+                    bedTypes   TEXT NOT NULL,
+                    capacity    INTEGER NOT NULL,
+                    description TEXT,
+                    image       TEXT
                 );
                 """;
 

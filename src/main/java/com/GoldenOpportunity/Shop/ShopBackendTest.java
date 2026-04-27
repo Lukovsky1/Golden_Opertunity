@@ -42,7 +42,7 @@ public class ShopBackendTest {
 
         AuthenticationController authenticationController = new AuthenticationController();
         ReservationService reservationService =
-                new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
+                new ReservationService();
         PaymentMethod paymentMethod = new PaymentMethod();
 
         Clerk clerk = new Clerk(2, "clerk1", "clerkpass", "clerk@golden.com");

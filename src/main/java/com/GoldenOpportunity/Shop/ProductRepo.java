@@ -1,6 +1,6 @@
 package com.GoldenOpportunity.Shop;
 
-import com.GoldenOpportunity.DBUtil;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -22,7 +22,7 @@ public class ProductRepo {
 
         String sql = "SELECT price, name, productID, image, description FROM products";
 
-        try (Connection connection = DBUtil.getConnection(dbURL);
+        try (Connection connection = DBUtil.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 
@@ -50,7 +50,7 @@ public class ProductRepo {
 
         String sql = "SELECT productID, stock FROM products";
 
-        try (Connection connection = DBUtil.getConnection(dbURL);
+        try (Connection connection = DBUtil.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 

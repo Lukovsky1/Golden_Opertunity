@@ -28,10 +28,11 @@ public class ShopController {
     }
 
     public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart) {
+        /* isAuthenticated needs to be updated
         if (!authenticationController.isAuthenticated(guestID)) {
             return "guest is not authenticated";
         }
-
+        */
         if (!reservationService.hasValidReservation(guestID)) {
             return "guest does not have a valid reservation";
         }

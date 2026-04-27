@@ -34,6 +34,7 @@ public class AuthenticationController {
     }
 
     // used for adding product to guest's cart
+    /* Needs to be updated with DB
     public boolean isAuthenticated(int guestID) {
         for (User user : users) {
             if (user.getUserId() == guestID) {
@@ -42,4 +43,5 @@ public class AuthenticationController {
         }
         return false;
     }
+    */
 }

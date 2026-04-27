@@ -10,6 +10,7 @@ public class Reservation {
     final DateRange dateRange;
     final double bill;
     boolean checkedIn;
+    private Receipt receipt;
 
 
     Reservation(String resId, List<Room> rooms, DateRange dateRange, double bill) {
@@ -18,6 +19,7 @@ public class Reservation {
         this.dateRange = dateRange;
         this.bill =  bill;
         this.checkedIn = false;
+        receipt = new Receipt();
     }
     public String getId() {
         return resId;
@@ -34,6 +36,7 @@ public class Reservation {
     public boolean isCheckedIn() {
         return checkedIn;
     }
+    public Receipt getReceipt(){return receipt;}
 
 
 

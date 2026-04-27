@@ -1,6 +1,13 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
 import com.GoldenOpportunity.Login.enums.*;
+import com.GoldenOpportunity.Roles.Clerk;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public abstract class User {
     private final int id;
