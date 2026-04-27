@@ -420,22 +420,24 @@ public class RoomDetailsPage extends JPanel {
             currRooms.add(room);
 
             ReservationService reservationService = new ReservationService();
-            reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
+            String newReservation =
+                    reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
 
             //TODO: Must edit so the new reservationID is given back to the user instead of the reservation
             // Retrieve the newly created reservation
-            Reservation newReservation = //reservationService.findReservation("");
-                   reservationService.getReservations().get(reservationService.getReservations().size() - 1);
+            /*Reservation newReservation = //reservationService.findReservation("");
+                   reservationService.getReservations().get(reservationService.getReservations().size() - 1); */
 
+            //TODO: Remove
             // Save reservation to CSV file
-            appendReservationToCsv(newReservation);
+            //appendReservationToCsv(newReservation);
 
             nightsValueLabel.setText(String.valueOf(nights));
             totalValueLabel.setText("$" + totalBill);
 
             // Show confirmation
             JOptionPane.showMessageDialog(this,
-                    "Reservation created successfully.\nReservation ID: " + newReservation.getId());
+                    "Reservation created successfully.\nReservation ID: " + newReservation);
 
         } catch (Exception ex) {
             ex.printStackTrace();

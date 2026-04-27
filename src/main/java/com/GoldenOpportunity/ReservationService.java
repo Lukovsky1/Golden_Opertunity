@@ -14,10 +14,10 @@ import java.util.*;
 
 public class ReservationService {
     //TODO: Remove
-    private List<Reservation> reserveList = new ArrayList<>();
-    private ReservationLoader reservationLoader =  new ReservationLoader();
+    //private List<Reservation> reserveList = new ArrayList<>();
+    //private ReservationLoader reservationLoader =  new ReservationLoader();
     //ReservationId mapped to its reservation object
-    private Map<String, Reservation> reservationMap = new HashMap<>();
+    //private Map<String, Reservation> reservationMap = new HashMap<>();
     //Set of ID numbers in use. Used to find the smallest unused ID value
     private final Set<Integer> ValidIDNums = new HashSet<>();
 
@@ -74,13 +74,17 @@ public class ReservationService {
      * @param end
      * @param bill
      */
-    public void createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill)  {
+    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill)  throws SQLException {
         //Creates a new reservation ID from the set of all valid reservation ids
         String newResId = createResId();
+        if (newResId == null) {
+            System.err.println("No available reservation IDs");
+            return null;
+        }
         //Confirms that the two given dates are within a valid range
         if (!DateRange.validateRange(start, end)) {
             JOptionPane.showMessageDialog(null, "Invalid date range");
-            return;
+            return null;
         }
         //TODO: Delete
         //Reservation newRes = new Reservation(newResId, roomList, new DateRange(start, end), bill);
@@ -117,24 +121,21 @@ public class ReservationService {
             reservedRoomsPstmt.executeBatch();
             conn.commit();
             System.out.println("Reservation created successfully: " + newResId);
+            return newResId;
 
         }catch (SQLException e){
             System.err.println("Error creating reservation: " + e.getMessage());
-        }
-
-        /*try {
-            assert newResId != null;
-            //reservationMap.put(newResId.toUpperCase(), newRes);
-        }*/
-        catch (NullPointerException e) {
-            System.err.println("Can not assign new reservation ID: " + e.getMessage());
+            try  {
+                DBUtil.getConnection().rollback();
+            } catch (SQLException ignored) {}
+            throw e;
         }
         //JOptionPane.showMessageDialog(null, "Go to Booking / Confirmation page");
     }
 
     //TODO: Must be able to write to the database/file and remove/add reservations
     //TODO: Possibly remove try/catch statement
-    public void deleteReservation(String reservationId) {
+    public void deleteReservation(String reservationId) throws SQLException {
         String deleteReservation = """
                 DELETE FROM Reservations WHERE resId = ?;
                 """;
@@ -145,31 +146,32 @@ public class ReservationService {
         try (Connection conn = DBUtil.getConnection();
         PreparedStatement dReserve = conn.prepareStatement(deleteReservation);
         PreparedStatement dReservedRooms = conn.prepareStatement(deleteReservedRooms)) {
-            int resOrigSize, resRoomOrigSize, resNewSize, resRoomNewSize;
-
-            resOrigSize = DBUtil.getCountOfAllInTable("Reservations");
-            resRoomOrigSize = DBUtil.getCountOfAllInTable("ReservedRooms");
 
             conn.setAutoCommit(false);
 
             dReserve.setString(1, reservationId);
             dReservedRooms.setString(1,reservationId);
-            dReservedRooms.executeUpdate();
-            dReserve.executeUpdate();
+
+            int roomsDeleted = dReservedRooms.executeUpdate();
+            int resDeleted = dReserve.executeUpdate();
+
+            if (roomsDeleted == 0 && resDeleted == 0) {
+                System.out.println("Reservation not found: " + reservationId);
+                return;
+            }
+
             conn.commit();
 
-            resNewSize = DBUtil.getCountOfAllInTable("Reservations");
-            resRoomNewSize = DBUtil.getCountOfAllInTable("ReservedRooms");
-            if (resNewSize >= resOrigSize && resRoomNewSize >= resRoomOrigSize) {
-                System.out.println("Reservation not found: " + reservationId);
-            }
-            else {
-                System.out.println("Reservation found and deleted: " + reservationId);
-                ValidIDNums.remove(Integer.parseInt(reservationId.substring(2)));
-            }
+            System.out.println("Reservation found and deleted: " + reservationId);
+            ValidIDNums.remove(Integer.parseInt(reservationId.substring(2)));
+
 
         } catch (SQLException e) {
             System.err.println("Error deleting reservation: " + e.getMessage());
+            try {
+                DBUtil.getConnection().rollback();
+            } catch (SQLException ignored) {}
+            throw e;
         }
 
 
@@ -224,24 +226,32 @@ public class ReservationService {
      */
     private void fillValidIDNums() throws SQLException {
         ValidIDNums.clear();
-        try (Connection conn = DBUtil.getConnection();) {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT resId FROM Reservations");
+
+        String sql = "SELECT resId FROM Reservations";
+
+        try (Connection conn = DBUtil.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            conn.setAutoCommit(false);
+
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 String id = rs.getString("resId");
-                int num = Integer.parseInt(id.substring(2)); // "R-001" → 1
+                int num = Integer.parseInt(id.substring(2));
                 ValidIDNums.add(num);
             }
+
+            conn.commit();
+
         } catch (SQLException e) {
-            System.err.println("Error filling valid id numbers: " + e.getMessage());
+            System.err.println("Error filling valid ID numbers: " + e.getMessage());
+            try (Connection conn = DBUtil.getConnection()) {
+                conn.rollback();
+            } catch (SQLException ignored) {}
             throw e;
         }
-
-        /*for (int i = 0; i < reserveList.size(); i++) {
-            Integer num = Integer.parseInt(reserveList.get(i).getId().substring(2));
-            ValidIDNums.add(num);
-        } */
     }
+
 
 
     //TODO: Must implement (Only need to get the date range and the checked in status)
@@ -288,6 +298,7 @@ public class ReservationService {
 
         } catch (SQLException e) {
             System.err.println("Error finding reservation: " + e.getMessage());
+            DBUtil.getConnection().rollback();
             throw e;
         }
         /*
@@ -324,7 +335,10 @@ public class ReservationService {
             RoomService roomService = new RoomService();
             while (resRoomRS.next()) {
                 int roomNo = resRoomRS.getInt("roomNo");
-                roomList.add(roomService.findRoom(roomNo));
+                Room room = roomService.findRoom(roomNo);
+                if (room != null) {
+                    roomList.add(room);
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error building reservation: " + e.getMessage());
@@ -333,31 +347,111 @@ public class ReservationService {
         return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill, checkedIn);
     }
 
+    //FIXME: Might be depreciated
     //Find all rooms in the list that overlap with the given dateRange
     //In SearchController, find the intersection of those rooms which do not overlap
     public List<Room> findOverlaps(List<Room> currentAvailableRooms, DateRange possibleOverlap) {
         //Set<Room> overlaps = new HashSet<>();
-        return currentAvailableRooms.stream().filter(r ->  r.isAvailable(possibleOverlap, reserveList))
+        return currentAvailableRooms.stream().filter(r -> {
+                    try {
+                        return r.isAvailable(possibleOverlap, getAllReservations());
+                    } catch (SQLException e) {
+                        System.err.println("Error getting overlaps: " + e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                })
                 .toList();
     }
 
-    public List<Reservation> getReservations() {
-        return reserveList;
-    }
+    public List<Reservation> getAllReservations() throws SQLException {
+        List<Reservation> reservations = new ArrayList<>();
 
-    public Map<String, Reservation> getReservationMap() {
-        return reservationMap;
+        String sqlReservations = "SELECT * FROM Reservations";
+        String sqlRooms = "SELECT * FROM ReservedRooms WHERE resId = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement resStmt = conn.prepareStatement(sqlReservations);
+             PreparedStatement roomsStmt = conn.prepareStatement(sqlRooms)) {
+
+            conn.setAutoCommit(false);
+
+            ResultSet resRS = resStmt.executeQuery();
+
+            while (resRS.next()) {
+                String resId = resRS.getString("resId");
+
+                // Load all rooms for this reservation
+                roomsStmt.setString(1, resId);
+                ResultSet resRoomRS = roomsStmt.executeQuery();
+
+                // Build the reservation using your helper
+                Reservation reservation = buildReservationFromResultSet(resRS, resRoomRS);
+                reservations.add(reservation);
+            }
+
+            conn.commit();
+            return reservations;
+
+        } catch (SQLException e) {
+            System.err.println("Error getting all reservations: " + e.getMessage());
+            try (Connection conn = DBUtil.getConnection()) {
+                conn.rollback();
+            } catch (SQLException ignored) {}
+            throw e;
+        }
     }
 
     /**
      * getReservationsForRoom: Will return a list of reservations that a room has
+     * TODO: Must be tested
      * @param room
      * @return
      */
-    public List<Reservation> getReservationsForRoom(Room room) {
-        return reserveList.stream().filter(r -> r.getRooms().contains(room))
-                .toList();
+    public List<Reservation> getReservationsForRoom(Room room) throws SQLException {
+        List<Reservation> reservations = new ArrayList<>();
+
+        String sqlRes = """
+        SELECT * FROM Reservations
+        WHERE resId IN (
+            SELECT resId FROM ReservedRooms
+            WHERE roomNo = ? AND floorNum = ?
+        );
+    """;
+
+        String sqlRooms = "SELECT * FROM ReservedRooms WHERE resId = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement resStmt = conn.prepareStatement(sqlRes);
+             PreparedStatement roomsStmt = conn.prepareStatement(sqlRooms)) {
+
+            conn.setAutoCommit(false);
+
+            resStmt.setInt(1, room.getRoomNo());
+            resStmt.setInt(2, room.getFloorNum());
+
+            ResultSet resRS = resStmt.executeQuery();
+
+            while (resRS.next()) {
+                String resId = resRS.getString("resId");
+
+                roomsStmt.setString(1, resId);
+                ResultSet resRoomRS = roomsStmt.executeQuery();
+
+                reservations.add(buildReservationFromResultSet(resRS, resRoomRS));
+            }
+
+            conn.commit();
+            return reservations;
+
+        } catch (SQLException e) {
+            System.err.println("Error getting reservations for room: " + e.getMessage());
+            try (Connection conn = DBUtil.getConnection()) {
+                conn.rollback();
+            } catch (SQLException ignored) {}
+            throw e;
+        }
     }
+
     //TODO: Delete test
     /*public static void main (String[] args) {
         ReservationService reservationService =

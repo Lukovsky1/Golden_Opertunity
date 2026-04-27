@@ -1,6 +1,6 @@
 package com.GoldenOpportunity.Shop;
 
-import com.GoldenOpportunity.DBUtil;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +16,7 @@ public class ShopDBInitializer {
     private static final String SQL_FILE_PATH = "src/main/resources/shop.sql";
 
     public static void initializeDatabase() {
-        try (Connection connection = DBUtil.getConnection(DB_URL);
+        try (Connection connection = DBUtil.getConnection();
              Statement statement = connection.createStatement()) {
 
             // create the table if it does not already exist
