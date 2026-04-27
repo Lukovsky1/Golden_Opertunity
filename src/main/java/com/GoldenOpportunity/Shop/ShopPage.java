@@ -27,7 +27,7 @@ public class ShopPage extends JPanel {
 
         //shop = new Shop("src/main/resources/testProductData.csv");
         // this is only to get it to run, im not touching anything else here
-        ProductRepo productRepo = new ProductRepo("jdbc:sqlite:src/main/resources/shop.db");
+        ProductRepo productRepo = new ProductRepo();
         shop = new Shop(productRepo);
         shoppingCart = new ShoppingCart();
 
@@ -177,7 +177,7 @@ public class ShopPage extends JPanel {
         grid.setBackground(Color.WHITE);
         grid.setBorder(new EmptyBorder(10, 20, 20, 20));
 
-        for (ProductDescription productDescription : shop.getProducts()) {
+        for (ProductDescription productDescription : shop.getAvailableProducts()) {
             grid.add(createProductCard(productDescription));
         }
 
@@ -208,7 +208,7 @@ public class ShopPage extends JPanel {
 
         JLabel price = new JLabel("Price: $" + String.format("%.2f", productDescription.getPrice()));
 
-        JLabel stock = new JLabel("Stock: " + productDescription.getStock());
+        JLabel stock = new JLabel("Stock: " + shop.findInventory(productDescription.getProductID()).getStock());
 
         JButton addButton = new JButton("Add to Cart");
         addButton.setBackground(new Color(255, 204, 0));
@@ -242,4 +242,3 @@ public class ShopPage extends JPanel {
         return footer;
     }
 }
-}*/

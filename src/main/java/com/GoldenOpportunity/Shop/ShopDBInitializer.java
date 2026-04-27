@@ -5,10 +5,7 @@ import com.GoldenOpportunity.DBUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 // this file is to load the shop database or intialize it
 public class ShopDBInitializer {
@@ -16,7 +13,7 @@ public class ShopDBInitializer {
     private static final String SQL_FILE_PATH = "src/main/resources/shop.sql";
 
     public static void initializeDatabase() {
-        try (Connection connection = DBUtil.getConnection(DB_URL);
+        try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
 
             // create the table if it does not already exist

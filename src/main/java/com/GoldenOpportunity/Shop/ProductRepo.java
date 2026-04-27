@@ -2,10 +2,7 @@ package com.GoldenOpportunity.Shop;
 
 import com.GoldenOpportunity.DatabaseTools.DBUtil;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +15,9 @@ public class ProductRepo {
     public List<ProductDescription> getAllProductDescriptions() {
         List<ProductDescription> productDescriptions = new ArrayList<>();
 
-        String sql = "SELECT productID, name, price, image, description FROM ProductDescriptions";
+        String sql = "SELECT productID, name, price, image, description FROM products";
 
-        try (Connection connection = DBUtil.getConnection();
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/shop.db");
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 
@@ -46,9 +43,9 @@ public class ProductRepo {
     public List<ProductInventory> getAllProductInventory() {
         List<ProductInventory> inventoryList = new ArrayList<>();
 
-        String sql = "SELECT productID, stock FROM ProductDescriptions";
+        String sql = "SELECT productID, stock FROM products";
 
-        try (Connection connection = DBUtil.getConnection();
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/shop.db");
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 

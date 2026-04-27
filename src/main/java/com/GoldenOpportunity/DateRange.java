@@ -21,6 +21,6 @@ public record DateRange(LocalDate startDate, LocalDate endDate) {
 
     @Override
     public String toString() {
-        return "DateRange: " + startDate + " to " + endDate;
+        return "Dates: " + startDate + " - " + endDate;
     }
 }

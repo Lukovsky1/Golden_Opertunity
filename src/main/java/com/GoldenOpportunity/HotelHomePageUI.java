@@ -31,8 +31,8 @@ public class HotelHomePageUI extends JPanel {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.uiState = uiState;
-        uiState.reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
-        uiState.roomService = new RoomService("src/main/resources/testRoomData1.csv");
+        uiState.reservationService = new ReservationService();
+        uiState.roomService = new RoomService();
 
         setLayout(new BorderLayout(10, 10));
 
@@ -228,12 +228,9 @@ public class HotelHomePageUI extends JPanel {
         JPanel rooms = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         rooms.setBackground(new Color(245, 245, 245));
 
-        rooms.add(createRoomCard(uiState.roomService.getRoomList().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
-        rooms.add(createRoomCard(uiState.roomService.getRoomList().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
-        rooms.add(createRoomCard(uiState.roomService.getRoomList().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
-        rooms.add(createRoomCard(roomService.getAllRooms().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
-        rooms.add(createRoomCard(roomService.getAllRooms().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
-        rooms.add(createRoomCard(roomService.getAllRooms().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
 
         wrapper.add(rooms);
         return wrapper;

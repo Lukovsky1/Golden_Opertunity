@@ -24,6 +24,7 @@ public class Guest extends User {
 
 
 
+
     /**
      * Constructs a guest user with the GUEST role.
      *

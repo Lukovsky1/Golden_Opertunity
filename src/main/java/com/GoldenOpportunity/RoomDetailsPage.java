@@ -440,20 +440,14 @@ public class RoomDetailsPage extends JPanel {
             }
 
             //TODO: Must account for multiple rooms and their rates (List<Room>)
-            double totalBill = nights * room.getRate();
-            List<Room> currRooms = new ArrayList<>();
-            currRooms.add(room);
             double totalBill = nights * uiState.room.getRate();
 
-            ReservationService reservationService = new ReservationService();
-            reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
-            ReservationService reservationService = new ReservationService(Path.of(RESERVATION_FILE));
-            reservationService.createReservation(uiState.room, checkInDate, checkOutDate, totalBill);
+            uiState.reservationService.createReservation(uiState.potentialRooms, checkInDate, checkOutDate, totalBill);
 
             //TODO: Must edit so the new reservationID is given back to the user instead of the reservation
             // Retrieve the newly created reservation
             Reservation newReservation = //reservationService.findReservation("");
-                   reservationService.getReservations().get(reservationService.getReservations().size() - 1);
+                   uiState.reservationService.getReservations().get(uiState.reservationService.getReservations().size() - 1);
 
             // Save reservation to CSV file
             appendReservationToCsv(newReservation);

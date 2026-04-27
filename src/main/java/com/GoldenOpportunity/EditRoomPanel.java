@@ -3,9 +3,8 @@ package com.GoldenOpportunity;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * This page allows a clerk to:
@@ -28,18 +27,17 @@ public class EditRoomPanel extends JPanel {
     private JPanel bedTypesPanel;
     private List<JComboBox<String>> bedTypeComboBoxes;
 
-    private String titlePanel;
-
-    // Path to CSV file
-    private static final String ROOM_CSV_FILE = "src/main/resources/testRoomData1.csv";
+    private String titleForPanel;
+    private UIState uiState;
 
     /**
      * Constructor → initializes UI
      */
-    public EditRoomPanel(String title) {
+    public EditRoomPanel(String title,UIState uiState) {
         setLayout(new BorderLayout());
 
-        this.titlePanel = title;
+        this.titleForPanel = title;
+        this.uiState = uiState;
 
         add(createHeader(), BorderLayout.NORTH);
         add(createFormPanel(), BorderLayout.CENTER);
@@ -52,7 +50,7 @@ public class EditRoomPanel extends JPanel {
         JPanel header = new JPanel();
         header.setBackground(Color.WHITE);
 
-        JLabel title = new JLabel(titlePanel);
+        JLabel title = new JLabel(titleForPanel);
         title.setFont(new Font("SansSerif", Font.BOLD, 28));
 
         header.add(title);
@@ -128,7 +126,14 @@ public class EditRoomPanel extends JPanel {
         JButton save = new JButton("Save");
         JButton clear = new JButton("Clear");
 
-        save.addActionListener(e -> saveRoom());
+        save.addActionListener(e -> {
+            if(titleForPanel.equals("Add New Room")){
+                addRoom();
+            }
+            else{
+                modifyRoom();
+            }
+        });
         clear.addActionListener(e -> clearForm());
 
         buttons.add(save);
@@ -200,7 +205,7 @@ public class EditRoomPanel extends JPanel {
     /**
      * MAIN LOGIC → SAVE ROOM
      */
-    private void saveRoom() {
+    private void addRoom(){
 
         // ===== READ INPUT =====
         String roomText = roomNumberField.getText().trim();
@@ -251,97 +256,108 @@ public class EditRoomPanel extends JPanel {
         int beds = (int) bedsSpinner.getValue();
         boolean smoking = smokingCheckBox.isSelected();
 
+        Map<String,Integer> bedMap = new HashMap<>();
+        for (JComboBox<String> box : bedTypeComboBoxes) {
+            String bedType = (String) box.getSelectedItem();
+            if(bedMap.containsKey(bedType)){
+                bedMap.put(bedType,bedMap.get(bedType)+1);
+            }
+            else{
+                bedMap.put(bedType,1);
+            }
+        }
+
+        uiState.roomService.createRoom(floor,roomNumber,beds,smoking,quality,roomType,rate,bedMap);
+
+        JOptionPane.showMessageDialog(this, "Room added!");
+        clearForm();
+    }
+    private void modifyRoom(){
+
+        // ===== READ INPUT =====
+        String roomText = roomNumberField.getText().trim();
+        String rateText = rateField.getText().trim();
+
+        // ===== BASIC CHECK =====
+        if (roomText.isEmpty() || rateText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Fill all fields");
+            return;
+        }
+
+        int roomNumber;
+        double rate;
+
+        try {
+            roomNumber = Integer.parseInt(roomText);
+            rate = Double.parseDouble(rateText);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid number format");
+            return;
+        }
+
+        // ===== NEGATIVE CHECK =====
+        if (roomNumber < 0 || rate < 0) {
+            JOptionPane.showMessageDialog(this, "Values cannot be negative");
+            return;
+        }
+
+        int floor = getFloor();
+
+        // ===== FLOOR RULE =====
+        if (String.valueOf(roomNumber).charAt(0) != String.valueOf(floor).charAt(0)) {
+            JOptionPane.showMessageDialog(this,
+                    "Room must start with floor number");
+            return;
+        }
+
+        // ===== ROOM EXISTS CHECK =====
+        if (!roomExists(roomNumber)) {
+            JOptionPane.showMessageDialog(this,
+                    "Room does not exist");
+            return;
+        }
+
+        // ===== COLLECT DATA =====
+        String roomType = (String) roomTypeComboBox.getSelectedItem();
+        String quality = (String) qualityComboBox.getSelectedItem();
+        int beds = (int) bedsSpinner.getValue();
+        boolean smoking = smokingCheckBox.isSelected();
+
         List<String> bedsList = new ArrayList<>();
         for (JComboBox<String> box : bedTypeComboBoxes) {
             bedsList.add((String) box.getSelectedItem());
         }
 
-        String bedsText = "\"" + String.join(", ", bedsList) + "\"";
-
-        // ===== SAVE TO CSV =====
-        boolean saved = writeToCSV(
-                floor, roomNumber, roomType, quality,
-                beds, bedsText, smoking, rate
-        );
-
-        if (saved) {
-            JOptionPane.showMessageDialog(this, "Room added!");
-            clearForm();
+        Map<String,Integer> bedMap = new HashMap<>();
+        for (JComboBox<String> box : bedTypeComboBoxes) {
+            String bedType = (String) box.getSelectedItem();
+            if(bedMap.containsKey(bedType)){
+                bedMap.put(bedType,bedMap.get(bedType)+1);
+            }
+            else{
+                bedMap.put(bedType,1);
+            }
         }
+
+        uiState.roomService.modifyRoom(floor,roomNumber,beds,smoking,quality,roomType,rate,bedMap);
+
+        JOptionPane.showMessageDialog(this, "Room modified!");
+        clearForm();
     }
 
     /**
      * Check if room already exists in CSV
      */
     private boolean roomExists(int roomNumber) {
-        try (BufferedReader br = new BufferedReader(new FileReader(ROOM_CSV_FILE))) {
+        boolean flag = false;
 
-            String line;
-            br.readLine(); // skip header
-
-            while ((line = br.readLine()) != null) {
-
-                String[] parts = parseCSV(line);
-
-                int existing = Integer.parseInt(parts[1].trim());
-
-                if (existing == roomNumber) return true;
+        for(Room room : uiState.roomService.getAllRooms()){
+            if(room.getRoomNo() == roomNumber){
+                flag = true;
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        return false;
-    }
-
-    /**
-     * Write new room to CSV
-     */
-    private boolean writeToCSV(int floor, int room, String type, String quality,
-                              int beds, String bedTypes, boolean smoking, double rate) {
-
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ROOM_CSV_FILE, true))) {
-
-            bw.newLine();
-
-            bw.write(floor + "," +
-                    room + "," +
-                    type + "," +
-                    quality + "," +
-                    beds + "," +
-                    bedTypes + "," +
-                    (smoking ? "TRUE" : "FALSE") + "," +
-                    rate);
-
-            return true;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Handles CSV parsing with quotes
-     */
-    private String[] parseCSV(String line) {
-        List<String> parts = new ArrayList<>();
-        StringBuilder current = new StringBuilder();
-        boolean insideQuotes = false;
-
-        for (char c : line.toCharArray()) {
-
-            if (c == '"') insideQuotes = !insideQuotes;
-
-            else if (c == ',' && !insideQuotes) {
-                parts.add(current.toString());
-                current.setLength(0);
-            } else current.append(c);
-        }
-
-        parts.add(current.toString());
-        return parts.toArray(new String[0]);
+        return flag;
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.GoldenOpportunity;
 
-import com.GoldenOpportunity.Shop.Product;
+//import com.GoldenOpportunity.Shop.Product;
 import com.GoldenOpportunity.Shop.ShopPage;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 //import com.GoldenOpportunity.Shop.ShopPage;

@@ -154,7 +154,7 @@ public class AddRoomPage extends JPanel {
         JPanel centerArea = new JPanel(new BorderLayout());
         centerArea.setOpaque(false);
 
-        centerArea.add(new EditRoomPanel("Add New Room"));
+        centerArea.add(new EditRoomPanel("Add New Room",uiState));
 
         return centerArea;
     }

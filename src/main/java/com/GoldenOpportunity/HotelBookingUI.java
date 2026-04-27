@@ -186,7 +186,7 @@ public class HotelBookingUI extends JPanel {
         photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png");
         photos.add("src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg");
 
-        for(Room room : uiState.roomService.getRoomList()){
+        for(Room room : uiState.roomService.getAllRooms()){
             int randomNum = (int)(Math.random() * 3);
             list.add(createRoomCard(room,photos.get(randomNum)));
             list.add(Box.createVerticalStrut(15));

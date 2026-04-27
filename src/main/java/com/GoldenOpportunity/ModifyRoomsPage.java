@@ -179,7 +179,7 @@ public class ModifyRoomsPage extends JPanel {
         gbc.gridx = 1;
         gbc.weightx = 0.35;
         gbc.insets = new Insets(0, 0, 0, 0); // no gap needed here
-        editRoomPanel = new EditRoomPanel("Modify Room");
+        editRoomPanel = new EditRoomPanel("Modify Room",uiState);
         centerArea.add(editRoomPanel, gbc);
 
         return centerArea;
@@ -210,7 +210,7 @@ public class ModifyRoomsPage extends JPanel {
             }
         };
 
-        for(Room room : uiState.roomService.getRoomList()){
+        for(Room room : uiState.roomService.getAllRooms()){
             String desc = "";
             for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
                 desc = desc.concat(entry.getValue() + " ");
@@ -288,12 +288,8 @@ public class ModifyRoomsPage extends JPanel {
 
             ModifyRoomsPage modifyRoomsPage = null;
             UIState uiState1 = new UIState();
-            uiState1.reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
-            try {
-                uiState1.roomService = new RoomService("src/main/resources/testRoomData1.csv");
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            uiState1.reservationService = new ReservationService();
+            uiState1.roomService = new RoomService();
             try {
                 modifyRoomsPage = new ModifyRoomsPage(cardLayout, mainPanel,uiState1);
             } catch (IOException e) {

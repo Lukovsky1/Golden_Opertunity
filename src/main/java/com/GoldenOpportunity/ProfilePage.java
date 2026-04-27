@@ -17,14 +17,15 @@ public class ProfilePage extends JPanel {
     private final JPanel mainPanel;
     private UIState uiState;
 
-    private JPanel name;
-    private JPanel email;
-    private JPanel phone;
-    private JPanel username;
-    private JPanel password;
+    private JPanel namePanel;
+    private JPanel emailPanel;
+    private JPanel phonePanel;
+    private JPanel usernamePanel;
+    private JPanel passwordPanel;
     private JButton editProfileBtn;
     private JPanel fieldsPanel;
     private JPanel profilePanel;
+    private JPanel reservationPanel;
 
     public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
@@ -127,9 +128,10 @@ public class ProfilePage extends JPanel {
         content.setBackground(new Color(245, 245, 245));
 
         profilePanel = createProfilePanel();
+        reservationPanel = createReservationsPanel()
 
         content.add(profilePanel);
-        content.add(createReservationsPanel());
+        content.add(reservationPanel);
 
         outer.add(content, BorderLayout.NORTH);
 
@@ -155,11 +157,18 @@ public class ProfilePage extends JPanel {
         fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
         fieldsPanel.setOpaque(false);
 
-        name = createLabelField("Name", "XXXXXXX");
-        email = createLabelField("Email", "XXXXXXX");
-        phone = createLabelField("Phone Number", "XXXXXXX");
-        username = createLabelField("Username", "XXXXXXX");
-        password = createLabelField("Password", "**********");
+        //TODO: need to access guest information for this
+        String[] data = uiState.getCurrentSession().getUserId().split(",");
+
+        String name = data[0];
+        String email = data[1];
+        String phone = data[2];
+
+        namePanel = createLabelField("Name", name);
+        emailPanel = createLabelField("Email", email);
+        phonePanel = createLabelField("Phone Number", phone);
+        usernamePanel = createLabelField("Username", username);
+        passwordPanel = createLabelField("Password", password);
 
         addFieldsToPanel();
 
@@ -357,6 +366,19 @@ public class ProfilePage extends JPanel {
         JButton modifyBtn = createBlackButton("Modify Reservation", 225, 50);
         buttonWrapper.add(modifyBtn); // GridBagLayout centers it automatically
 
+        modifyBtn.addActionListener(e -> {
+            try {
+                mainPanel.add(new ModifyReservationPage(cardLayout, mainPanel,uiState), "GUEST_MODIFY_RESERVE");
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            mainPanel.revalidate();
+            mainPanel.repaint();
+
+            cardLayout.show(mainPanel,"GUEST_MODIFY_RESERVE");
+        });
+
         // ADD TO CARD
         card.add(infoPanel, BorderLayout.CENTER);
         card.add(buttonWrapper, BorderLayout.EAST);
@@ -394,15 +416,15 @@ public class ProfilePage extends JPanel {
     }
 
     private void addFieldsToPanel() {
-        fieldsPanel.add(name);
+        fieldsPanel.add(namePanel);
         fieldsPanel.add(Box.createVerticalStrut(8));
-        fieldsPanel.add(email);
+        fieldsPanel.add(emailPanel);
         fieldsPanel.add(Box.createVerticalStrut(8));
-        fieldsPanel.add(phone);
+        fieldsPanel.add(phonePanel);
         fieldsPanel.add(Box.createVerticalStrut(8));
-        fieldsPanel.add(username);
+        fieldsPanel.add(usernamePanel);
         fieldsPanel.add(Box.createVerticalStrut(8));
-        fieldsPanel.add(password);
+        fieldsPanel.add(passwordPanel);
         fieldsPanel.add(Box.createVerticalStrut(28));
     }
 
@@ -414,20 +436,20 @@ public class ProfilePage extends JPanel {
         fieldsPanel.removeAll();
 
         if(editProfileBtn.getText().equals("Edit Profile")){
-            name = createTextField("Name", "XXXXXXX");
-            email = createTextField("Email", "XXXXXXX");
-            phone = createTextField("Phone Number", "XXXXXXX");
-            username = createTextField("Username", "XXXXXXX");
-            password = createTextField("Password", "**********");
+            namePanel = createTextField("Name", "XXXXXXX");
+            emailPanel = createTextField("Email", "XXXXXXX");
+            phonePanel = createTextField("Phone Number", "XXXXXXX");
+            usernamePanel = createTextField("Username", "XXXXXXX");
+            passwordPanel = createTextField("Password", "**********");
 
             editProfileBtn.setText("Save Profile");
         }
         else{
-            name = createLabelField("Name", "XXXXXXX");
-            email = createLabelField("Email", "XXXXXXX");
-            phone = createLabelField("Phone Number", "XXXXXXX");
-            username = createLabelField("Username", "XXXXXXX");
-            password = createLabelField("Password", "**********");
+            namePanel = createLabelField("Name", "XXXXXXX");
+            emailPanel = createLabelField("Email", "XXXXXXX");
+            phonePanel = createLabelField("Phone Number", "XXXXXXX");
+            usernamePanel = createLabelField("Username", "XXXXXXX");
+            passwordPanel = createLabelField("Password", "**********");
 
             editProfileBtn.setText("Edit Profile");
 
@@ -441,5 +463,12 @@ public class ProfilePage extends JPanel {
 
         profilePanel.revalidate();
         profilePanel.repaint();
+    }
+
+    public void updateReservationPanel(){
+        reservationPanel.removeAll();
+        reservationPanel = createReservationsPanel();
+        reservationPanel.revalidate();
+        reservationPanel.repaint();
     }
 }

@@ -8,8 +8,6 @@ import java.sql.*;
 import java.util.*;
 
 public class RoomService {
-    //TODO: Delete repeating databaseZ
-    //String database = "jdbc:sqlite:src/main/resources/golden.db";
     public RoomService() {
         // No roomList, no roomMap — DB only
     }
