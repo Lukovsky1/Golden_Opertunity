@@ -160,6 +160,7 @@ public class ProfilePage extends JPanel {
         fieldsPanel.setOpaque(false);
 
         //TODO: need to access guest information for this
+        /*
         String[] data = uiState.getCurrentSession().getUserId().split(",");
 
         String name = data[0];
@@ -171,6 +172,13 @@ public class ProfilePage extends JPanel {
         phonePanel = createLabelField("Phone Number", phone);
         usernamePanel = createLabelField("Username", username);
         passwordPanel = createLabelField("Password", password);
+*/
+
+        namePanel = createLabelField("Name", "x");
+        emailPanel = createLabelField("Email", "x");
+        phonePanel = createLabelField("Phone Number", "x");
+        usernamePanel = createLabelField("Username", "x");
+        passwordPanel = createLabelField("Password", "x");
 
         addFieldsToPanel();
 
@@ -329,7 +337,7 @@ public class ProfilePage extends JPanel {
 
         return panel;
     }
-
+/*
     private JPanel createReservationCard(Guest guest, Reservation reservation) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBackground(new Color(243, 243, 243));
@@ -387,7 +395,60 @@ public class ProfilePage extends JPanel {
 
         return card;
     }
+*/
+private JPanel createReservationCard(String dates, String rooms) {
+    JPanel card = new JPanel(new BorderLayout(10, 10));
+    card.setBackground(new Color(243, 243, 243));
+    card.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(190, 200, 210), 2),
+            new EmptyBorder(10, 12, 10, 12)
+    ));
+    card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
 
+    // LEFT SIDE (INFO)
+    JPanel infoPanel = new JPanel();
+    infoPanel.setOpaque(false);
+    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+    JLabel reservationLabel = new JLabel("Reservation:");
+    reservationLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+    reservationLabel.setForeground(new Color(45, 55, 70));
+
+    JLabel datesLabel = new JLabel(dates);
+    datesLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
+
+    JLabel roomsLabel = new JLabel("Rooms: " + rooms);
+    roomsLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
+
+    infoPanel.add(Box.createVerticalStrut(10));
+    infoPanel.add(reservationLabel);
+    infoPanel.add(Box.createVerticalStrut(8));
+    infoPanel.add(datesLabel);
+    infoPanel.add(Box.createVerticalStrut(8));
+    infoPanel.add(roomsLabel);
+
+    // RIGHT SIDE (BUTTON - CENTERED)
+    JPanel buttonWrapper = new JPanel(new GridBagLayout()); // this centers vertically
+    buttonWrapper.setOpaque(false);
+
+    JButton modifyBtn = createBlackButton("Modify Reservation", 225, 50);
+    buttonWrapper.add(modifyBtn); // GridBagLayout centers it automatically
+
+    modifyBtn.addActionListener(e -> {
+        //mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,uiState), "GUEST_MODIFY_RESERVE");
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        cardLayout.show(mainPanel,"GUEST_MODIFY_RESERVE");
+    });
+
+    // ADD TO CARD
+    card.add(infoPanel, BorderLayout.CENTER);
+    card.add(buttonWrapper, BorderLayout.EAST);
+
+    return card;
+}
     // ================= BUTTON HELPERS =================
     private JButton createBlackButton(String text, int width, int height) {
         JButton button = new JButton(text);

@@ -291,7 +291,7 @@ public class ClerkHomePage extends JPanel {
 
         detailsButton.addActionListener(e -> {
             try {
-                mainPanel.add(new ClerkModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,uiState), "CLERK_MODIFY_RESERVE");
+                mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,uiState), "CLERK_MODIFY_RESERVE");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

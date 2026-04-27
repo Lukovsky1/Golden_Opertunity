@@ -1,7 +1,7 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Login.enums.Role;
 import com.GoldenOpportunity.Roles.Guest;
-import com.GoldenOpportunity.Roles.RolePermissions;
 import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.imageio.ImageIO;
@@ -13,15 +13,18 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO finish modify reservation for both clerk and guest
+
 public class ModifyReservationPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private ProfilePage profilePage;
 
     private Guest guest;
     private Reservation reservation;
     private UIState uiState;
+    private ClerkHomePage clerkHomePage;
+    private ProfilePage profilePage;
 
     private JTextField nameField;
     private JTextField emailField;
@@ -29,9 +32,27 @@ public class ModifyReservationPage extends JPanel {
     private DatePicker startDate;
     private DatePicker endDate;
 
-    public ModifyReservationPage(ProfilePage profilePage,
-                                      CardLayout cardLayout,JPanel mainPanel,Guest guest,
-                                      Reservation reservation,UIState uiState) throws IOException {
+    public ModifyReservationPage(ClerkHomePage clerkHomePage, CardLayout cardLayout, JPanel mainPanel, Guest guest, Reservation reservation, UIState uiState) throws IOException {
+        this.clerkHomePage = clerkHomePage;
+        this.cardLayout = cardLayout;
+        this.mainPanel = mainPanel;
+        this.guest = guest;
+        this.reservation = reservation;
+        this.uiState = uiState;
+
+        setLayout(new BorderLayout());
+        setBackground(new Color(240, 243, 247));
+
+        if(uiState.getCurrentSession().getRole() == Role.CLERK){
+            add(createClerkHeader(), BorderLayout.NORTH);
+        }
+        else if(uiState.getCurrentSession().getRole() == Role.GUEST){
+            add(createGuestHeader(), BorderLayout.NORTH);
+        }
+        add(createBody(), BorderLayout.CENTER);
+    }
+
+    public ModifyReservationPage(ProfilePage profilePage, CardLayout cardLayout, JPanel mainPanel, Guest guest, Reservation reservation, UIState uiState) throws IOException {
         this.profilePage = profilePage;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
@@ -42,11 +63,63 @@ public class ModifyReservationPage extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(240, 243, 247));
 
-        add(createHeader(),BorderLayout.NORTH);
+        if(uiState.getCurrentSession().getRole() == Role.CLERK){
+            add(createClerkHeader(), BorderLayout.NORTH);
+        }
+        else if(uiState.getCurrentSession().getRole() == Role.GUEST){
+            add(createGuestHeader(), BorderLayout.NORTH);
+        }
         add(createBody(), BorderLayout.CENTER);
     }
 
-    private JPanel createHeader() throws IOException {
+    private JPanel createClerkHeader() throws IOException {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBorder(new EmptyBorder(15, 20, 15, 20));
+        header.setBackground(Color.WHITE);
+
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
+
+        int newHeight = 70;
+        int newWidth = (originalWidth * newHeight) / originalHeight;
+
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
+        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        nav.setBackground(Color.WHITE);
+        String profileIcon = "👤";
+
+        JButton homeButton = new JButton("Home");
+        homeButton.setFocusPainted(false);
+        homeButton.setBackground(Color.WHITE);
+        homeButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        homeButton.setPreferredSize(new Dimension(90, 35));
+        nav.add(homeButton);
+
+        JButton profileButton = new JButton(profileIcon);
+        profileButton.setFocusPainted(false);
+        profileButton.setBackground(Color.WHITE);
+        profileButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        profileButton.setPreferredSize(new Dimension(90, 35));
+        nav.add(profileButton);
+
+        profileButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"PROFILE");
+        });
+        homeButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"CLERK_HOME");
+        });
+
+        header.add(logoLabel, BorderLayout.WEST);
+        header.add(nav, BorderLayout.EAST);
+        return header;
+    }
+
+    private JPanel createGuestHeader() throws IOException {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
@@ -129,9 +202,35 @@ public class ModifyReservationPage extends JPanel {
         body.setBackground(new Color(240, 243, 247));
         body.setBorder(new EmptyBorder(18, 20, 20, 20));
 
+        if(uiState.getCurrentSession().getRole() == Role.CLERK){
+            body.add(createSidebar(), BorderLayout.WEST);
+        }
         body.add(createReservationPanel(), BorderLayout.CENTER);
 
         return body;
+    }
+
+    private JPanel createSidebar() {
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setBackground(Color.WHITE);
+        sidebar.setBorder(new LineBorder(new Color(190, 205, 218), 2));
+        sidebar.setPreferredSize(new Dimension(230, 0));
+
+        sidebar.add(Box.createVerticalStrut(12));
+
+        JButton addRoomsButton = createSideButton("Add Rooms");
+        JButton modifyRoomsButton = createSideButton("Modify Rooms");
+
+        addRoomsButton.addActionListener(e -> cardLayout.show(mainPanel, "ADD_ROOM"));
+        modifyRoomsButton.addActionListener(e -> cardLayout.show(mainPanel, "MODIFY_ROOMS"));
+
+        sidebar.add(addRoomsButton);
+        sidebar.add(Box.createVerticalStrut(18));
+        sidebar.add(modifyRoomsButton);
+        sidebar.add(Box.createVerticalGlue());
+
+        return sidebar;
     }
 
     private JButton createSideButton(String text) {
@@ -239,7 +338,7 @@ public class ModifyReservationPage extends JPanel {
         gbc.weightx = 0.4;
         panel.add(endDate, gbc);
 
-        JComboBox<String> RoomEditChoice = new JComboBox<>(new String[]{"Add", "Change", "Delete"});
+        JComboBox<String> roomEditChoice = new JComboBox<>(new String[]{"Add", "Change", "Delete"});
         JComboBox<String> roomToEditBox = new JComboBox<>(new String[]{"Current Room"});
 
         for(Room room : reservation.getRooms()){
@@ -249,24 +348,36 @@ public class ModifyReservationPage extends JPanel {
         JComboBox<String> newRoomBox = new JComboBox<>(new String[]{"New Room"});
 
         //TODO: implement better search
-        for(Room room : uiState.roomService.searchRoom(DateRange)){
+        for(Room room : uiState.roomService.searchRoom(new Criteria())){
             newRoomBox.addItem(String.valueOf(room.getRoomNo()));
         }
 
-        styleRoomComboBox(RoomEditChoice, 175, 50);
+        styleRoomComboBox(roomEditChoice, 175, 50);
         styleRoomComboBox(roomToEditBox, 125, 50);
+        styleRoomComboBox(newRoomBox, 125, 50);
 
         gbc.gridy = 5;
         gbc.gridx = 0;
         gbc.gridwidth = 1;
         gbc.weightx = 0;
+        gbc.insets = new Insets(10, 12, 10, 12);
         panel.add(createLabel("Rooms:"), gbc);
 
+// First combo box: Add / Change / Delete
         gbc.gridx = 1;
-        gbc.weightx = 0.4;
-        panel.add(currentRoomBox, gbc);
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.35;
+        panel.add(roomEditChoice, gbc);
 
+// Second combo box: Current Room
         gbc.gridx = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.25;
+        panel.add(roomToEditBox, gbc);
+
+// Third combo box: New Room
+        gbc.gridx = 3;
+        gbc.gridwidth = 1;
         gbc.weightx = 0.25;
         panel.add(newRoomBox, gbc);
 
@@ -287,21 +398,35 @@ public class ModifyReservationPage extends JPanel {
         JButton cancelButton = createRedButton("Cancel Reservation", 250, 55);
 
         saveButton.addActionListener(e -> {
-            //TODO
+            //uiState.reservationService.modifyReservation(reservation.getId());
+            if(uiState.getCurrentSession().getRole() == Role.CLERK){
+                clerkHomePage.updatePage();
+                cardLayout.show(mainPanel,"CLERK_HOME");
+            }
+            else if(uiState.getCurrentSession().getRole() == Role.GUEST){
+                profilePage.updatePage();
+                cardLayout.show(mainPanel,"PROFILE");
+            }
         });
 
         cancelButton.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
                     this,
                     "Are you sure you want to cancel reservation?",
-                    "Logout",
+                    "Cancel",
                     JOptionPane.YES_NO_OPTION
             );
 
             if (confirm == JOptionPane.YES_OPTION) {
                 uiState.reservationService.deleteReservation(reservation.getId());
-                profilePage.updatePage();
-                cardLayout.show(mainPanel,"CLERK_HOME");
+                if(uiState.getCurrentSession().getRole() == Role.CLERK){
+                    clerkHomePage.updatePage();
+                    cardLayout.show(mainPanel,"CLERK_HOME");
+                }
+                else if(uiState.getCurrentSession().getRole() == Role.GUEST){
+                    profilePage.updatePage();
+                    cardLayout.show(mainPanel,"PROFILE");
+                }
             }
         });
 
@@ -342,28 +467,6 @@ public class ModifyReservationPage extends JPanel {
         return field;
     }
 
-    private JComboBox<String> createDateBox() {
-        JComboBox<String> box = new JComboBox<>(new String[]{
-                "", "01/01/2026", "01/02/2026", "01/03/2026"
-        });
-        box.setPreferredSize(new Dimension(175, 52));
-        box.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        return box;
-    }
-
-    private JButton createRoomButton(String text) {
-        JButton button = new JButton(text);
-        button.setPreferredSize(new Dimension(85, 55));
-        button.setFocusPainted(false);
-        button.setBackground(Color.BLACK);
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("SansSerif", Font.BOLD, 22));
-        button.setBorder(BorderFactory.createEmptyBorder());
-        button.setOpaque(true);
-        button.setContentAreaFilled(true);
-        return button;
-    }
-
     private JButton createBlackButton(String text, int width, int height) {
         JButton button = new JButton(text);
         button.setPreferredSize(new Dimension(width, height));
@@ -390,43 +493,22 @@ public class ModifyReservationPage extends JPanel {
         return button;
     }
 
-    // Optional getters if you want to use the field values elsewhere
-    public String getNameValue() {
-        return nameField.getText();
-    }
-
-    public String getEmailValue() {
-        return emailField.getText();
-    }
-
-    public String getPhoneValue() {
-        return phoneField.getText();
-    }
-
-    public String getRoomsValue() {
-        return roomsField.getText();
-    }
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Reservation Manager");
+            JFrame frame = new JFrame("Modify Rooms");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1000, 860);
+            frame.setSize(1220, 800);
             frame.setLocationRelativeTo(null);
 
             CardLayout cardLayout = new CardLayout();
             JPanel mainPanel = new JPanel(cardLayout);
 
-            ModifyReservationPage page = null;
-            try {
-                page = new ModifyReservationPage(cardLayout, mainPanel, new UIState());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            mainPanel.add(page, "RESERVATIONS");
+            ModifyReservationPage clerkReservation = null;
+            //clerkReservation = new ModifyReservationPage(cardLayout, mainPanel,null,null);
+            mainPanel.add(clerkReservation, "MODIFY_ROOMS");
 
             frame.setContentPane(mainPanel);
-            cardLayout.show(mainPanel, "RESERVATIONS");
+            cardLayout.show(mainPanel, "MODIFY_ROOMS");
 
             frame.setVisible(true);
         });
