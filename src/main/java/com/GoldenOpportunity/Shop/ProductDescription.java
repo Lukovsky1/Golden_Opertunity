@@ -32,7 +32,7 @@ public class ProductDescription {
 
     // basic summary
     public String getSummary() {
-        return "Product ID: " + productID +
+        return "Product status ID: " + productID +
                 ", Name: " + name +
                 ", Price: $" + price +
                 ", Image: " + image;
