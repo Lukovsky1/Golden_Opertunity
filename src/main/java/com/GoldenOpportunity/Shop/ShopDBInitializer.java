@@ -1,6 +1,6 @@
 package com.GoldenOpportunity.Shop;
 
-import com.GoldenOpportunity.DBUtil;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -2,6 +2,7 @@ package com.GoldenOpportunity;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,11 +24,11 @@ public class SearchController {
      * reservation object.
      */
     //TODO: Edit all these methods to align with database implementation
-    public void printRoomsAndReservations() {
+    public void printRoomsAndReservations() throws SQLException {
         for (int i = 0; i < roomService.getAllRooms().size(); i++) {
             int num = roomService.getAllRooms().get(i).getRoomNo();
             System.out.println("All reservations assigned to " + num);
-            for (Reservation r : resService.getReservations()) {
+            for (Reservation r : resService.getAllReservations()) {
                 if (r.getRooms().equals(roomService.getAllRooms().get(i))) {
                     System.out.println(r.getId());
                 }
@@ -35,7 +36,7 @@ public class SearchController {
         }
     }
 
-    public List<Room> searchAvailableRooms(Criteria criteria) {
+    public List<Room> searchAvailableRooms(Criteria criteria) throws SQLException {
         List<Room> filteredRooms = roomService.searchRoom(criteria);
         List<Room> availableRooms = new ArrayList<>();
 
@@ -57,8 +58,9 @@ public class SearchController {
     }
 
     //TODO: Move to room class
-    private boolean isRoomAvailable(Room room, DateRange range) {
-        for (Reservation r : resService.getReservations()) {
+    private boolean isRoomAvailable(Room room, DateRange range) throws SQLException {
+        List<Reservation> allReservations = resService.getAllReservations();
+        for (Reservation r : allReservations) {
             if (r.getRooms().equals(room) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
@@ -83,9 +85,9 @@ public class SearchController {
         List<Room> newRooms = Arrays.asList(testRooms);
 
         //TODO: reserveRoom Use Case
-        searchController.resService.createReservation(newRooms, LocalDate.now(),
-                LocalDate.parse("2026-11-20"), 0.0);
-        searchController.resService.deleteReservation("R-019");
+        //searchController.resService.createReservation(newRooms, LocalDate.now(),
+         //       LocalDate.parse("2026-11-20"), 0.0);
+        //searchController.resService.deleteReservation("R-019");
 
         Criteria criteria = new Criteria();
         criteria.setDateRange(null);
@@ -94,10 +96,10 @@ public class SearchController {
         criteria.setSmoking(true);
         criteria.setRoomType("Deluxe");
         criteria.setDateRange( new DateRange(LocalDate.now(), LocalDate.now().plusDays(1)));
-        searchController.searchAvailableRooms(criteria);
+        //searchController.searchAvailableRooms(criteria);
 
-        List<Room> availableRooms = searchController.searchAvailableRooms(criteria);
-        availableRooms.forEach(r -> System.out.println(r.getRoomNo()));
+        //List<Room> availableRooms = searchController.searchAvailableRooms(criteria);
+        //availableRooms.forEach(r -> System.out.println(r.getRoomNo()));
 
 
         //searchController.printRoomsAndReservations();

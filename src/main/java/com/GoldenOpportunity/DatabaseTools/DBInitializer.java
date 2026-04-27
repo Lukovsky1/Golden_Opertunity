@@ -125,15 +125,18 @@ public class DBInitializer {
         """;
 
             String createRooms = """
-                CREATE TABLE IF NOT EXISTS Rooms (
-                    floorNum   INTEGER NOT NULL,
-                    roomNo     INTEGER PRIMARY KEY,
-                    numBeds    INTEGER NOT NULL,
-                    smoking    BOOLEAN NOT NULL,
-                    qLevel     TEXT NOT NULL,
-                    roomType   TEXT NOT NULL,
-                    rate       REAL NOT NULL,
-                    bedTypes   TEXT NOT NULL
+             CREATE TABLE IF NOT EXISTS Rooms (
+             floorNum   INTEGER NOT NULL,
+             roomNo     INTEGER PRIMARY KEY,
+             numBeds    INTEGER NOT NULL,
+             smoking    BOOLEAN NOT NULL,
+             qLevel     TEXT NOT NULL,
+             roomType   TEXT NOT NULL,
+             rate       REAL NOT NULL,
+             bedTypes   TEXT NOT NULL,
+             capacity   INTEGER NOT NULL,
+             description TEXT,
+             image      TEXT
                 );
                 """;
 
@@ -169,6 +172,8 @@ public class DBInitializer {
                     """;
 
             try (Statement st = conn.createStatement()) {
+                conn.setAutoCommit(false);
+
                 st.execute(createUsers);
                 st.execute(createUniqueEmailIndex);
                 st.execute(createRooms);

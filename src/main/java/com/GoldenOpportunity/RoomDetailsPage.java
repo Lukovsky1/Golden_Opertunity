@@ -443,14 +443,21 @@ public class RoomDetailsPage extends JPanel {
             double totalBill = nights * uiState.room.getRate();
 
             uiState.reservationService.createReservation(uiState.potentialRooms, checkInDate, checkOutDate, totalBill);
+            ReservationService reservationService = new ReservationService();
+            String newReservation =
+                    reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
 
             //TODO: Must edit so the new reservationID is given back to the user instead of the reservation
             // Retrieve the newly created reservation
             Reservation newReservation = //reservationService.findReservation("");
                    uiState.reservationService.getReservations().get(uiState.reservationService.getReservations().size() - 1);
+            //FIXME: Depreciated, see above
+            /*Reservation newReservation = //reservationService.findReservation("");
+                   reservationService.getReservations().get(reservationService.getReservations().size() - 1); */
 
+            //TODO: Remove
             // Save reservation to CSV file
-            appendReservationToCsv(newReservation);
+            //appendReservationToCsv(newReservation);
 
             nightsValueLabel.setText(String.valueOf(nights));
             totalValueLabel.setText("$" + totalBill);
