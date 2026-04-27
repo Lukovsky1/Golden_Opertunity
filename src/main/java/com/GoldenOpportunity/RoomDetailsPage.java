@@ -423,8 +423,7 @@ public class RoomDetailsPage extends JPanel {
             String newReservation =
                     reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
 
-            //TODO: Must edit so the new reservationID is given back to the user instead of the reservation
-            // Retrieve the newly created reservation
+            //FIXME: Depreciated, see above
             /*Reservation newReservation = //reservationService.findReservation("");
                    reservationService.getReservations().get(reservationService.getReservations().size() - 1); */
 
