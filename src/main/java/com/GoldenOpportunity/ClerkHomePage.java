@@ -17,6 +17,8 @@ public class ClerkHomePage extends JPanel {
     private final JPanel mainPanel;
     private final UIState uiState;
 
+    private JScrollPane scrollPane;
+
     public ClerkHomePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
@@ -154,8 +156,10 @@ public class ClerkHomePage extends JPanel {
         JPanel contentSection = new JPanel(new BorderLayout(0, 18));
         contentSection.setOpaque(false);
 
+        scrollPane = createScrollableCards();
+
         contentSection.add(createSearchBar(), BorderLayout.NORTH);
-        contentSection.add(createScrollableCards(), BorderLayout.CENTER);
+        contentSection.add(scrollPane, BorderLayout.CENTER);
 
         return contentSection;
     }
@@ -287,7 +291,7 @@ public class ClerkHomePage extends JPanel {
 
         detailsButton.addActionListener(e -> {
             try {
-                mainPanel.add(new ClerkModifyReservationPage(cardLayout, mainPanel,guest,reservation,uiState), "CLERK_MODIFY_RESERVE");
+                mainPanel.add(new ClerkModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,uiState), "CLERK_MODIFY_RESERVE");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -328,6 +332,17 @@ public class ClerkHomePage extends JPanel {
         card.add(buttonPanel);
 
         return card;
+    }
+
+    private void updateReservationPanel(){
+        scrollPane.removeAll();
+        scrollPane = createScrollableCards();
+        scrollPane.revalidate();
+        scrollPane.repaint();
+    }
+
+    public void updatePage(){
+        updateReservationPanel();
     }
 
     // =========================

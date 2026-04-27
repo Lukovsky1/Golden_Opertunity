@@ -1,5 +1,7 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Roles.Guest;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -128,7 +130,7 @@ public class ProfilePage extends JPanel {
         content.setBackground(new Color(245, 245, 245));
 
         profilePanel = createProfilePanel();
-        reservationPanel = createReservationsPanel()
+        reservationPanel = createReservationsPanel();
 
         content.add(profilePanel);
         content.add(reservationPanel);
@@ -328,7 +330,7 @@ public class ProfilePage extends JPanel {
         return panel;
     }
 
-    private JPanel createReservationCard(String dates, String rooms) {
+    private JPanel createReservationCard(Guest guest, Reservation reservation) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBackground(new Color(243, 243, 243));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -346,10 +348,10 @@ public class ProfilePage extends JPanel {
         reservationLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
         reservationLabel.setForeground(new Color(45, 55, 70));
 
-        JLabel datesLabel = new JLabel("Dates: " + dates);
+        JLabel datesLabel = new JLabel(reservation.getDateRange().toString());
         datesLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
 
-        JLabel roomsLabel = new JLabel("Rooms: " + rooms);
+        JLabel roomsLabel = new JLabel("Rooms: " + reservation.getRooms());
         roomsLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
 
         infoPanel.add(Box.createVerticalStrut(10));
@@ -368,7 +370,7 @@ public class ProfilePage extends JPanel {
 
         modifyBtn.addActionListener(e -> {
             try {
-                mainPanel.add(new ModifyReservationPage(cardLayout, mainPanel,uiState), "GUEST_MODIFY_RESERVE");
+                mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,uiState), "GUEST_MODIFY_RESERVE");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -465,10 +467,15 @@ public class ProfilePage extends JPanel {
         profilePanel.repaint();
     }
 
-    public void updateReservationPanel(){
+    private void updateReservationPanel(){
         reservationPanel.removeAll();
         reservationPanel = createReservationsPanel();
         reservationPanel.revalidate();
         reservationPanel.repaint();
+    }
+
+    public void updatePage(){
+        updateProfileToEdit();
+        updateReservationPanel();
     }
 }

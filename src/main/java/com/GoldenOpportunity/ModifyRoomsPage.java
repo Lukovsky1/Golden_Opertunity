@@ -25,6 +25,7 @@ public class ModifyRoomsPage extends JPanel {
 
     private JTable roomsTable;
     private EditRoomPanel editRoomPanel;
+    private JPanel roomsPanel;
     private DefaultTableModel model;
 
     public ModifyRoomsPage(CardLayout cardLayout, JPanel mainPanel,UIState uiState) throws IOException {
@@ -173,13 +174,14 @@ public class ModifyRoomsPage extends JPanel {
         gbc.gridx = 0;
         gbc.weightx = 0.65;
         gbc.insets = new Insets(0, 0, 0, 20); // ← RIGHT GAP
-        centerArea.add(createRoomsPanel(), gbc);
+        roomsPanel = createRoomsPanel();
+        centerArea.add(roomsPanel, gbc);
 
         // RIGHT (form) → smaller
         gbc.gridx = 1;
         gbc.weightx = 0.35;
         gbc.insets = new Insets(0, 0, 0, 0); // no gap needed here
-        editRoomPanel = new EditRoomPanel("Modify Room",uiState);
+        editRoomPanel = new EditRoomPanel(this,"Modify Room",uiState);
         centerArea.add(editRoomPanel, gbc);
 
         return centerArea;
@@ -271,6 +273,13 @@ public class ModifyRoomsPage extends JPanel {
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    public void updatePage(){
+        roomsPanel.removeAll();
+        roomsPanel = createRoomsPanel();
+        roomsPanel.revalidate();
+        roomsPanel.repaint();
     }
 
     // =========================

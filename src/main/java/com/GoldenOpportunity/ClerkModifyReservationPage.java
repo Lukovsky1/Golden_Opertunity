@@ -22,6 +22,7 @@ public class ClerkModifyReservationPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private ClerkHomePage clerkHomePage;
 
     private Guest guest;
     private Reservation reservation;
@@ -33,7 +34,10 @@ public class ClerkModifyReservationPage extends JPanel {
     private DatePicker startDate;
     private DatePicker endDate;
 
-    public ClerkModifyReservationPage(CardLayout cardLayout,JPanel mainPanel,Guest guest,Reservation reservation,UIState uiState) throws IOException {
+    public ClerkModifyReservationPage(ClerkHomePage clerkHomePage,
+                                      CardLayout cardLayout,JPanel mainPanel,Guest guest,
+                                      Reservation reservation,UIState uiState) throws IOException {
+        this.clerkHomePage = clerkHomePage;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.guest = guest;
@@ -43,16 +47,11 @@ public class ClerkModifyReservationPage extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(240, 243, 247));
 
-        if(uiState.getCurrentSession().getRole() == Role.CLERK){
-            add(createClerkHeader(), BorderLayout.NORTH);
-        }
-        else if(uiState.getCurrentSession().getRole() == Role.GUEST){
-            add(createGuestHeader(), BorderLayout.NORTH);
-        }
+        add(createHeader(),BorderLayout.NORTH);
         add(createBody(), BorderLayout.CENTER);
     }
 
-    private JPanel createClerkHeader() throws IOException {
+    private JPanel createHeader() throws IOException {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
@@ -99,84 +98,6 @@ public class ClerkModifyReservationPage extends JPanel {
         return header;
     }
 
-    private JPanel createGuestHeader() throws IOException {
-        JPanel header = new JPanel(new BorderLayout());
-        header.setBorder(new EmptyBorder(15, 20, 15, 20));
-        header.setBackground(Color.WHITE);
-
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
-
-        int originalWidth = logo.getWidth(null);
-        int originalHeight = logo.getHeight(null);
-
-        int newHeight = 70;
-        int newWidth = (originalWidth * newHeight) / originalHeight;
-
-        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-        JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
-        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-
-        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
-        nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
-        Map<String,JButton> buttonMap = new HashMap<>();
-
-        for (String item : items) {
-            buttonMap.put(item,new JButton(item));
-            buttonMap.get(item).setFocusPainted(false);
-            buttonMap.get(item).setBackground(Color.WHITE);
-            buttonMap.get(item).setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
-            nav.add(buttonMap.get(item));
-        }
-
-        uiState.registerLoginButton(buttonMap.get("Login"));
-
-        buttonMap.get("Home").addActionListener(e -> {
-            cardLayout.show(mainPanel,"HOME");
-        });
-        buttonMap.get("Rooms").addActionListener(e -> {
-            cardLayout.show(mainPanel,"ROOMS");
-        });
-        buttonMap.get("Login").addActionListener(e -> {
-            cardLayout.show(mainPanel,"LOGIN");
-        });
-        buttonMap.get("Shop").addActionListener(e -> {
-            cardLayout.show(mainPanel,"SHOP");
-        });
-        buttonMap.get("🛒").addActionListener(e -> {
-            if(uiState.potentialRooms.isEmpty()){
-                JOptionPane.showMessageDialog(this, "Please add a room first.");
-            }
-            else{
-                try {
-                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
-
-                    mainPanel.revalidate();
-                    mainPanel.repaint();
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Error processing booking");
-                }
-                cardLayout.show(mainPanel,"CHECKOUT");
-            }
-        });
-        buttonMap.get("👤").addActionListener(e -> {
-            if(!uiState.isLoggedIn){
-                cardLayout.show(mainPanel,"LOGIN");
-            }
-            else{
-                cardLayout.show(mainPanel,"PROFILE");
-                mainPanel.revalidate();
-                mainPanel.repaint();
-            }
-        });
-
-        header.add(logoLabel, BorderLayout.WEST);
-        header.add(nav, BorderLayout.EAST);
-        return header;
-    }
-
     private JButton createTopButton(String text, int width, int height) {
         JButton button = new JButton(text);
         button.setPreferredSize(new Dimension(width, height));
@@ -195,9 +116,7 @@ public class ClerkModifyReservationPage extends JPanel {
         body.setBackground(new Color(240, 243, 247));
         body.setBorder(new EmptyBorder(18, 20, 20, 20));
 
-        if(uiState.getCurrentSession().getRole() == Role.CLERK){
-            body.add(createSidebar(), BorderLayout.WEST);
-        }
+        body.add(createSidebar(),BorderLayout.WEST);
         body.add(createReservationPanel(), BorderLayout.CENTER);
 
         return body;
@@ -378,13 +297,22 @@ public class ClerkModifyReservationPage extends JPanel {
         JButton saveButton = createBlackButton("Save Reservation", 230, 55);
         JButton cancelButton = createRedButton("Cancel Reservation", 250, 55);
 
+        saveButton.addActionListener(e -> {
+            //TODO
+        });
+
         cancelButton.addActionListener(e -> {
-            uiState.reservationService.deleteReservation(reservation.getId());
-            if(uiState.getCurrentSession().getRole() == Role.CLERK){
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure you want to cancel reservation?",
+                    "Logout",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                uiState.reservationService.deleteReservation(reservation.getId());
+                clerkHomePage.updatePage();
                 cardLayout.show(mainPanel,"CLERK_HOME");
-            }
-            else if(uiState.getCurrentSession().getRole() == Role.GUEST){
-                cardLayout.show(mainPanel,"PROFILE");
             }
         });
 

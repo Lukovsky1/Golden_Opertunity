@@ -1,5 +1,6 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Roles.Guest;
 import com.GoldenOpportunity.Roles.RolePermissions;
 import com.github.lgooddatepicker.components.DatePicker;
 
@@ -9,40 +10,40 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ModifyReservationPage extends JPanel {
 
-    private final CardLayout cardLayout;
-    private final JPanel mainPanel;
-    private final UIState uiState;
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+    private ProfilePage profilePage;
+
+    private Guest guest;
+    private Reservation reservation;
+    private UIState uiState;
 
     private JTextField nameField;
     private JTextField emailField;
     private JTextField phoneField;
     private DatePicker startDate;
     private DatePicker endDate;
-    private JTextField roomsField;
 
-    public ModifyReservationPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
+    public ModifyReservationPage(ProfilePage profilePage,
+                                      CardLayout cardLayout,JPanel mainPanel,Guest guest,
+                                      Reservation reservation,UIState uiState) throws IOException {
+        this.profilePage = profilePage;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.guest = guest;
+        this.reservation = reservation;
         this.uiState = uiState;
 
         setLayout(new BorderLayout());
-        setBackground(new Color(240, 242, 245));
-        setBorder(new EmptyBorder(15, 15, 15, 15));
+        setBackground(new Color(240, 243, 247));
 
-        add(createHeader(), BorderLayout.NORTH);
+        add(createHeader(),BorderLayout.NORTH);
         add(createBody(), BorderLayout.CENTER);
-    }
-
-    @Override
-    public void setVisible(boolean aFlag) {
-        if (aFlag && !RolePermissions.requireRole(this, uiState, "Modifying reservations", "HOME", cardLayout, mainPanel, com.GoldenOpportunity.Login.enums.Role.CLERK)) {
-            super.setVisible(false);
-            return;
-        }
-        super.setVisible(aFlag);
     }
 
     private JPanel createHeader() throws IOException {
@@ -64,27 +65,58 @@ public class ModifyReservationPage extends JPanel {
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String profileIcon = "👤";
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
+        Map<String,JButton> buttonMap = new HashMap<>();
 
-        JButton homeButton = new JButton("Home");
-        homeButton.setFocusPainted(false);
-        homeButton.setBackground(Color.WHITE);
-        homeButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        homeButton.setPreferredSize(new Dimension(90, 35));
-        nav.add(homeButton);
+        for (String item : items) {
+            buttonMap.put(item,new JButton(item));
+            buttonMap.get(item).setFocusPainted(false);
+            buttonMap.get(item).setBackground(Color.WHITE);
+            buttonMap.get(item).setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
+            nav.add(buttonMap.get(item));
+        }
 
-        JButton profileButton = new JButton(profileIcon);
-        profileButton.setFocusPainted(false);
-        profileButton.setBackground(Color.WHITE);
-        profileButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        profileButton.setPreferredSize(new Dimension(90, 35));
-        nav.add(profileButton);
+        uiState.registerLoginButton(buttonMap.get("Login"));
 
-        profileButton.addActionListener(e -> {
-            cardLayout.show(mainPanel,"PROFILE");
+        buttonMap.get("Home").addActionListener(e -> {
+            cardLayout.show(mainPanel,"HOME");
         });
-        homeButton.addActionListener(e -> {
-            cardLayout.show(mainPanel,"CLERK_HOME");
+        buttonMap.get("Rooms").addActionListener(e -> {
+            cardLayout.show(mainPanel,"ROOMS");
+        });
+        buttonMap.get("Login").addActionListener(e -> {
+            cardLayout.show(mainPanel,"LOGIN");
+        });
+        buttonMap.get("Shop").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SHOP");
+        });
+        buttonMap.get("🛒").addActionListener(e -> {
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -93,201 +125,269 @@ public class ModifyReservationPage extends JPanel {
     }
 
     private JPanel createBody() {
-        JPanel bodyWrapper = new JPanel(new BorderLayout(20, 0));
-        bodyWrapper.setBackground(new Color(245, 245, 245));
-        bodyWrapper.setBorder(new EmptyBorder(15, 0, 0, 0));
+        JPanel body = new JPanel(new BorderLayout(20, 0));
+        body.setBackground(new Color(240, 243, 247));
+        body.setBorder(new EmptyBorder(18, 20, 20, 20));
 
-        bodyWrapper.add(createSidebar(), BorderLayout.WEST);
-        bodyWrapper.add(createFormPanel(), BorderLayout.CENTER);
+        body.add(createReservationPanel(), BorderLayout.CENTER);
 
-        return bodyWrapper;
+        return body;
     }
 
-    private JPanel createSidebar() {
-        JPanel sidebar = new JPanel();
-        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setPreferredSize(new Dimension(230, 500));
-        sidebar.setBackground(new Color(245, 245, 245));
-        sidebar.setBorder(new CompoundBorder(
-                new LineBorder(new Color(190, 200, 210), 2),
-                new EmptyBorder(20, 20, 20, 20)
-        ));
-
-        JButton addRoomsButton = createSidebarButton("Add Rooms");
-        JButton modifyRoomsButton = createSidebarButton("Modify Rooms");
-
-        addRoomsButton.addActionListener(e -> {
-            if (cardLayout != null && mainPanel != null) {
-                cardLayout.show(mainPanel, "ADD_ROOMS");
-            }
-        });
-
-        modifyRoomsButton.addActionListener(e -> {
-            if (cardLayout != null && mainPanel != null) {
-                cardLayout.show(mainPanel, "MODIFY_ROOMS");
-            }
-        });
-
-        sidebar.add(addRoomsButton);
-        sidebar.add(Box.createVerticalStrut(18));
-        sidebar.add(modifyRoomsButton);
-
-        return sidebar;
-    }
-
-    private JButton createSidebarButton(String text) {
+    private JButton createSideButton(String text) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(180, 50));
-        button.setPreferredSize(new Dimension(180, 50));
+        button.setPreferredSize(new Dimension(185, 52));
+        button.setMaximumSize(new Dimension(185, 52));
         button.setFocusPainted(false);
-        button.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        button.setBackground(new Color(250, 250, 250));
-        button.setBorder(new LineBorder(new Color(160, 160, 160), 2));
+        button.setBackground(Color.WHITE);
+        button.setForeground(Color.BLACK);
+        button.setFont(new Font("SansSerif", Font.BOLD, 20));
+        button.setBorder(new LineBorder(new Color(150, 150, 150), 2, true));
         button.setOpaque(true);
         button.setContentAreaFilled(true);
         return button;
     }
 
-    private JPanel createFormPanel() {
-        JPanel outer = new JPanel(new BorderLayout());
-        outer.setBackground(new Color(245, 245, 245));
-        outer.setBorder(new CompoundBorder(
-                new LineBorder(new Color(190, 200, 210), 2),
-                new EmptyBorder(20, 20, 20, 20)
+    private JPanel createReservationPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(190, 205, 218), 2),
+                new EmptyBorder(18, 24, 24, 24)
         ));
 
-        JLabel title = new JLabel("Reservation:");
-        title.setFont(new Font("SansSerif", Font.PLAIN, 34));
-        title.setForeground(new Color(45, 60, 75));
-
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        titlePanel.setOpaque(false);
-        titlePanel.add(title);
-
-        outer.add(titlePanel, BorderLayout.NORTH);
-        outer.add(createFormFields(), BorderLayout.CENTER);
-
-        return outer;
-    }
-
-    private JPanel createFormFields() {
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setOpaque(false);
-
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(14, 12, 14, 12);
+        gbc.insets = new Insets(10, 12, 10, 12);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        Font labelFont = new Font("SansSerif", Font.PLAIN, 18);
+        JLabel title = new JLabel("Reservation:");
+        title.setFont(new Font("SansSerif", Font.PLAIN, 32));
+        title.setForeground(new Color(43, 58, 72));
 
-        nameField = createTextField(24);
-        emailField = createTextField(24);
-        phoneField = createTextField(24);
-        roomsField = createTextField(18);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 4;
+        gbc.weightx = 1;
+        panel.add(title, gbc);
+
+        nameField = createTextField();
+        emailField = createTextField();
+        phoneField = createTextField();
+
+        String[] data = guest.getContactInfo().split(",");
+        nameField.setText(data[0]);
+        emailField.setText(data[1]);
+        phoneField.setText(data[2]);
+
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        panel.add(createLabel("Name:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        panel.add(nameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        panel.add(createLabel("Email:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        panel.add(emailField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        panel.add(createLabel("Phone Number:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        panel.add(phoneField, gbc);
 
         startDate = new DatePicker();
-        startDate.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
         endDate = new DatePicker();
-        endDate.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+
+        startDate.setDate(reservation.dateRange.startDate());
+        endDate.setDate(reservation.dateRange.endDate());
+
+        gbc.gridy = 4;
+        gbc.gridwidth = 1;
 
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        form.add(createLabel("Name:", labelFont), gbc);
+        gbc.weightx = 0;
+        panel.add(createLabel("Start Date:"), gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 3;
-        form.add(nameField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        form.add(createLabel("Email:", labelFont), gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 3;
-        form.add(emailField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        form.add(createLabel("Phone Number:", labelFont), gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 3;
-        form.add(phoneField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-        form.add(createLabel("Start Date:", labelFont), gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-        form.add(startDate, gbc);
+        gbc.weightx = 0.4;
+        panel.add(startDate, gbc);
 
         gbc.gridx = 2;
-        gbc.gridy = 3;
-        form.add(createLabel("End Date:", labelFont), gbc);
+        gbc.weightx = 0;
+        panel.add(createLabel("End Date:"), gbc);
 
         gbc.gridx = 3;
-        gbc.gridy = 3;
-        form.add(endDate, gbc);
+        gbc.weightx = 0.4;
+        panel.add(endDate, gbc);
 
+        JComboBox<String> RoomEditChoice = new JComboBox<>(new String[]{"Add", "Change", "Delete"});
+        JComboBox<String> roomToEditBox = new JComboBox<>(new String[]{"Current Room"});
+
+        for(Room room : reservation.getRooms()){
+            roomToEditBox.addItem(String.valueOf(room.getRoomNo()));
+        }
+
+        JComboBox<String> newRoomBox = new JComboBox<>(new String[]{"New Room"});
+
+        //TODO: implement better search
+        for(Room room : uiState.roomService.searchRoom(DateRange)){
+            newRoomBox.addItem(String.valueOf(room.getRoomNo()));
+        }
+
+        styleRoomComboBox(RoomEditChoice, 175, 50);
+        styleRoomComboBox(roomToEditBox, 125, 50);
+
+        gbc.gridy = 5;
         gbc.gridx = 0;
-        gbc.gridy = 4;
-        form.add(createLabel("Rooms:", labelFont), gbc);
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        panel.add(createLabel("Rooms:"), gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        form.add(roomsField, gbc);
+        gbc.weightx = 0.4;
+        panel.add(currentRoomBox, gbc);
 
-        JButton cancelButton = new JButton("Cancel Reservation");
-        cancelButton.setFont(new Font("SansSerif", Font.BOLD, 16));
-        cancelButton.setForeground(Color.WHITE);
-        cancelButton.setBackground(new Color(215, 72, 95));
-        cancelButton.setFocusPainted(false);
-        cancelButton.setBorder(new EmptyBorder(12, 24, 12, 24));
-        cancelButton.setOpaque(true);
-        cancelButton.setContentAreaFilled(true);
+        gbc.gridx = 2;
+        gbc.weightx = 0.25;
+        panel.add(newRoomBox, gbc);
 
+        JButton saveRoomEditsButton = createBlackButton("Save Room Edits", 210, 55);
+
+        JPanel roomEditPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        roomEditPanel.setOpaque(false);
+        roomEditPanel.add(saveRoomEditsButton);
+
+        gbc.gridy = 6;
         gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(26, 12, 12, 12);
-        form.add(cancelButton, gbc);
+        gbc.gridwidth = 4;
+        gbc.weightx = 1;
+        gbc.insets = new Insets(28, 12, 10, 12);
+        panel.add(roomEditPanel, gbc);
 
-        return form;
+        JButton saveButton = createBlackButton("Save Reservation", 230, 55);
+        JButton cancelButton = createRedButton("Cancel Reservation", 250, 55);
+
+        saveButton.addActionListener(e -> {
+            //TODO
+        });
+
+        cancelButton.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure you want to cancel reservation?",
+                    "Logout",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                uiState.reservationService.deleteReservation(reservation.getId());
+                profilePage.updatePage();
+                cardLayout.show(mainPanel,"CLERK_HOME");
+            }
+        });
+
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        actionPanel.setOpaque(false);
+        actionPanel.add(saveButton);
+        actionPanel.add(Box.createHorizontalStrut(22));
+        actionPanel.add(cancelButton);
+
+        gbc.gridy = 7;
+        gbc.gridx = 0;
+        gbc.gridwidth = 4;
+        gbc.weightx = 1;
+        gbc.insets = new Insets(10, 12, 0, 12);
+        panel.add(actionPanel, gbc);
+
+        return panel;
     }
 
-    private JLabel createLabel(String text, Font font) {
+    private void styleRoomComboBox(JComboBox<String> box, int width, int height) {
+        box.setPreferredSize(new Dimension(width, height));
+        box.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        box.setBorder(new LineBorder(new Color(190, 205, 218), 2, true));
+    }
+
+    private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setFont(font);
-        label.setForeground(new Color(45, 60, 75));
+        label.setFont(new Font("SansSerif", Font.BOLD, 20));
+        label.setForeground(new Color(43, 58, 72));
         return label;
     }
 
-    private JTextField createTextField(int columns) {
-        JTextField field = new JTextField(columns);
-        field.setPreferredSize(new Dimension(300, 42));
-        field.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        field.setBorder(new LineBorder(new Color(190, 200, 210), 2, true));
-        field.setBackground(Color.WHITE);
+    private JTextField createTextField() {
+        JTextField field = new JTextField();
+        field.setPreferredSize(new Dimension(400, 52));
+        field.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        field.setBorder(new LineBorder(new Color(190, 205, 218), 2, true));
         return field;
     }
 
-    private void styleComboBox(JComboBox<String> comboBox, int rows) {
-        comboBox.setPreferredSize(new Dimension(210, 42));
-        comboBox.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        comboBox.setBackground(Color.WHITE);
-        comboBox.setBorder(new LineBorder(new Color(190, 200, 210), 2, true));
-        comboBox.setMaximumRowCount(rows);
+    private JComboBox<String> createDateBox() {
+        JComboBox<String> box = new JComboBox<>(new String[]{
+                "", "01/01/2026", "01/02/2026", "01/03/2026"
+        });
+        box.setPreferredSize(new Dimension(175, 52));
+        box.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        return box;
+    }
+
+    private JButton createRoomButton(String text) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(85, 55));
+        button.setFocusPainted(false);
+        button.setBackground(Color.BLACK);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("SansSerif", Font.BOLD, 22));
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        return button;
+    }
+
+    private JButton createBlackButton(String text, int width, int height) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(width, height));
+        button.setFocusPainted(false);
+        button.setBackground(Color.BLACK);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("SansSerif", Font.BOLD, 20));
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        return button;
+    }
+
+    private JButton createRedButton(String text, int width, int height) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(width, height));
+        button.setFocusPainted(false);
+        button.setBackground(new Color(214, 65, 88));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("SansSerif", Font.BOLD, 20));
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        return button;
     }
 
     // Optional getters if you want to use the field values elsewhere

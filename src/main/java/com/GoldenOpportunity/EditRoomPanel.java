@@ -28,6 +28,7 @@ public class EditRoomPanel extends JPanel {
     private List<JComboBox<String>> bedTypeComboBoxes;
 
     private String titleForPanel;
+    private ModifyRoomsPage modifyRoomsPage;
     private UIState uiState;
 
     /**
@@ -36,6 +37,18 @@ public class EditRoomPanel extends JPanel {
     public EditRoomPanel(String title,UIState uiState) {
         setLayout(new BorderLayout());
 
+        this.modifyRoomsPage = null;
+        this.titleForPanel = title;
+        this.uiState = uiState;
+
+        add(createHeader(), BorderLayout.NORTH);
+        add(createFormPanel(), BorderLayout.CENTER);
+    }
+
+    public EditRoomPanel(ModifyRoomsPage modifyRoomsPage,String title,UIState uiState) {
+        setLayout(new BorderLayout());
+
+        this.modifyRoomsPage = modifyRoomsPage;
         this.titleForPanel = title;
         this.uiState = uiState;
 
@@ -343,6 +356,8 @@ public class EditRoomPanel extends JPanel {
 
         JOptionPane.showMessageDialog(this, "Room modified!");
         clearForm();
+
+        modifyRoomsPage.updatePage();
     }
 
     /**
