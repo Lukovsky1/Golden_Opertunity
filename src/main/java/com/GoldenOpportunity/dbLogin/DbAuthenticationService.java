@@ -35,11 +35,17 @@ public class DbAuthenticationService {
 
     /** Attempt to authenticate a user and return a UI-friendly result object. */
     public LoginResult logIn(String username, String password) {
+        String normalizedUsername = username == null ? "" : username.trim().toLowerCase();
+
+        if (EmailValidator.looksLikeEmail(normalizedUsername) && !EmailValidator.isValidEmail(normalizedUsername)) {
+            return new LoginResult(false, EmailValidator.supportedDomainsMessage(), null);
+        }
+
         try {
             // 1) Fetch user by username first, then fall back to email/contact info.
             DbUser user = userDao.findByUsername(username);
             if (user == null) {
-                user = userDao.findByEmail(username);
+                user = userDao.findByEmail(normalizedUsername);
             }
             if (user == null) {
                 // Do not reveal whether the username exists.
@@ -95,6 +101,10 @@ public class DbAuthenticationService {
         try {
             if (normalizedUsername.isEmpty() || normalizedEmail.isEmpty() || password == null || password.isBlank()) {
                 return new AuthResult(false, "All fields are required.");
+            }
+
+            if (!EmailValidator.isValidEmail(normalizedEmail)) {
+                return new AuthResult(false, EmailValidator.supportedDomainsMessage());
             }
 
             if (userDao.findByUsername(normalizedUsername) != null) {

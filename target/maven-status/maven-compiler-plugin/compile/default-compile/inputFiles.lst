@@ -46,6 +46,7 @@
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/DbAuthenticationService.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/DbSeeder.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/DbUser.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/EmailValidator.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/GuestReservationDao.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/GuestReservationSeeder.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/PasswordHasher.java

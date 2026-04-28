@@ -1,6 +1,7 @@
 package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Login.AuthResult;
+import com.GoldenOpportunity.dbLogin.EmailValidator;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -34,7 +35,6 @@ public class SignUpPage extends JPanel {
         outerPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setPreferredSize(new Dimension(420, 360));
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(new CompoundBorder(
                 new LineBorder(new Color(220, 220, 220), 1, true),
@@ -51,12 +51,13 @@ public class SignUpPage extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         formPanel.add(titleLabel, gbc);
 
-        usernameField = new JTextField(20);
-        emailField = new JTextField(20);
-        passwordField = new JPasswordField(20);
-        confirmPasswordField = new JPasswordField(20);
+        usernameField = createResponsiveTextField();
+        emailField = createResponsiveTextField();
+        passwordField = createResponsivePasswordField();
+        confirmPasswordField = createResponsivePasswordField();
 
         int row = 1;
         addFormRow(formPanel, gbc, row++, "Username:", usernameField);
@@ -69,6 +70,7 @@ public class SignUpPage extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row++;
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         formPanel.add(messageLabel, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
@@ -83,9 +85,16 @@ public class SignUpPage extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         formPanel.add(buttonPanel, gbc);
 
-        outerPanel.add(formPanel);
+        GridBagConstraints outerGbc = new GridBagConstraints();
+        outerGbc.gridx = 0;
+        outerGbc.gridy = 0;
+        outerGbc.weightx = 1.0;
+        outerGbc.fill = GridBagConstraints.HORIZONTAL;
+        outerGbc.anchor = GridBagConstraints.NORTH;
+        outerPanel.add(formPanel, outerGbc);
         return outerPanel;
     }
 
@@ -93,10 +102,26 @@ public class SignUpPage extends JPanel {
         gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = row;
+        gbc.weightx = 0.0;
         panel.add(new JLabel(labelText), gbc);
 
         gbc.gridx = 1;
+        gbc.weightx = 1.0;
         panel.add(component, gbc);
+    }
+
+    private JTextField createResponsiveTextField() {
+        JTextField field = new JTextField(24);
+        field.setPreferredSize(new Dimension(260, 36));
+        field.setMinimumSize(new Dimension(180, 36));
+        return field;
+    }
+
+    private JPasswordField createResponsivePasswordField() {
+        JPasswordField field = new JPasswordField(24);
+        field.setPreferredSize(new Dimension(260, 36));
+        field.setMinimumSize(new Dimension(180, 36));
+        return field;
     }
 
     private void handleSignUp() {
@@ -111,9 +136,9 @@ public class SignUpPage extends JPanel {
             return;
         }
 
-        if (!email.contains("@") || !email.contains(".")) {
+        if (!EmailValidator.isValidEmail(email)) {
             messageLabel.setForeground(Color.RED);
-            messageLabel.setText("Please enter a valid email address.");
+            messageLabel.setText(EmailValidator.supportedDomainsMessage());
             return;
         }
 

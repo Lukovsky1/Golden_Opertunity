@@ -34,6 +34,11 @@ public class AuthTester {
             assertEquals(0, dao.getFailedCount("guest1"), "failed count reset");
         });
 
+        check("success login by supported email", () -> {
+            var res = auth.logIn("guest@golden.com", "guestpass");
+            assertTrue(res.isSuccess(), "Expected success");
+        });
+
         // 2) Single wrong password increments failed count
         dao.resetAccountState("guest1");
         check("wrong password increments count", () -> {
@@ -72,10 +77,15 @@ public class AuthTester {
             assertFalse(res.isSuccess(), "Expected failure for unknown user");
         });
 
+        check("unsupported email domain blocked on login", () -> {
+            var res = auth.logIn("guest@example.com", "guestpass");
+            assertFalse(res.isSuccess(), "Expected failure for unsupported email domain");
+        });
+
         // 7) Signup writes a new guest user to SQLite
         check("signup persists user in database", () -> {
             String username = "signup_test_" + System.currentTimeMillis();
-            String email = username + "@example.com";
+            String email = username + "@gmail.com";
 
             AuthResult res = auth.signUp(username, email, "secret123");
             assertTrue(res.isSuccess(), "Expected signup success");
@@ -85,6 +95,12 @@ public class AuthTester {
             assertEquals("GUEST", createdUser.role, "role stored");
             assertEquals("ACTIVE", createdUser.accountStatus, "status stored");
             assertEquals(email, createdUser.contactInfo, "email stored");
+        });
+
+        check("signup rejects unsupported email domain", () -> {
+            String username = "signup_bad_" + System.currentTimeMillis();
+            AuthResult res = auth.signUp(username, username + "@example.com", "secret123");
+            assertFalse(res.isSuccess(), "Expected signup failure");
         });
 
         System.out.println();

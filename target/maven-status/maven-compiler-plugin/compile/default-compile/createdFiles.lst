@@ -36,6 +36,7 @@ com/GoldenOpportunity/Reservation.class
 com/GoldenOpportunity/ClerkHomePage.class
 com/GoldenOpportunity/ModifyRoomsPage.class
 com/GoldenOpportunity/HotelBookingUI.class
+com/GoldenOpportunity/dbLogin/EmailValidator.class
 com/GoldenOpportunity/dbLogin/UserDao.class
 com/GoldenOpportunity/Loader.class
 com/GoldenOpportunity/ModifyRoomsPage$1.class

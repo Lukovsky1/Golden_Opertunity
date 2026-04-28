@@ -3,6 +3,7 @@ package com.GoldenOpportunity;
 import com.GoldenOpportunity.Login.AuthResult;
 import com.GoldenOpportunity.Login.enums.Role;
 import com.GoldenOpportunity.Roles.RolePermissions;
+import com.GoldenOpportunity.dbLogin.EmailValidator;
 import com.GoldenOpportunity.dbLogin.DbUser;
 import com.GoldenOpportunity.dbLogin.UserDao;
 
@@ -411,8 +412,8 @@ public class AdminPage extends JPanel {
             return;
         }
 
-        if (!email.contains("@") || !email.contains(".")) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid email address.");
+        if (!EmailValidator.isValidEmail(email)) {
+            JOptionPane.showMessageDialog(this, EmailValidator.supportedDomainsMessage());
             return;
         }
 
