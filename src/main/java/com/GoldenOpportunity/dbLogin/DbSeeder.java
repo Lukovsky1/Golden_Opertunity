@@ -10,6 +10,7 @@ import java.sql.SQLException;
  *
  * This is intended for local development and manual testing of the login UI.
  */
+//TODO: Need to separate the seeding logic from the loadingInsertStatements
 public class DbSeeder {
     public static void main(String[] args) throws SQLException {
         UserDao dao = new UserDao();

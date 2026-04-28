@@ -57,18 +57,6 @@ public class SearchController {
         return availableRooms;
     }
 
-    //TODO: Move to room class
-    private boolean isRoomAvailable(Room room, DateRange range) throws SQLException {
-        List<Reservation> allReservations = resService.getAllReservations();
-        for (Reservation r : allReservations) {
-            if (r.getRooms().equals(room) &&
-                    r.getDateRange().overlaps(range)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     /*
     Testing and debug note: DO NOT use "new" when trying to create room objects!
