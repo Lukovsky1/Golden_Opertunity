@@ -1,7 +1,6 @@
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/AddRoomPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/AdminPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/AuthenticationController.java
-/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Bed.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/CheckoutPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/ClerkHomePage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Criteria.java
@@ -26,10 +25,10 @@
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Reservation.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/ReservationLoader.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/ReservationService.java
-/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/RolePermissions.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Roles/Admin.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Roles/Clerk.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Roles/Guest.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Roles/RolePermissions.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Room.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/RoomService.java
@@ -47,6 +46,8 @@
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/DbAuthenticationService.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/DbSeeder.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/DbUser.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/GuestReservationDao.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/GuestReservationSeeder.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/PasswordHasher.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/dbLogin/UserDao.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/tools/AuthTester.java
