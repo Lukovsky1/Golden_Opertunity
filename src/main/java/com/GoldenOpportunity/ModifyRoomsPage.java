@@ -203,7 +203,8 @@ public class ModifyRoomsPage extends JPanel {
         title.setForeground(new Color(52, 66, 80));
         title.setBorder(new EmptyBorder(0, 0, 12, 0));
 
-        String[] columns = {"Floor Number","Room Number","Room Type","Quality","Number of Beds","Type of Beds","Smoking Status","Rate/per Night"};
+        String[] columns = {"Floor Number","Room Number","Room Type","Quality","Number of Beds",
+                "Type of Beds","Smoking Status","Rate/per Night","Description"};
 
         model = new DefaultTableModel(columns,0) {
             @Override
@@ -219,26 +220,17 @@ public class ModifyRoomsPage extends JPanel {
                 desc = desc.concat(entry.getKey() + ", ");
             }
             String finalDesc = desc.substring(0,desc.length()-2);
-            model.addRow(new Object[]{room.getFloorNum(),room.getRoomNo(),room.getRoomType(),room.getQLevel(),room.getBeds(),finalDesc,room.isSmoking(),room.getRate()});
+            model.addRow(new Object[]{room.getFloorNum(),room.getRoomNo(),room.getRoomType(),room.getQLevel(),
+                    room.getBeds(),finalDesc,room.isSmoking(),room.getRate(),room.getDescription()});
         }
 
-        roomsTable = new JTable(model);
-        roomsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        roomsTable.setRowHeight(38);
-        roomsTable.setShowGrid(true);
-        roomsTable.setGridColor(new Color(210, 218, 226));
-        roomsTable.setSelectionBackground(new Color(220, 230, 240));
-        roomsTable.setSelectionForeground(Color.BLACK);
-        roomsTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        roomsTable.getTableHeader().setReorderingAllowed(false);
-        roomsTable.getTableHeader().setResizingAllowed(false);
-        roomsTable.getTableHeader().setPreferredSize(new Dimension(0, 36));
-        roomsTable.getTableHeader().setBackground(Color.WHITE);
-        roomsTable.getTableHeader().setBorder(new LineBorder(new Color(210, 218, 226), 1));
+        roomsTable = createTable();
 
         JScrollPane scrollPane = new JScrollPane(roomsTable);
         scrollPane.setBorder(new LineBorder(new Color(210, 218, 226), 1));
         scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         JButton selectButton = new JButton("Select");
         selectButton.setFocusPainted(false);
@@ -275,9 +267,48 @@ public class ModifyRoomsPage extends JPanel {
         return panel;
     }
 
+    private JTable createTable(){
+        JTable table = new JTable(model);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setRowHeight(38);
+        table.setShowGrid(true);
+        table.setGridColor(new Color(210, 218, 226));
+        table.setSelectionBackground(new Color(220, 230, 240));
+        table.setSelectionForeground(Color.BLACK);
+        table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        table.getTableHeader().setReorderingAllowed(false);
+        table.getTableHeader().setResizingAllowed(false);
+        table.getTableHeader().setPreferredSize(new Dimension(0, 36));
+        table.getTableHeader().setBackground(Color.WHITE);
+        table.getTableHeader().setBorder(new LineBorder(new Color(210, 218, 226), 1));
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        table.getColumnModel().getColumn(0).setPreferredWidth(100);
+        table.getColumnModel().getColumn(1).setPreferredWidth(100);
+        table.getColumnModel().getColumn(2).setPreferredWidth(100);
+        table.getColumnModel().getColumn(3).setPreferredWidth(100);
+        table.getColumnModel().getColumn(4).setPreferredWidth(100);
+        table.getColumnModel().getColumn(5).setPreferredWidth(120);
+        table.getColumnModel().getColumn(6).setPreferredWidth(100);
+        table.getColumnModel().getColumn(7).setPreferredWidth(100);
+        table.getColumnModel().getColumn(8).setPreferredWidth(500);
+
+        return table;
+    }
+
     public void updatePage(){
-        roomsPanel.removeAll();
-        roomsPanel = createRoomsPanel();
+        model.setRowCount(0);
+
+        for(Room room : uiState.roomService.getAllRooms()){
+            String desc = "";
+            for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+                desc = desc.concat(entry.getValue() + " ");
+                desc = desc.concat(entry.getKey() + ", ");
+            }
+            String finalDesc = desc.substring(0,desc.length()-2);
+            model.addRow(new Object[]{room.getFloorNum(),room.getRoomNo(),room.getRoomType(),room.getQLevel(),room.getBeds(),finalDesc,room.isSmoking(),room.getRate()});
+        }
+
         roomsPanel.revalidate();
         roomsPanel.repaint();
     }

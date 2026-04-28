@@ -10,6 +10,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -347,8 +348,9 @@ public class ModifyReservationPage extends JPanel {
 
         JComboBox<String> newRoomBox = new JComboBox<>(new String[]{"New Room"});
 
-        //TODO: implement better search
-        for(Room room : uiState.roomService.searchRoom(new Criteria())){
+        Criteria criteria = new Criteria();
+        criteria.setDateRange(new DateRange(startDate.getDate(),endDate.getDate()));
+        for(Room room : uiState.roomService.searchRoom(criteria)){
             newRoomBox.addItem(String.valueOf(room.getRoomNo()));
         }
 
@@ -418,7 +420,11 @@ public class ModifyReservationPage extends JPanel {
             );
 
             if (confirm == JOptionPane.YES_OPTION) {
-                uiState.reservationService.deleteReservation(reservation.getId());
+                try {
+                    uiState.reservationService.deleteReservation(reservation.getId());
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 if(uiState.getCurrentSession().getRole() == Role.CLERK){
                     clerkHomePage.updatePage();
                     cardLayout.show(mainPanel,"CLERK_HOME");
@@ -430,13 +436,36 @@ public class ModifyReservationPage extends JPanel {
             }
         });
 
+        int buttonRow = 7;
+
+        if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+            JButton checkInButton = createGreenButton("Check-In", 140, 55);
+            JButton checkOutButton = createRedButton("Check-Out", 150, 55);
+
+            JPanel checkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            checkPanel.setOpaque(false);
+
+            checkPanel.add(checkInButton);
+            checkPanel.add(Box.createHorizontalStrut(22));
+            checkPanel.add(checkOutButton);
+
+            gbc.gridy = buttonRow;
+            gbc.gridx = 0;
+            gbc.gridwidth = 4;
+            gbc.weightx = 1;
+            gbc.insets = new Insets(0, 12, 8, 12);
+            panel.add(checkPanel, gbc);
+
+            buttonRow++;
+        }
+
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         actionPanel.setOpaque(false);
         actionPanel.add(saveButton);
         actionPanel.add(Box.createHorizontalStrut(22));
         actionPanel.add(cancelButton);
 
-        gbc.gridy = 7;
+        gbc.gridy = buttonRow;
         gbc.gridx = 0;
         gbc.gridwidth = 4;
         gbc.weightx = 1;
@@ -444,6 +473,19 @@ public class ModifyReservationPage extends JPanel {
         panel.add(actionPanel, gbc);
 
         return panel;
+    }
+
+    private JButton createGreenButton(String text, int width, int height) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(width, height));
+        button.setFocusPainted(false);
+        button.setBackground(new Color(30, 130, 114));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("SansSerif", Font.BOLD, 20));
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        return button;
     }
 
     private void styleRoomComboBox(JComboBox<String> box, int width, int height) {

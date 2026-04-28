@@ -45,7 +45,7 @@ public class MainUIFrame extends JFrame {
         UIState uiState = new UIState();
 
         hotelHomePageUI = new HotelHomePageUI(cardLayout,mainPanel,uiState);
-        hotelBookingUI = new HotelBookingUI(cardLayout,mainPanel,uiState);
+        hotelBookingUI = hotelHomePageUI.hotelBookingUI;
         loginPage = new LoginPage(cardLayout,mainPanel,uiState);
         shopPage = new ShopPage(cardLayout,mainPanel,uiState);
         profilePage = new ProfilePage(cardLayout, mainPanel,uiState);

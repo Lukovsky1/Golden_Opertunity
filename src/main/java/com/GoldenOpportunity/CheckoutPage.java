@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -28,7 +29,17 @@ public class CheckoutPage extends JPanel {
         setBackground(new Color(245, 245, 245));
 
         add(createHeader(), BorderLayout.NORTH);
-        add(createMainContent(), BorderLayout.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane(createMainContent());
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getVerticalScrollBar().setValue(0);
+        });
+
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     // ================= HEADER =================
@@ -98,25 +109,20 @@ public class CheckoutPage extends JPanel {
 
     // ================= MAIN =================
     private JPanel createMainContent() {
-        JPanel container = new JPanel(new BorderLayout(20, 20));
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
         container.setBorder(new EmptyBorder(20, 20, 20, 20));
         container.setBackground(new Color(245, 245, 245));
 
-        // LEFT PANEL (SCROLLABLE)
         JPanel leftPanel = createLeftPanel();
+        JPanel summaryPanel = createSummaryPanel();
 
-        JScrollPane scrollPane = new JScrollPane(leftPanel);
-        scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16); // smoother scroll
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        leftPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        summaryPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 
-        // Control width of left side
-        scrollPane.setPreferredSize(new Dimension(650, 0));
-
-        container.add(scrollPane, BorderLayout.CENTER);
-
-        // RIGHT PANEL (FIXED)
-        container.add(createSummaryPanel(), BorderLayout.EAST);
+        container.add(leftPanel);
+        container.add(Box.createHorizontalStrut(20));
+        container.add(summaryPanel);
 
         return container;
     }
@@ -161,9 +167,10 @@ public class CheckoutPage extends JPanel {
         box.add(oneField("Credit/Debit Card Number"));
 
         // Expiration row with labels
-        JPanel expiryRow = new JPanel(new GridLayout(1, 2, 15, 0));
+        JPanel expiryRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 0));
         expiryRow.setBackground(Color.WHITE);
         expiryRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        expiryRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
         String[] months = {"01","02","03","04","05","06","07","08","09","10","11","12"};
         JComboBox<String> monthBox = new JComboBox<>(months);
@@ -181,6 +188,7 @@ public class CheckoutPage extends JPanel {
         expiryRow.add(labeledComponent("Expiration Year", yearBox));
 
         box.add(expiryRow);
+        box.add(Box.createVerticalStrut(10));
 
         box.add(twoFieldRow("CVV Number", "Billing Zip Code"));
 
@@ -190,7 +198,6 @@ public class CheckoutPage extends JPanel {
     // ================= RIGHT SIDE =================
     private JPanel createSummaryPanel() {
         JPanel panel = createCardPanel();
-        panel.setPreferredSize(new Dimension(400, 500));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JLabel title = sectionTitle("Booking Summary");
@@ -203,20 +210,75 @@ public class CheckoutPage extends JPanel {
             nights = 0;
         }
 
-        for(Room room : uiState.potentialRooms){
-            panel.add(realImagePanel("src/main/java/com/GoldenOpportunity/Images/room.png"));
+        for (Room room : uiState.potentialRooms) {
+            JPanel roomCard = new JPanel();
+            roomCard.setLayout(new BoxLayout(roomCard, BoxLayout.Y_AXIS));
+            roomCard.setBackground(Color.WHITE);
+            roomCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+            roomCard.setBorder(BorderFactory.createCompoundBorder(
+                    new LineBorder(Color.LIGHT_GRAY, 1),
+                    new EmptyBorder(10, 10, 10, 10)
+            ));
+            roomCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 320));
+
+            roomCard.add(realImagePanel(room.getImage()));
+
+            String floor = "Floor Number: " + room.getFloorNum();
+            String roomNumber = "Room Number: " + room.getRoomNo();
+
             String desc = "";
-            for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+            for (Map.Entry<String, Integer> entry : room.getBedTypes().entrySet()) {
                 desc = desc.concat(entry.getValue() + " ");
                 desc = desc.concat(entry.getKey() + ", ");
             }
-            String finalDesc = desc.substring(0,desc.length()-2);
-            panel.add(leftLabel(finalDesc));
-            panel.add(leftLabel("Price: " + String.format("%.2f",room.getRate()) + " / night"));
+            String finalDesc = desc.substring(0, desc.length() - 2);
+
+            roomCard.add(leftLabel(floor));
+            roomCard.add(leftLabel(roomNumber));
+            roomCard.add(leftLabel(finalDesc));
+            roomCard.add(leftLabel("Price: " + String.format("%.2f", room.getRate()) + " / night"));
+
+            JButton deleteBtn = new JButton("Delete");
+            deleteBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+// Make it red
+            deleteBtn.setBackground(new Color(200, 50, 50)); // nice red
+            deleteBtn.setForeground(Color.WHITE);
+            deleteBtn.setOpaque(true);
+            deleteBtn.setContentAreaFilled(true);
+            deleteBtn.setBorderPainted(false);
+
+// Optional: nicer padding/size
+            deleteBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+
+            deleteBtn.addActionListener(e -> {
+                uiState.potentialRooms.remove(room);
+
+                removeAll();
+                try {
+                    add(createHeader(), BorderLayout.NORTH);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                JScrollPane scrollPane = new JScrollPane(createMainContent());
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+                add(scrollPane, BorderLayout.CENTER);
+
+                revalidate();
+                repaint();
+            });
+
+            roomCard.add(Box.createVerticalStrut(8));
+            roomCard.add(deleteBtn);
+
+            panel.add(roomCard);
+            panel.add(Box.createVerticalStrut(15));
 
             sum += room.getRate() * nights;
-
-            panel.add(Box.createVerticalStrut(15));
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -242,11 +304,22 @@ public class CheckoutPage extends JPanel {
 
         double finalSum = sum;
         bookBtn.addActionListener(e -> {
-            //uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,uiState.endDate, finalSum);
+            try {
+                uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,uiState.endDate, finalSum);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            uiState.potentialRooms.clear();
+            cardLayout.show(mainPanel,"HOME");
+            JOptionPane.showMessageDialog(null, "Reservation was successfully made!");
         });
 
         panel.add(Box.createVerticalStrut(10));
         panel.add(bookBtn);
+
+        Dimension preferred = panel.getPreferredSize();
+        panel.setPreferredSize(new Dimension(400, preferred.height));
+        panel.setMaximumSize(new Dimension(400, Integer.MAX_VALUE));
 
         return panel;
     }

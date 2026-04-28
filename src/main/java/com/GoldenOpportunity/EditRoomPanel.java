@@ -22,6 +22,7 @@ public class EditRoomPanel extends JPanel {
     private JComboBox<String> qualityComboBox;
     private JComboBox<String> floorComboBox;
     private JComboBox<String> roomTypeComboBox;
+    private JTextArea descriptionArea;
 
     // Panel that dynamically shows bed types
     private JPanel bedTypesPanel;
@@ -115,6 +116,12 @@ public class EditRoomPanel extends JPanel {
         floorComboBox.addActionListener(e -> updateSmokingByFloor());
         updateSmokingByFloor();
 
+        descriptionArea = new JTextArea(4, 20);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+
+        JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
+
         int row = 0;
 
         addRow(form, gbc, row++, "Room Number:", roomNumberField);
@@ -123,6 +130,7 @@ public class EditRoomPanel extends JPanel {
         addRow(form, gbc, row++, "Floor:", floorComboBox);
         addRow(form, gbc, row++, "Number of Beds:", bedsSpinner);
         addRow(form, gbc, row++, "Type of Beds:", bedTypesPanel);
+        addRow(form, gbc, row++, "Description:", descriptionScroll);
         addRow(form, gbc, row++, "Rate:", rateField);
 
         // Smoking checkbox
@@ -280,7 +288,17 @@ public class EditRoomPanel extends JPanel {
             }
         }
 
-        uiState.roomService.createRoom(floor,roomNumber,beds,smoking,quality,roomType,rate,bedMap);
+        int capacity = beds*2;
+
+        String description = descriptionArea.getText();
+
+        String image = switch (Objects.requireNonNull(roomType)) {
+            case "Deluxe" -> "src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png";
+            case "Suite" -> "src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg";
+            default -> "src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg";
+        };
+
+        uiState.roomService.createRoom(floor,roomNumber,beds,smoking,quality,roomType,rate,bedMap,capacity,description,image);
 
         JOptionPane.showMessageDialog(this, "Room added!");
         clearForm();
@@ -352,7 +370,31 @@ public class EditRoomPanel extends JPanel {
             }
         }
 
-        uiState.roomService.modifyRoom(floor,roomNumber,beds,smoking,quality,roomType,rate,bedMap);
+        int capacity = beds*2;
+
+        String description = descriptionArea.getText();
+
+        String image = switch (Objects.requireNonNull(roomType)) {
+            case "Deluxe" -> "src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png";
+            case "Suite" -> "src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg";
+            default -> "src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg";
+        };
+
+        Criteria criteria = new Criteria();
+
+        criteria.setFloorNum(floor);
+        criteria.setRoomNum(roomNumber);
+        criteria.setNumBeds(beds);
+        criteria.setSmoking(smoking);
+        criteria.setQuality(quality);
+        criteria.setRoomType(roomType);
+        criteria.setRate(rate);
+        criteria.setBeds(bedMap);
+        criteria.setCapacity(capacity);
+        criteria.setDescription(description);
+        criteria.setImage(image);
+
+        uiState.roomService.modifyRoom(criteria);
 
         JOptionPane.showMessageDialog(this, "Room modified!");
         clearForm();
@@ -382,18 +424,20 @@ public class EditRoomPanel extends JPanel {
         roomNumberField.setText("");
         rateField.setText("");
         bedsSpinner.setValue(1);
+        descriptionArea.setText("");
         updateBedTypeFields();
     }
 
     public void updateInfo(Vector<Object> data){
         //String[] columns = {"Floor Number","Room Number","Room Type","Quality","Number of Beds","Type of Beds","Smoking Status","Rate/per Night"};
-        floorComboBox.setSelectedItem(data.elementAt(0));
+        floorComboBox.setSelectedItem(data.elementAt(0).toString());
         roomNumberField.setText(data.elementAt(1).toString());
         roomTypeComboBox.setSelectedItem(data.elementAt(2));
         qualityComboBox.setSelectedItem(data.elementAt(3));
         bedsSpinner.setValue(data.elementAt(4));
         smokingCheckBox.setSelected((Boolean) data.elementAt(6));
         rateField.setText(String.valueOf(data.elementAt(7)));
+        descriptionArea.setText(String.valueOf(data.elementAt(8)));
         updateBedTypeFields();
         List<String> beds = processBedTypes(data.elementAt(5));
         for(int i = 0; i < bedTypeComboBoxes.size(); i++){

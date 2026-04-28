@@ -278,6 +278,10 @@ public class ClerkHomePage extends JPanel {
         roomsLabel.setFont(textFont);
         roomsLabel.setForeground(new Color(55, 70, 85));
 
+        JLabel checkedInStatus = new JLabel("Check-In: " + (reservation.isCheckedIn() ? "Yes" : "No"));
+        checkedInStatus.setFont(textFont);
+        checkedInStatus.setForeground(new Color(55, 70, 85));
+
         JButton detailsButton = new JButton("Modify Reservation");
         detailsButton.setFocusPainted(false);
         detailsButton.setForeground(Color.WHITE);
@@ -328,6 +332,8 @@ public class ClerkHomePage extends JPanel {
         card.add(datesLabel);
         card.add(Box.createVerticalStrut(5));
         card.add(roomsLabel);
+        card.add(Box.createVerticalStrut(5));
+        card.add(checkedInStatus);
         card.add(Box.createVerticalStrut(18));
         card.add(buttonPanel);
 

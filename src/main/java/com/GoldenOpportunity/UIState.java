@@ -2,6 +2,7 @@ package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Login.Session;
 import com.GoldenOpportunity.Login.enums.Role;
+import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.swing.*;
 import java.time.LocalDate;
@@ -13,14 +14,26 @@ public class UIState {
     public LocalDate endDate = LocalDate.now();
     public int numGuests;
     public Room room;
-    public String imageFile;
     public ReservationService reservationService;
     public RoomService roomService;
     public SearchController searchController;
     public List<Room> potentialRooms = new ArrayList<>();
+    public List<Room> filteredRooms = new ArrayList<>();
+
     public boolean isLoggedIn;
     private Session currentSession;
     private final List<JButton> loginButtons = new ArrayList<>();
+
+    public LocalDate searchStartDate;
+    public LocalDate searchEndDate;
+    public String searchFloor = "Any";
+    public String searchRoomNumber = "Any";
+    public String searchRoomType = "Any";
+    public String searchQuality = "Any";
+    public int searchNumBeds = 0;
+    public String searchRate = "Any";
+    public boolean searchSmoking = false;
+    public List<String> searchBedTypes = new ArrayList<>();
 
     public void registerLoginButton(JButton loginButton) {
         if (loginButton == null) {
@@ -59,5 +72,16 @@ public class UIState {
 
     public boolean hasRole(Role role) {
         return role != null && role == getCurrentRole();
+    }
+
+    public boolean containsRoom(int roomNumber){
+        boolean flag = false;
+
+        for(Room room : potentialRooms){
+            if(room.getRoomNo() == roomNumber){
+                flag = true;
+            }
+        }
+        return flag;
     }
 }

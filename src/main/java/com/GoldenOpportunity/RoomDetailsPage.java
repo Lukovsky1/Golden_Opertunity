@@ -186,7 +186,7 @@ public class RoomDetailsPage extends JPanel {
         pageTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Room image
-        Image roomImage = ImageIO.read(new File(uiState.imageFile));
+        Image roomImage = ImageIO.read(new File(uiState.room.getImage()));
         Image scaledRoom = roomImage.getScaledInstance(500, 280, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
         imageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -331,7 +331,7 @@ public class RoomDetailsPage extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 uiState.potentialRooms.add(uiState.room);
-                cardLayout.show(mainPanel,"HOME");
+                cardLayout.show(mainPanel,"ROOMS");
                 JOptionPane.showMessageDialog(null, "Room was successfully added");
             }
         });
