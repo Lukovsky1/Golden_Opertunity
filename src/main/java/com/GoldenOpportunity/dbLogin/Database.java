@@ -7,10 +7,6 @@ import java.nio.file.Paths;
 import java.sql.*;
 
 /**
- * Guest must have their reservations either in the User Database or a separate database
- */
-
-/**
  * Responsibilities:
  * - Define where the database file lives on disk (relative path under {@code data/}).
  * - Provide a JDBC {@link Connection} configured with sane defaults (e.g., foreign keys ON).
@@ -21,7 +17,7 @@ import java.sql.*;
  */
 public final class Database {
     /** Folder that contains the SQLite file. Relative to the project run directory. */
-    private static final String DB_DIR = "src/main/resources"; //TODO: This was edited from data
+    private static final String DB_DIR = "data";
     /** Database filename. The full path will be {@code data/golden.db}. */
     private static final String DB_FILE = "golden.db";
     /** JDBC URL for the SQLite driver. */
@@ -97,46 +93,73 @@ public final class Database {
             WHERE contact_info IS NOT NULL AND contact_info <> '';
         """;
 
-        String createRooms = """
-                CREATE TABLE IF NOT EXISTS Rooms (
-                    floorNum   INTEGER NOT NULL,
-                    roomNo     INTEGER PRIMARY KEY,
-                    numBeds    INTEGER NOT NULL,
-                    smoking    BOOLEAN NOT NULL,
-                    qLevel     TEXT NOT NULL,
-                    roomType   TEXT NOT NULL,
-                    rate       REAL NOT NULL,
-                    bedTypes   TEXT NOT NULL
-                );
-                """;
+        String createGuests = """
+            CREATE TABLE IF NOT EXISTS guests (
+                guest_id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                email TEXT,
+                reservation_ids TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (guest_id) REFERENCES users(id) ON DELETE CASCADE
+            );
+        """;
 
-        String createReservation = """
-                CREATE TABLE IF NOT EXISTS Reservations (
-                      resId TEXT PRIMARY KEY,
-                      startDate TEXT NOT NULL,
-                      endDate TEXT NOT NULL,
-                      bill REAL NOT NULL
-                  );
+        String createReservations = """
+            CREATE TABLE IF NOT EXISTS reservations (
+                reservation_id TEXT PRIMARY KEY,
+                guest_id INTEGER,
+                room_number INTEGER NOT NULL,
+                start_date TEXT NOT NULL,
+                end_date TEXT NOT NULL,
+                bill REAL NOT NULL DEFAULT 0,
+                source TEXT NOT NULL DEFAULT 'APP',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (guest_id) REFERENCES guests(guest_id) ON DELETE SET NULL
+            );
+        """;
 
-                """;
+        String createReservationsGuestIndex = """
+            CREATE INDEX IF NOT EXISTS idx_reservations_guest_id
+            ON reservations(guest_id);
+        """;
 
-        String createReservedRooms = """
-                CREATE TABLE IF NOT EXISTS ReservedRooms (
-                      resId TEXT NOT NULL,
-                      roomNo INTEGER NOT NULL,
-                      floorNum INTEGER NOT NULL,
-                      PRIMARY KEY (resId, roomNo, floorNum),
-                      FOREIGN KEY (resId) REFERENCES Reservation(resId),
-                      FOREIGN KEY (roomNo, floorNum) REFERENCES Rooms(roomNo, floorNum)
-                );
-                """;
+        String createGuestReservationView = """
+            CREATE VIEW IF NOT EXISTS guest_reservation_summary AS
+            SELECT
+                g.guest_id,
+                g.name,
+                g.email,
+                g.reservation_ids,
+                r.reservation_id,
+                r.room_number,
+                r.start_date,
+                r.end_date,
+                r.bill,
+                r.source
+            FROM guests g
+            LEFT JOIN reservations r ON r.guest_id = g.guest_id
+            ORDER BY g.guest_id, r.start_date, r.reservation_id;
+        """;
 
         try (Statement st = conn.createStatement()) {
             st.execute(createUsers);
             st.execute(createUniqueEmailIndex);
-            st.execute(createRooms);
-            st.execute(createReservation);
-            st.execute(createReservedRooms);
+            st.execute(createGuests);
+            ensureGuestsReservationIdsColumn(conn, st);
+            st.execute(createReservations);
+            st.execute(createReservationsGuestIndex);
+            st.execute("DROP VIEW IF EXISTS guest_reservation_summary");
+            st.execute(createGuestReservationView);
+        }
+    }
+
+    private static void ensureGuestsReservationIdsColumn(Connection conn, Statement st) throws SQLException {
+        try (ResultSet rs = conn.getMetaData().getColumns(null, null, "guests", "reservation_ids")) {
+            if (!rs.next()) {
+                st.execute("ALTER TABLE guests ADD COLUMN reservation_ids TEXT");
+            }
         }
     }
 }

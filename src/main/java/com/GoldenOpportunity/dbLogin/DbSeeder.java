@@ -20,6 +20,13 @@ public class DbSeeder {
         seedIfMissing(dao, "admin1", "adminpass", "ADMIN", "admin@golden.com");
         seedIfMissing(dao, "clerk1", "clerkpass", "CLERK", "clerk@golden.com");
         seedIfMissing(dao, "guest1", "guestpass", "GUEST", "guest@golden.com");
+        seedIfMissing(dao, "guest2", "guestpass2", "GUEST", "guest2@golden.com");
+
+        GuestReservationDao guestReservationDao = new GuestReservationDao();
+        guestReservationDao.initializeSchema();
+        guestReservationDao.syncGuestUsersFromUsersTable();
+        guestReservationDao.seedReservationForGuest("guest2", "R-201", 101, "2026-05-15", "2026-05-18", 450.00);
+        guestReservationDao.seedReservationForGuest("guest2", "R-202", 204, "2026-06-02", "2026-06-05", 525.00);
 
         try {
             LoadingInserts.createRooms(DBUtil.getConnection());

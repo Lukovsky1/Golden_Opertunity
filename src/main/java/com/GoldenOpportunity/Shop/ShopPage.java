@@ -1,5 +1,7 @@
-// commented all this out because i redid the whole product in order to have description and inventory separately
-/*package com.GoldenOpportunity.Shop;
+package com.GoldenOpportunity.Shop;
+
+import com.GoldenOpportunity.CheckoutPage;
+import com.GoldenOpportunity.UIState;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,15 +18,14 @@ public class ShopPage extends JPanel {
     private JPanel mainPanel;
     private Shop shop;
     private ShoppingCart shoppingCart;
+    private UIState uiState;
 
-    public ShopPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public ShopPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
-        //shop = new Shop("src/main/resources/testProductData.csv");
-        // this is only to get it to run, im not touching anything else here
-        ProductRepo productRepo = new ProductRepo("jdbc:sqlite:src/main/resources/shop.db");
-        shop = new Shop(productRepo);
+        shop = new Shop("src/main/resources/testProductData.csv");
         shoppingCart = new ShoppingCart();
 
         setLayout(new BorderLayout(10, 10));
@@ -66,7 +67,7 @@ public class ShopPage extends JPanel {
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up", "🛒"};
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
         Map<String,JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
@@ -77,6 +78,8 @@ public class ShopPage extends JPanel {
             buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
             nav.add(buttonMap.get(item));
         }
+
+        uiState.registerLoginButton(buttonMap.get("Login"));
 
         buttonMap.get("Home").addActionListener(e -> {
             cardLayout.show(mainPanel,"HOME");
@@ -89,6 +92,26 @@ public class ShopPage extends JPanel {
         });
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
+        });
+        buttonMap.get("🛒").addActionListener(e -> {
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            cardLayout.show(mainPanel,"PROFILE");
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -151,14 +174,14 @@ public class ShopPage extends JPanel {
         grid.setBackground(Color.WHITE);
         grid.setBorder(new EmptyBorder(10, 20, 20, 20));
 
-        for (ProductDescription productDescription : shop.getProducts()) {
-            grid.add(createProductCard(productDescription));
+        for (Product product : shop.getProducts()) {
+            grid.add(createProductCard(product));
         }
 
         return grid;
     }
 
-    private JPanel createProductCard(ProductDescription productDescription) throws IOException {
+    private JPanel createProductCard(Product product) throws IOException {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
         card.setBackground(Color.WHITE);
@@ -166,7 +189,7 @@ public class ShopPage extends JPanel {
         card.setPreferredSize(new Dimension(280, 320));
 
         // Image placeholder
-        Image productImage = ImageIO.read(new File(productDescription.getImage()));
+        Image productImage = ImageIO.read(new File(product.getImage()));
         Image scaledRoom = productImage.getScaledInstance(180, 200, Image.SCALE_SMOOTH);
 
         JLabel image = new JLabel(new ImageIcon(scaledRoom));
@@ -177,12 +200,12 @@ public class ShopPage extends JPanel {
         info.setBackground(Color.WHITE);
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JLabel name = new JLabel(productDescription.getName());
+        JLabel name = new JLabel(product.getName());
         name.setFont(new Font("Arial", Font.BOLD, 14));
 
-        JLabel price = new JLabel("Price: $" + String.format("%.2f", productDescription.getPrice()));
+        JLabel price = new JLabel("Price: $" + String.format("%.2f",product.getPrice()));
 
-        JLabel stock = new JLabel("Stock: " + productDescription.getStock());
+        JLabel stock = new JLabel("Stock: " + product.getStock());
 
         JButton addButton = new JButton("Add to Cart");
         addButton.setBackground(new Color(255, 204, 0));
@@ -216,4 +239,3 @@ public class ShopPage extends JPanel {
         return footer;
     }
 }
-}*/

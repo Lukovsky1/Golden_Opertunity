@@ -1,11 +1,9 @@
 package com.GoldenOpportunity.dbLogin;
 
-import com.GoldenOpportunity.User;
-
 import java.sql.*;
 import java.time.Instant;
-
-import static com.GoldenOpportunity.Login.enums.AccountStatus.ACTIVE;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Data Access Object focused on the {@code users} table.
@@ -33,13 +31,6 @@ public class UserDao {
         return findOneByField(sql, email);
     }
 
-    /** Lookup a user by their given id */
-    public DbUser findById(int id) throws SQLException {
-        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info " +
-                "FROM users WHERE id = ?";
-        return findOneByField(sql, String.valueOf(id));
-    }
-
     private DbUser findOneByField(String sql, String value) throws SQLException {
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -60,22 +51,29 @@ public class UserDao {
         }
     }
 
-    /** Cgheused for adding product to guest's cart
-     *
-     * @param guestID
-     * @return
-     * @throws SQLException
-     */
-    public boolean isAuthenticated(int guestID) throws SQLException {
-        try {
-            DbUser guest = findById(guestID);
-            if (guest == null) return false;
-            if (guest.accountStatus.equals(ACTIVE)) return true;
-            return false;
-        } catch (SQLException e) {
-            System.err.println("Error checking authentication from guest database");
-            throw e;
+    /** Return all users for administrative display. */
+    public List<DbUser> findAllUsers() throws SQLException {
+        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info " +
+                "FROM users ORDER BY username";
+        List<DbUser> users = new ArrayList<>();
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                users.add(new DbUser(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password_hash"),
+                        rs.getString("role"),
+                        rs.getString("account_status"),
+                        rs.getInt("failed_login_count"),
+                        rs.getString("contact_info")
+                ));
+            }
         }
+
+        return users;
     }
 
     /** Create a new user with a freshly hashed password. Returns generated ID or -1 on failure. */
@@ -108,6 +106,19 @@ public class UserDao {
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, hash);
+            ps.setString(2, now);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    /** Update a user's username. */
+    public void updateUsername(int userId, String newUsername) throws SQLException {
+        String now = Instant.now().toString();
+        String sql = "UPDATE users SET username = ?, updated_at = ? WHERE id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newUsername);
             ps.setString(2, now);
             ps.setInt(3, userId);
             ps.executeUpdate();

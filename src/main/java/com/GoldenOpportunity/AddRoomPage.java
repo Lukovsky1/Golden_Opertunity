@@ -1,361 +1,189 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Roles.RolePermissions;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
-/**
- * This page allows a clerk to:
- * - Add a new room
- * - Validate inputs
- * - Save room into CSV file
- */
-public class AddRoomPage extends JFrame {
+public class AddRoomPage extends JPanel {
 
-    // ===== UI COMPONENTS =====
-    private JTextField roomNumberField;
-    private JTextField rateField;
-    private JSpinner bedsSpinner;
-    private JCheckBox smokingCheckBox;
-    private JComboBox<String> qualityComboBox;
-    private JComboBox<String> floorComboBox;
-    private JComboBox<String> roomTypeComboBox;
+    private final CardLayout cardLayout;
+    private final JPanel mainPanel;
+    private final UIState uiState;
 
-    // Panel that dynamically shows bed types
-    private JPanel bedTypesPanel;
-    private List<JComboBox<String>> bedTypeComboBoxes;
+    public AddRoomPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
+        this.cardLayout = cardLayout;
+        this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
-    // Path to CSV file
-    private static final String ROOM_CSV_FILE = "src/main/resources/testRoomData1.csv";
-
-    /**
-     * Constructor → initializes UI
-     */
-    public AddRoomPage() {
-        setTitle("Add New Room");
-        setSize(700, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        setBackground(new Color(243, 246, 249));
 
         add(createHeader(), BorderLayout.NORTH);
-        add(createFormPanel(), BorderLayout.CENTER);
+        add(createMainContent(), BorderLayout.CENTER);
     }
 
-    /**
-     * Header (title)
-     */
-    private JPanel createHeader() {
-        JPanel header = new JPanel();
+    @Override
+    public void setVisible(boolean aFlag) {
+        if (aFlag && !RolePermissions.requireRole(this, uiState, "Managing rooms", "HOME", cardLayout, mainPanel, com.GoldenOpportunity.Login.enums.Role.CLERK)) {
+            super.setVisible(false);
+            return;
+        }
+        super.setVisible(aFlag);
+    }
+
+    // =========================
+    // HEADER
+    // =========================
+    private JPanel createHeader() throws IOException {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        JLabel title = new JLabel("Add New Room");
-        title.setFont(new Font("SansSerif", Font.BOLD, 28));
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
 
-        header.add(title);
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
+
+        int newHeight = 70;
+        int newWidth = (originalWidth * newHeight) / originalHeight;
+
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
+        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        nav.setBackground(Color.WHITE);
+        String profileIcon = "👤";
+
+        JButton homeButton = new JButton("Home");
+        homeButton.setFocusPainted(false);
+        homeButton.setBackground(Color.WHITE);
+        homeButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        homeButton.setPreferredSize(new Dimension(90, 35));
+        nav.add(homeButton);
+
+        JButton profileButton = new JButton(profileIcon);
+        profileButton.setFocusPainted(false);
+        profileButton.setBackground(Color.WHITE);
+        profileButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        profileButton.setPreferredSize(new Dimension(90, 35));
+        nav.add(profileButton);
+
+        profileButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"PROFILE");
+        });
+        homeButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"CLERK_HOME");
+        });
+
+        header.add(logoLabel, BorderLayout.WEST);
+        header.add(nav, BorderLayout.EAST);
         return header;
     }
 
-    /**
-     * Main form UI
-     */
-    private JPanel createFormPanel() {
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setBackground(Color.WHITE);
+    // =========================
+    // MAIN CONTENT
+    // =========================
+    private JPanel createMainContent() {
+        JPanel content = new JPanel(new BorderLayout(20, 0));
+        content.setBackground(new Color(243, 246, 249));
+        content.setBorder(new EmptyBorder(12, 15, 18, 15));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        content.add(createSidebar(), BorderLayout.WEST);
+        content.add(createCenterArea(), BorderLayout.CENTER);
 
-        // ===== INPUT FIELDS =====
-        roomNumberField = new JTextField(20);
-        rateField = new JTextField(20);
+        return content;
+    }
 
-        bedsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+    // =========================
+    // SIDEBAR
+    // =========================
+    private JPanel createSidebar() {
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setBackground(Color.WHITE);
+        sidebar.setBorder(new LineBorder(new Color(190, 205, 218), 1));
+        sidebar.setPreferredSize(new Dimension(185, 0));
 
-        smokingCheckBox = new JCheckBox("Smoking Allowed");
+        JButton addRoomsButton = createSidebarButton("Add Rooms");
+        JButton modifyRoomsButton = createSidebarButton("Modify Rooms");
 
-        qualityComboBox = new JComboBox<>(new String[]{
-                "Economic", "Business", "Comfort", "Executive"
+        addRoomsButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"ADD_ROOMS");
+        });
+        modifyRoomsButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"MODIFY_ROOMS");
         });
 
-        floorComboBox = new JComboBox<>(new String[]{
-                "1", "2", "3"
-        });
+        sidebar.add(Box.createVerticalStrut(14));
+        sidebar.add(addRoomsButton);
+        sidebar.add(Box.createVerticalStrut(14));
+        sidebar.add(modifyRoomsButton);
+        sidebar.add(Box.createVerticalGlue());
 
-        roomTypeComboBox = new JComboBox<>(new String[]{
-                "Single", "Double", "Suite", "Standard", "Deluxe"
-        });
-
-        // ===== BED TYPES (dynamic) =====
-        bedTypeComboBoxes = new ArrayList<>();
-        bedTypesPanel = new JPanel();
-        bedTypesPanel.setLayout(new BoxLayout(bedTypesPanel, BoxLayout.Y_AXIS));
-
-        updateBedTypeFields(); // initial creation
-
-        // When number of beds changes → update UI
-        bedsSpinner.addChangeListener(e -> updateBedTypeFields());
-
-        // Auto smoking for floor 2 & 3
-        floorComboBox.addActionListener(e -> updateSmokingByFloor());
-        updateSmokingByFloor();
-
-        int row = 0;
-
-        addRow(form, gbc, row++, "Room Number:", roomNumberField);
-        addRow(form, gbc, row++, "Room Type:", roomTypeComboBox);
-        addRow(form, gbc, row++, "Quality:", qualityComboBox);
-        addRow(form, gbc, row++, "Floor:", floorComboBox);
-        addRow(form, gbc, row++, "Number of Beds:", bedsSpinner);
-        addRow(form, gbc, row++, "Type of Beds:", bedTypesPanel);
-        addRow(form, gbc, row++, "Rate:", rateField);
-
-        // Smoking checkbox
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 2;
-        form.add(smokingCheckBox, gbc);
-
-        row++;
-
-        // ===== BUTTONS =====
-        JPanel buttons = new JPanel();
-
-        JButton save = new JButton("Save");
-        JButton clear = new JButton("Clear");
-
-        save.addActionListener(e -> saveRoom());
-        clear.addActionListener(e -> clearForm());
-
-        buttons.add(save);
-        buttons.add(clear);
-
-        gbc.gridy = row;
-        form.add(buttons, gbc);
-
-        return form;
+        return sidebar;
     }
 
-    /**
-     * Helper → adds label + field
-     */
-    private void addRow(JPanel panel, GridBagConstraints gbc, int row, String label, JComponent comp) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        panel.add(new JLabel(label), gbc);
+    private JButton createSidebarButton(String text) {
+        JButton button = new JButton(text);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setPreferredSize(new Dimension(135, 40));
+        button.setMaximumSize(new Dimension(135, 40));
+        button.setMinimumSize(new Dimension(135, 40));
+        button.setFocusPainted(false);
+        button.setBackground(Color.WHITE);
+        button.setForeground(Color.BLACK);
+        button.setFont(new Font("SansSerif", Font.BOLD, 14));
+        button.setBorder(new LineBorder(new Color(150, 150, 150), 1, true));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
 
-        gbc.gridx = 1;
-        panel.add(comp, gbc);
+        return button;
     }
 
-    /**
-     * Creates one dropdown per bed
-     */
-    private void updateBedTypeFields() {
-        bedTypesPanel.removeAll();
-        bedTypeComboBoxes.clear();
+    // =========================
+    // CENTER AREA
+    // =========================
+    private JPanel createCenterArea() {
+        JPanel centerArea = new JPanel(new BorderLayout());
+        centerArea.setOpaque(false);
 
-        int beds = (int) bedsSpinner.getValue();
+        centerArea.add(new EditRoomPanel("Add New Room"));
 
-        for (int i = 1; i <= beds; i++) {
-            JComboBox<String> box = new JComboBox<>(new String[]{
-                    "Twin", "Full", "Queen", "King"
-            });
-
-            bedTypeComboBoxes.add(box);
-            bedTypesPanel.add(new JLabel("Bed " + i));
-            bedTypesPanel.add(box);
-        }
-
-        bedTypesPanel.revalidate();
-        bedTypesPanel.repaint();
+        return centerArea;
     }
 
-    /**
-     * Automatically set smoking based on floor
-     */
-    private void updateSmokingByFloor() {
-        int floor = getFloor();
-
-        if (floor == 2 || floor == 3) {
-            smokingCheckBox.setSelected(true);
-            smokingCheckBox.setEnabled(false);
-        } else {
-            smokingCheckBox.setEnabled(true);
-            smokingCheckBox.setSelected(false);
-        }
-    }
-
-    /**
-     * Get selected floor (int)
-     */
-    private int getFloor() {
-        return Integer.parseInt((String) floorComboBox.getSelectedItem());
-    }
-
-    /**
-     * MAIN LOGIC → SAVE ROOM
-     */
-    private void saveRoom() {
-
-        // ===== READ INPUT =====
-        String roomText = roomNumberField.getText().trim();
-        String rateText = rateField.getText().trim();
-
-        // ===== BASIC CHECK =====
-        if (roomText.isEmpty() || rateText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Fill all fields");
-            return;
-        }
-
-        int roomNumber;
-        double rate;
-
-        try {
-            roomNumber = Integer.parseInt(roomText);
-            rate = Double.parseDouble(rateText);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Invalid number format");
-            return;
-        }
-
-        // ===== NEGATIVE CHECK =====
-        if (roomNumber < 0 || rate < 0) {
-            JOptionPane.showMessageDialog(this, "Values cannot be negative");
-            return;
-        }
-
-        int floor = getFloor();
-
-        // ===== FLOOR RULE =====
-        if (String.valueOf(roomNumber).charAt(0) != String.valueOf(floor).charAt(0)) {
-            JOptionPane.showMessageDialog(this,
-                    "Room must start with floor number");
-            return;
-        }
-
-        // ===== DUPLICATE CHECK =====
-        if (roomExists(roomNumber)) {
-            JOptionPane.showMessageDialog(this,
-                    "Room already exists");
-            return;
-        }
-
-        // ===== COLLECT DATA =====
-        String roomType = (String) roomTypeComboBox.getSelectedItem();
-        String quality = (String) qualityComboBox.getSelectedItem();
-        int beds = (int) bedsSpinner.getValue();
-        boolean smoking = smokingCheckBox.isSelected();
-
-        List<String> bedsList = new ArrayList<>();
-        for (JComboBox<String> box : bedTypeComboBoxes) {
-            bedsList.add((String) box.getSelectedItem());
-        }
-
-        String bedsText = "\"" + String.join(", ", bedsList) + "\"";
-
-        // ===== SAVE TO CSV =====
-        boolean saved = writeToCSV(
-                floor, roomNumber, roomType, quality,
-                beds, bedsText, smoking, rate
-        );
-
-        if (saved) {
-            JOptionPane.showMessageDialog(this, "Room added!");
-            clearForm();
-        }
-    }
-
-    /**
-     * Check if room already exists in CSV
-     *
-     */
-    private boolean roomExists(int roomNumber) {
-        try (BufferedReader br = new BufferedReader(new FileReader(ROOM_CSV_FILE))) {
-
-            String line;
-            br.readLine(); // skip header
-
-            while ((line = br.readLine()) != null) {
-
-                String[] parts = parseCSV(line);
-
-                int existing = Integer.parseInt(parts[1].trim());
-
-                if (existing == roomNumber) return true;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    /**
-     * Write new room to CSV
-     */
-    private boolean writeToCSV(int floor, int room, String type, String quality,
-                              int beds, String bedTypes, boolean smoking, double rate) {
-
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ROOM_CSV_FILE, true))) {
-
-            bw.newLine();
-
-            bw.write(floor + "," +
-                    room + "," +
-                    type + "," +
-                    quality + "," +
-                    beds + "," +
-                    bedTypes + "," +
-                    (smoking ? "TRUE" : "FALSE") + "," +
-                    rate);
-
-            return true;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Handles CSV parsing with quotes
-     */
-    private String[] parseCSV(String line) {
-        List<String> parts = new ArrayList<>();
-        StringBuilder current = new StringBuilder();
-        boolean insideQuotes = false;
-
-        for (char c : line.toCharArray()) {
-
-            if (c == '"') insideQuotes = !insideQuotes;
-
-            else if (c == ',' && !insideQuotes) {
-                parts.add(current.toString());
-                current.setLength(0);
-            } else current.append(c);
-        }
-
-        parts.add(current.toString());
-        return parts.toArray(new String[0]);
-    }
-
-    /**
-     * Reset form
-     */
-    private void clearForm() {
-        roomNumberField.setText("");
-        rateField.setText("");
-        bedsSpinner.setValue(1);
-        updateBedTypeFields();
-    }
-
+    // =========================
+    // TEST MAIN
+    // =========================
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new AddRoomPage().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Modify Rooms");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(1220, 800);
+            frame.setLocationRelativeTo(null);
+
+            CardLayout cardLayout = new CardLayout();
+            JPanel mainPanel = new JPanel(cardLayout);
+
+            AddRoomPage addRoomPage = null;
+            try {
+                addRoomPage = new AddRoomPage(cardLayout, mainPanel, new UIState());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            mainPanel.add(addRoomPage, "MODIFY_ROOMS");
+
+            frame.setContentPane(mainPanel);
+            cardLayout.show(mainPanel, "MODIFY_ROOMS");
+
+            frame.setVisible(true);
+        });
     }
 }
