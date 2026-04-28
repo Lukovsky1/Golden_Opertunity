@@ -239,7 +239,6 @@ public class LoginPage extends JPanel {
             messageLabel.setForeground(Color.RED);
             messageLabel.setText(result.getMessage());
             passwordField.setText("");
-            messageLabel.setText(" ");
             return;
         }
 
