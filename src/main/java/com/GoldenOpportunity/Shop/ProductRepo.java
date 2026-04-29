@@ -10,17 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 // this file is used to work w all the SQL stuff
+//FIXME: Edited this file to not take a url and instead use the DBUtil.getConnection() url
 public class ProductRepo {
-    private String dbURL;
 
-    public ProductRepo(String dbURL) {
-        this.dbURL = dbURL;
-    }
+    public ProductRepo() {}
 
     public List<ProductDescription> getAllProductDescriptions() {
         List<ProductDescription> productDescriptions = new ArrayList<>();
 
-        String sql = "SELECT price, name, productID, image, description FROM products";
+        String sql = "SELECT productID, name, price, image, description FROM ProductDescriptions";
 
         try (Connection connection = DBUtil.getConnection();
              Statement statement = connection.createStatement();
@@ -48,7 +46,7 @@ public class ProductRepo {
     public List<ProductInventory> getAllProductInventory() {
         List<ProductInventory> inventoryList = new ArrayList<>();
 
-        String sql = "SELECT productID, stock FROM products";
+        String sql = "SELECT productID, stock FROM ProductDescriptions";
 
         try (Connection connection = DBUtil.getConnection();
              Statement statement = connection.createStatement();

@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
+//FIXME: Depreciated
 public class LoadingInserts {
     private static final String roomFile = "src/main/resources/room_insertWBedTypes.sql";
     private static final String reservationFile = "src/main/resources/reservation_insert.sql";

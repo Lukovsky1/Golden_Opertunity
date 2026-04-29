@@ -1,13 +1,4 @@
-CREATE TABLE IF NOT EXISTS productDescriptions (
-    productID INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    price REAL NOT NULL,
-    stock INTEGER NOT NULL,
-    image TEXT NOT NULL,
-    description TEXT
-);
-
-INSERT INTO productDescriptions (productID, name, price, stock, image, description) VALUES
+INSERT INTO ProductDescriptions (productID, name, price, stock, image, description) VALUES
     (1, 'T-Shirt', 20.00, 5, 'src/main/java/com/GoldenOpportunity/Images/Products/tshirt.jpg', 'Comfortable hotel souvenir t-shirt'),
     (2, 'Hat', 8.00, 2, 'src/main/java/com/GoldenOpportunity/Images/Products/hat.jpg', 'Classic hotel-branded hat'),
     (3, 'Pen', 1.00, 7, 'src/main/java/com/GoldenOpportunity/Images/Products/pen.jpg', 'Smooth-writing souvenir pen'),

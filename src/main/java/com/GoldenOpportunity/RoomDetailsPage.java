@@ -2,8 +2,10 @@ package com.GoldenOpportunity;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
+        import javax.swing.border.*;
+        import java.awt.*;
+        import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -38,27 +40,15 @@ public class RoomDetailsPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private int numGuests;
-    private String imageFile;
-    private Room room;
-    private ReservationService reservationService;
+    private UIState uiState;
 
     /**
      * Constructor: initializes the main window and layout
      */
-    public RoomDetailsPage(CardLayout cardLayout,JPanel mainPanel,
-                           LocalDate startDate,LocalDate endDate,int numGuests,Room room,String imageFile,
-                           ReservationService reservationService) throws IOException {
+    public RoomDetailsPage(CardLayout cardLayout,JPanel mainPanel,UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.numGuests = numGuests;
-        this.room = room;
-        this.imageFile = imageFile;
-        this.reservationService = reservationService;
+        this.uiState = uiState;
 
         setLayout(new BorderLayout());
 
@@ -96,24 +86,52 @@ public class RoomDetailsPage extends JPanel {
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
-        Map<String, JButton> buttonMap = new HashMap<>();
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
+        Map<String,JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
-            JButton button = new JButton(item);
-            button.setFocusPainted(false);
-            button.setBackground(Color.WHITE);
-            button.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            button.setPreferredSize(new Dimension(90, 35));
-            buttonMap.put(item, button);
-            nav.add(button);
+            buttonMap.put(item,new JButton(item));
+            buttonMap.get(item).setFocusPainted(false);
+            buttonMap.get(item).setBackground(Color.WHITE);
+            buttonMap.get(item).setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
+            nav.add(buttonMap.get(item));
         }
 
-        buttonMap.get("Home").addActionListener(e -> cardLayout.show(mainPanel, "HOME"));
-        buttonMap.get("Rooms").addActionListener(e -> cardLayout.show(mainPanel, "ROOMS"));
-        buttonMap.get("Login").addActionListener(e -> cardLayout.show(mainPanel, "LOGIN"));
-        buttonMap.get("Shop").addActionListener(e -> cardLayout.show(mainPanel, "SHOP"));
-        buttonMap.get("Sign Up").addActionListener(e -> cardLayout.show(mainPanel, "SIGNUP"));
+        uiState.registerLoginButton(buttonMap.get("Login"));
+
+        buttonMap.get("Home").addActionListener(e -> {
+            cardLayout.show(mainPanel,"HOME");
+        });
+        buttonMap.get("Rooms").addActionListener(e -> {
+            cardLayout.show(mainPanel,"ROOMS");
+        });
+        buttonMap.get("Login").addActionListener(e -> {
+            cardLayout.show(mainPanel,"LOGIN");
+        });
+        buttonMap.get("Shop").addActionListener(e -> {
+            cardLayout.show(mainPanel,"SHOP");
+        });
+        buttonMap.get("🛒").addActionListener(e -> {
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            cardLayout.show(mainPanel,"PROFILE");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -168,7 +186,7 @@ public class RoomDetailsPage extends JPanel {
         pageTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Room image
-        Image roomImage = ImageIO.read(new File(imageFile));
+        Image roomImage = ImageIO.read(new File(uiState.imageFile));
         Image scaledRoom = roomImage.getScaledInstance(500, 280, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
         imageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -212,7 +230,7 @@ public class RoomDetailsPage extends JPanel {
         amenities.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Price display
-        JLabel priceLabel = new JLabel("Price: $" + room.getRate() + " / night");
+        JLabel priceLabel = new JLabel("Price: $" + uiState.room.getRate() + " / night");
         priceLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         priceLabel.setForeground(new Color(0, 130, 0));
         priceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -258,12 +276,12 @@ public class RoomDetailsPage extends JPanel {
         // Booking inputs
         JLabel checkInLabel = new JLabel("Check-in Date");
         checkInPicker = new DatePicker();
-        checkInPicker.setDate(startDate);
+        checkInPicker.setDate(uiState.startDate);
         checkInPicker.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
 
         JLabel checkOutLabel = new JLabel("Check-out Date");
         checkOutPicker = new DatePicker();
-        checkOutPicker.setDate(endDate);
+        checkOutPicker.setDate(uiState.endDate);
         checkOutPicker.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
 
         // Add listeners to update the cost summary automatically
@@ -272,7 +290,7 @@ public class RoomDetailsPage extends JPanel {
         checkOutPicker.addDateChangeListener(e -> updateCostSummary());
 
         JLabel guestsLabel = new JLabel("Number of Guests");
-        guestsSpinner = new JSpinner(new SpinnerNumberModel(numGuests, 1, 10, 1));
+        guestsSpinner = new JSpinner(new SpinnerNumberModel(uiState.numGuests, 1, 10, 1));
 
         JSeparator separator = new JSeparator();
 
@@ -283,9 +301,9 @@ public class RoomDetailsPage extends JPanel {
         JPanel priceRow = new JPanel(new BorderLayout());
         priceRow.setOpaque(false);
         priceRow.add(new JLabel("Price per night:"), BorderLayout.WEST);
-        priceRow.add(new JLabel("$" + String.format("%.2f",room.getRate())), BorderLayout.EAST);
+        priceRow.add(new JLabel("$" + String.format("%.2f",uiState.room.getRate())), BorderLayout.EAST);
 
-        long initialNights = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+        long initialNights = java.time.temporal.ChronoUnit.DAYS.between(uiState.startDate, uiState.endDate);
         if (initialNights < 0) {
             initialNights = 0;
         }
@@ -300,16 +318,23 @@ public class RoomDetailsPage extends JPanel {
         totalRow.setOpaque(false);
         JLabel totalText = new JLabel("Total:");
         totalText.setFont(new Font("SansSerif", Font.BOLD, 18));
-        totalValueLabel = new JLabel("$" + String.format("%.2f",(room.getRate() * initialNights)));
+        totalValueLabel = new JLabel("$" + String.format("%.2f",(uiState.room.getRate() * initialNights)));
         totalValueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         totalRow.add(totalText, BorderLayout.WEST);
         totalRow.add(totalValueLabel, BorderLayout.EAST);
 
         // Booking button
-        JButton proceedButton = new JButton("Proceed to Booking");
+        JButton proceedButton = new JButton("Add Room to Booking");
         proceedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         proceedButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        proceedButton.addActionListener(e -> handleBooking());
+        proceedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                uiState.potentialRooms.add(uiState.room);
+                cardLayout.show(mainPanel,"HOME");
+                JOptionPane.showMessageDialog(null, "Room was successfully added");
+            }
+        });
 
         bookingPanel.add(title);
         bookingPanel.add(Box.createVerticalStrut(20));
@@ -373,7 +398,7 @@ public class RoomDetailsPage extends JPanel {
             long nights = java.time.temporal.ChronoUnit.DAYS.between(checkInDate, checkOutDate);
 
             if (nights > 0) {
-                double total = nights * room.getRate();
+                double total = nights * uiState.room.getRate();
                 nightsValueLabel.setText(String.valueOf(nights));
                 totalValueLabel.setText("$" + total);
             } else {
@@ -393,6 +418,7 @@ public class RoomDetailsPage extends JPanel {
      * - Saves the reservation to the CSV file
      * - Updates the UI and shows confirmation
      */
+    //TODO: Edit isAvailable to work with database
     private void handleBooking() {
         try {
             LocalDate checkInDate = checkInPicker.getDate();
@@ -414,26 +440,24 @@ public class RoomDetailsPage extends JPanel {
             }
 
             //TODO: Must account for multiple rooms and their rates (List<Room>)
-            double totalBill = nights * room.getRate();
-            List<Room> currRooms = new ArrayList<>();
-            currRooms.add(room);
+            double totalBill = nights * uiState.room.getRate();
 
-            ReservationService reservationService = new ReservationService();
-            reservationService.createReservation(currRooms, checkInDate, checkOutDate, totalBill);
+            //uiState.reservationService.createReservation(uiState.potentialRooms, checkInDate, checkOutDate, totalBill);
 
+            //TODO: Must edit so the new reservationID is given back to the user instead of the reservation
             // Retrieve the newly created reservation
-            Reservation newReservation =
-                    reservationService.getReservations().get(reservationService.getReservations().size() - 1);
+            String newReservation = //reservationService.findReservation("");
+                    uiState.reservationService.createReservation(uiState.potentialRooms, checkInDate, checkOutDate, totalBill);
 
             // Save reservation to CSV file
-            appendReservationToCsv(newReservation);
+            //appendReservationToCsv(newReservation);
 
             nightsValueLabel.setText(String.valueOf(nights));
             totalValueLabel.setText("$" + totalBill);
 
             // Show confirmation
             JOptionPane.showMessageDialog(this,
-                    "Reservation created successfully.\nReservation ID: " + newReservation.getId());
+                    "Reservation created successfully.\nReservation ID: " + newReservation);
 
         } catch (Exception ex) {
             ex.printStackTrace();

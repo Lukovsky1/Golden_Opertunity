@@ -18,9 +18,9 @@ public class AuthTester {
         dao.initializeSchema();
 
         // Ensure seed users
-        seedIfMissing(dao, "admin1", "adminpass", "ADMIN", "admin@golden.com");
-        seedIfMissing(dao, "clerk1", "clerkpass", "CLERK", "clerk@golden.com");
-        seedIfMissing(dao, "guest1", "guestpass", "GUEST", "guest@golden.com");
+        seedIfMissing(dao, "admin1", "adminpass", "ADMIN", "admin@golden.com", "Admin One", "555-0101");
+        seedIfMissing(dao, "clerk1", "clerkpass", "CLERK", "clerk@golden.com", "Clerk One", "555-0102");
+        seedIfMissing(dao, "guest1", "guestpass", "GUEST", "guest@golden.com", "Guest One", "555-0103");
 
         // Use guest1 for stateful tests
         dao.resetAccountState("guest1");
@@ -32,6 +32,11 @@ public class AuthTester {
             var res = auth.logIn("guest1", "guestpass");
             assertTrue(res.isSuccess(), "Expected success");
             assertEquals(0, dao.getFailedCount("guest1"), "failed count reset");
+        });
+
+        check("success login by supported email", () -> {
+            var res = auth.logIn("guest@golden.com", "guestpass");
+            assertTrue(res.isSuccess(), "Expected success");
         });
 
         // 2) Single wrong password increments failed count
@@ -72,12 +77,20 @@ public class AuthTester {
             assertFalse(res.isSuccess(), "Expected failure for unknown user");
         });
 
+        check("unsupported email domain blocked on login", () -> {
+            var res = auth.logIn("guest@example.com", "guestpass");
+            assertFalse(res.isSuccess(), "Expected failure for unsupported email domain");
+        });
+
         // 7) Signup writes a new guest user to SQLite
         check("signup persists user in database", () -> {
             String username = "signup_test_" + System.currentTimeMillis();
-            String email = username + "@example.com";
+            String email = username + "@gmail.com";
 
-            AuthResult res = auth.signUp(username, email, "secret123");
+            String fullName = "Signup Test User";
+            String phoneNumber = "555-0199";
+
+            AuthResult res = auth.signUp(username, email, "secret123", fullName, phoneNumber);
             assertTrue(res.isSuccess(), "Expected signup success");
 
             DbUser createdUser = dao.findByUsername(username);
@@ -85,6 +98,14 @@ public class AuthTester {
             assertEquals("GUEST", createdUser.role, "role stored");
             assertEquals("ACTIVE", createdUser.accountStatus, "status stored");
             assertEquals(email, createdUser.contactInfo, "email stored");
+            assertEquals(fullName, createdUser.fullName, "full name stored");
+            assertEquals(phoneNumber, createdUser.phoneNumber, "phone stored");
+        });
+
+        check("signup rejects unsupported email domain", () -> {
+            String username = "signup_bad_" + System.currentTimeMillis();
+            AuthResult res = auth.signUp(username, username + "@example.com", "secret123", "Bad Signup", "555-0109");
+            assertFalse(res.isSuccess(), "Expected signup failure");
         });
 
         System.out.println();
@@ -96,8 +117,9 @@ public class AuthTester {
         }
     }
 
-    private static void seedIfMissing(UserDao dao, String u, String p, String r, String c) throws Exception {
-        if (dao.findByUsername(u) == null) dao.createUser(u, p, r, c);
+    private static void seedIfMissing(UserDao dao, String u, String p, String r, String c,
+                                      String fullName, String phoneNumber) throws Exception {
+        if (dao.findByUsername(u) == null) dao.createUser(u, p, r, c, fullName, phoneNumber);
     }
 
     // Tiny assertion helpers

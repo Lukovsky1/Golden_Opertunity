@@ -1,20 +1,33 @@
 package com.GoldenOpportunity.Shop;
 
 import com.GoldenOpportunity.AuthenticationController;
+import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 import com.GoldenOpportunity.PaymentMethod;
 import com.GoldenOpportunity.ReservationService;
 import com.GoldenOpportunity.Roles.Clerk;
+import com.GoldenOpportunity.dbLogin.UserDao;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.List;
 
 // im seperating the UI from backend js to test my logic
 public class ShopBackendTest {
     public static void main(String[] args) {
         // make sure the db/table/data exist first
-        ShopDBInitializer.initializeDatabase();
+        //ShopDBInitializer.initializeDatabase();
+        try {
+            DBInitializer.initialize();
+        } catch (SQLException e) {
+            System.err.println("Error occurred initializing database:" + e.getMessage());
+            return;
+        } catch (IOException e) {
+            System.err.println("Error occurred reading files database:" + e.getMessage());
+            return;
+        }
 
-        ProductRepo productRepo = new ProductRepo("jdbc:sqlite:src/main/resources/shop.db");
+        ProductRepo productRepo = new ProductRepo();
         Shop shop = new Shop(productRepo);
 
         System.out.println("=== testing productrepo / shop ===");
@@ -41,15 +54,16 @@ public class ShopBackendTest {
         System.out.println("=== testing service/controller ===");
 
         AuthenticationController authenticationController = new AuthenticationController();
-        ReservationService reservationService =
-                new ReservationService();
+        ReservationService reservationService = new ReservationService();
         PaymentMethod paymentMethod = new PaymentMethod();
+        UserDao userDao = new UserDao();
 
         Clerk clerk = new Clerk(2, "clerk1", "clerkpass", "clerk@golden.com");
 
         ShopService shopService = new ShopService(shop, paymentMethod, clerk);
 
-        ShopController shopController = new ShopController(shopService, authenticationController, reservationService);
+        ShopController shopController = new ShopController(shopService, authenticationController, reservationService,
+                userDao);
         ShoppingCart shoppingCart = new ShoppingCart();
 
         System.out.println("view store:");
