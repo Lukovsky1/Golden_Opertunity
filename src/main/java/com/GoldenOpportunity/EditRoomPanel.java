@@ -302,6 +302,8 @@ public class EditRoomPanel extends JPanel {
 
         JOptionPane.showMessageDialog(this, "Room added!");
         clearForm();
+
+        modifyRoomsPage.updatePage();
     }
     private void modifyRoom(){
 

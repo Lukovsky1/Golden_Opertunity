@@ -29,6 +29,21 @@ public class ProfilePage extends JPanel {
     private JPanel profilePanel;
     private JPanel reservationPanel;
 
+    private JTextField nameField;
+    private JTextField emailField;
+    private JTextField phoneField;
+    private JTextField usernameField;
+    private JTextField passwordField;
+
+    private JPanel paymentPanel;
+    private JButton editPaymentBtn;
+
+    private JTextField cardNumberField;
+    private JTextField cardNameField;
+    private JTextField expMonthField;
+    private JTextField expYearField;
+    private JTextField cvvField;
+
     public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
@@ -173,12 +188,17 @@ public class ProfilePage extends JPanel {
         usernamePanel = createLabelField("Username", username);
         passwordPanel = createLabelField("Password", password);
 */
+        nameField = createTextField("x");
+        emailField = createTextField("x");
+        phoneField = createTextField("x");
+        usernameField = createTextField("x");
+        passwordField = createTextField("x");
 
-        namePanel = createLabelField("Name", "x");
-        emailPanel = createLabelField("Email", "x");
-        phonePanel = createLabelField("Phone Number", "x");
-        usernamePanel = createLabelField("Username", "x");
-        passwordPanel = createLabelField("Password", "x");
+        namePanel = createLabelPanel("Name",createLabelField("x"));
+        emailPanel = createLabelPanel("Email", createLabelField("x"));
+        phonePanel = createLabelPanel("Phone Number", createLabelField("x"));
+        usernamePanel = createLabelPanel("Username", createLabelField("x"));
+        passwordPanel = createLabelPanel("Password", createLabelField("x"));
 
         addFieldsToPanel();
 
@@ -197,34 +217,20 @@ public class ProfilePage extends JPanel {
         panel.add(paymentLabel);
         panel.add(Box.createVerticalStrut(6));
 
-        JPanel paymentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 14, 0));
-        paymentRow.setOpaque(false);
-        paymentRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cardNumberField = createTextField("****XXXX");
+        cardNameField = createTextField("John Doe");
+        expMonthField = createTextField("12");
+        expYearField = createTextField("2028");
+        cvvField = createTextField("***");
 
-        JPanel paymentWrapper = new JPanel();
-        paymentWrapper.setLayout(new BoxLayout(paymentWrapper, BoxLayout.Y_AXIS));
-        paymentWrapper.setOpaque(false);
-        paymentWrapper.setAlignmentX(Component.LEFT_ALIGNMENT);
+        paymentPanel = new JPanel();
+        paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.Y_AXIS));
+        paymentPanel.setOpaque(false);
+        paymentPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel paymentField = new JLabel("****XXXX");
-        paymentField.setFont(new Font("SansSerif", Font.PLAIN, 15));
-        paymentField.setOpaque(true);
-        paymentField.setBackground(Color.WHITE);
-        paymentField.setBorder(new CompoundBorder(
-                new LineBorder(new Color(190, 200, 210), 2, true),
-                new EmptyBorder(10, 10, 10, 10)
-        ));
-        paymentField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
-        paymentField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        createPaymentViewPanel();
 
-        JButton editPaymentBtn = createBlackButton("Edit Payment Info", 210, 48);
-        editPaymentBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        paymentWrapper.add(paymentField);
-        paymentWrapper.add(Box.createVerticalStrut(10));
-        paymentWrapper.add(editPaymentBtn);
-
-        panel.add(paymentWrapper);
+        panel.add(paymentPanel);
 
         panel.add(Box.createVerticalStrut(30));
 
@@ -249,7 +255,7 @@ public class ProfilePage extends JPanel {
         return panel;
     }
 
-    private JPanel createTextField(String labelText, String value) {
+    private JPanel createTextPanel(String labelText, JTextField textField) {
         JPanel wrapper = new JPanel();
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
         wrapper.setOpaque(false);
@@ -260,27 +266,14 @@ public class ProfilePage extends JPanel {
         label.setForeground(new Color(45, 55, 70));
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JTextField valueLabel = new JTextField(value);
-        valueLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
-        valueLabel.setForeground(Color.BLACK);
-        valueLabel.setOpaque(true);
-        valueLabel.setBackground(Color.WHITE);
-        valueLabel.setBorder(new CompoundBorder(
-                new LineBorder(new Color(190, 200, 210), 2, true),
-                new EmptyBorder(10, 10, 10, 10)
-        ));
-        valueLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
-        valueLabel.setPreferredSize(new Dimension(300, 48));
-        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         wrapper.add(label);
         wrapper.add(Box.createVerticalStrut(4));
-        wrapper.add(valueLabel);
+        wrapper.add(textField);
 
         return wrapper;
     }
 
-    private JPanel createLabelField(String labelText, String value) {
+    private JPanel createLabelPanel(String labelText, JLabel labelField) {
         JPanel wrapper = new JPanel();
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
         wrapper.setOpaque(false);
@@ -291,6 +284,14 @@ public class ProfilePage extends JPanel {
         label.setForeground(new Color(45, 55, 70));
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        wrapper.add(label);
+        wrapper.add(Box.createVerticalStrut(4));
+        wrapper.add(labelField);
+
+        return wrapper;
+    }
+
+    private JLabel createLabelField(String value){
         JLabel valueLabel = new JLabel(value);
         valueLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
         valueLabel.setForeground(Color.BLACK);
@@ -304,11 +305,24 @@ public class ProfilePage extends JPanel {
         valueLabel.setPreferredSize(new Dimension(300, 48));
         valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        wrapper.add(label);
-        wrapper.add(Box.createVerticalStrut(4));
-        wrapper.add(valueLabel);
+        return valueLabel;
+    }
 
-        return wrapper;
+    private JTextField createTextField(String value){
+        JTextField valueLabel = new JTextField(value);
+        valueLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        valueLabel.setForeground(Color.BLACK);
+        valueLabel.setOpaque(true);
+        valueLabel.setBackground(Color.WHITE);
+        valueLabel.setBorder(new CompoundBorder(
+                new LineBorder(new Color(190, 200, 210), 2, true),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+        valueLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        valueLabel.setPreferredSize(new Dimension(300, 48));
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        return  valueLabel;
     }
 
     // ================= RIGHT PANEL =================
@@ -491,32 +505,109 @@ private JPanel createReservationCard(String dates, String rooms) {
         fieldsPanel.add(Box.createVerticalStrut(28));
     }
 
-    private void handleEdit(){
+    private void createPaymentViewPanel() {
+        paymentPanel.removeAll();
 
+        JLabel paymentField = createLabelField("****XXXX");
+
+        editPaymentBtn = createBlackButton("Edit Payment Info", 210, 48);
+        editPaymentBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+        editPaymentBtn.addActionListener(e -> updatePaymentToEdit());
+
+        paymentPanel.add(paymentField);
+        paymentPanel.add(Box.createVerticalStrut(10));
+        paymentPanel.add(editPaymentBtn);
+
+        paymentPanel.revalidate();
+        paymentPanel.repaint();
+    }
+
+    private void updatePaymentToEdit() {
+        paymentPanel.removeAll();
+
+        if (editPaymentBtn.getText().equals("Edit Payment Info")) {
+            paymentPanel.add(createTextPanel("Card Number", cardNumberField));
+            paymentPanel.add(Box.createVerticalStrut(8));
+
+            paymentPanel.add(createTextPanel("Name on Card", cardNameField));
+            paymentPanel.add(Box.createVerticalStrut(8));
+
+            paymentPanel.add(createTextPanel("Expiration Month", expMonthField));
+            paymentPanel.add(Box.createVerticalStrut(8));
+
+            paymentPanel.add(createTextPanel("Expiration Year", expYearField));
+            paymentPanel.add(Box.createVerticalStrut(8));
+
+            paymentPanel.add(createTextPanel("CVV", cvvField));
+            paymentPanel.add(Box.createVerticalStrut(10));
+
+            editPaymentBtn.setText("Save Payment Info");
+            paymentPanel.add(editPaymentBtn);
+        } else {
+            handlePaymentEdit();
+
+            JLabel paymentField = createLabelField("****" + getLastFour(cardNumberField.getText()));
+
+            editPaymentBtn.setText("Edit Payment Info");
+
+            paymentPanel.add(paymentField);
+            paymentPanel.add(Box.createVerticalStrut(10));
+            paymentPanel.add(editPaymentBtn);
+        }
+
+        paymentPanel.revalidate();
+        paymentPanel.repaint();
+
+        profilePanel.revalidate();
+        profilePanel.repaint();
+    }
+
+    private String getLastFour(String cardNumber) {
+        String cleaned = cardNumber.replaceAll("\\s+", "");
+
+        if (cleaned.length() < 4) {
+            return cleaned;
+        }
+
+        return cleaned.substring(cleaned.length() - 4);
+    }
+
+    private void handlePaymentEdit() {
+        String cardNumber = cardNumberField.getText();
+        String cardName = cardNameField.getText();
+        String expMonth = expMonthField.getText();
+        String expYear = expYearField.getText();
+        String cvv = cvvField.getText();
+
+        // TODO: save this payment info to your Guest, UIState, database, etc.
+    }
+
+    private void handleEdit(){
+        //TODO: get from text fields the new values to save.
     }
 
     private void updateProfileToEdit(){
         fieldsPanel.removeAll();
 
         if(editProfileBtn.getText().equals("Edit Profile")){
-            namePanel = createTextField("Name", "XXXXXXX");
-            emailPanel = createTextField("Email", "XXXXXXX");
-            phonePanel = createTextField("Phone Number", "XXXXXXX");
-            usernamePanel = createTextField("Username", "XXXXXXX");
-            passwordPanel = createTextField("Password", "**********");
+            namePanel = createTextPanel("Name", nameField);
+            emailPanel = createTextPanel("Email", emailField);
+            phonePanel = createTextPanel("Phone Number", phoneField);
+            usernamePanel = createTextPanel("Username", usernameField);
+            passwordPanel = createTextPanel("Password", passwordField);
 
             editProfileBtn.setText("Save Profile");
         }
         else{
-            namePanel = createLabelField("Name", "XXXXXXX");
-            emailPanel = createLabelField("Email", "XXXXXXX");
-            phonePanel = createLabelField("Phone Number", "XXXXXXX");
-            usernamePanel = createLabelField("Username", "XXXXXXX");
-            passwordPanel = createLabelField("Password", "**********");
+            handleEdit();
+
+            namePanel = createLabelPanel("Name",createLabelField("x"));
+            emailPanel = createLabelPanel("Email", createLabelField("x"));
+            phonePanel = createLabelPanel("Phone Number", createLabelField("x"));
+            usernamePanel = createLabelPanel("Username", createLabelField("x"));
+            passwordPanel = createLabelPanel("Password", createLabelField("x"));
 
             editProfileBtn.setText("Edit Profile");
-
-            handleEdit();
         }
 
         addFieldsToPanel();

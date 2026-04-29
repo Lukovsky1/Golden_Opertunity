@@ -441,20 +441,37 @@ public class ModifyReservationPage extends JPanel {
         if (uiState.getCurrentSession().getRole() == Role.CLERK) {
             JButton checkInButton = createGreenButton("Check-In", 140, 55);
             JButton checkOutButton = createRedButton("Check-Out", 150, 55);
+            JButton generateBillButton = createBlackButton("Generate Bill", 175, 55);
 
-            JPanel checkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-            checkPanel.setOpaque(false);
+            checkInButton.addActionListener(e -> {
 
-            checkPanel.add(checkInButton);
-            checkPanel.add(Box.createHorizontalStrut(22));
-            checkPanel.add(checkOutButton);
+            });
+            checkOutButton.addActionListener(e -> {
+
+            });
+            /*
+            generateBillButton.addActionListener(e -> {
+                JPanel billPanel = createBillSummaryPanel();
+
+                mainPanel.add(billPanel, "BILL_SUMMARY");
+                cardLayout.show(mainPanel, "BILL_SUMMARY");
+            });
+*/
+            JPanel clerkActionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            clerkActionPanel.setOpaque(false);
+
+            clerkActionPanel.add(checkInButton);
+            clerkActionPanel.add(Box.createHorizontalStrut(22));
+            clerkActionPanel.add(checkOutButton);
+            clerkActionPanel.add(Box.createHorizontalStrut(22));
+            clerkActionPanel.add(generateBillButton);
 
             gbc.gridy = buttonRow;
             gbc.gridx = 0;
             gbc.gridwidth = 4;
             gbc.weightx = 1;
             gbc.insets = new Insets(0, 12, 8, 12);
-            panel.add(checkPanel, gbc);
+            panel.add(clerkActionPanel, gbc);
 
             buttonRow++;
         }
@@ -534,7 +551,119 @@ public class ModifyReservationPage extends JPanel {
         button.setContentAreaFilled(true);
         return button;
     }
+/*
+    private JPanel createBillSummaryPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(190, 205, 218), 2),
+                new EmptyBorder(18, 24, 24, 24)
+        ));
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 12, 10, 12);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel title = new JLabel("Bill Summary:");
+        title.setFont(new Font("SansSerif", Font.PLAIN, 32));
+        title.setForeground(new Color(43, 58, 72));
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1;
+        panel.add(title, gbc);
+
+        JLabel guestNameLabel = createLabel("Guest:");
+        JLabel guestNameValue = createValueLabel(nameField.getText());
+
+        JLabel reservationIdLabel = createLabel("Reservation ID:");
+        JLabel reservationIdValue = createValueLabel(String.valueOf(reservation.getId()));
+
+        JLabel roomsLabel = createLabel("Rooms:");
+        JLabel roomsValue = createValueLabel(getRoomsText());
+
+        JLabel datesLabel = createLabel("Dates:");
+        JLabel datesValue = createValueLabel(
+                reservation.dateRange.startDate() + " - " + reservation.dateRange.endDate()
+        );
+
+        JLabel nightsLabel = createLabel("Nights:");
+        JLabel nightsValue = createValueLabel(String.valueOf(getNumberOfNights()));
+
+        JLabel roomTotalLabel = createLabel("Room Total:");
+        JLabel roomTotalValue = createValueLabel(String.format("$%.2f", calculateRoomTotal()));
+
+        JLabel taxLabel = createLabel("Tax:");
+        JLabel taxValue = createValueLabel(String.format("$%.2f", calculateTax()));
+
+        JLabel totalLabel = createLabel("Total:");
+        totalLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+
+        JLabel totalValue = createValueLabel(String.format("$%.2f", calculateFinalTotal()));
+        totalValue.setFont(new Font("SansSerif", Font.BOLD, 24));
+
+        int row = 1;
+
+        addBillRow(panel, gbc, row++, guestNameLabel, guestNameValue);
+        addBillRow(panel, gbc, row++, reservationIdLabel, reservationIdValue);
+        addBillRow(panel, gbc, row++, roomsLabel, roomsValue);
+        addBillRow(panel, gbc, row++, datesLabel, datesValue);
+        addBillRow(panel, gbc, row++, nightsLabel, nightsValue);
+        addBillRow(panel, gbc, row++, roomTotalLabel, roomTotalValue);
+        addBillRow(panel, gbc, row++, taxLabel, taxValue);
+
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(16, 12, 16, 12);
+        panel.add(new JSeparator(), gbc);
+
+        row++;
+
+        addBillRow(panel, gbc, row++, totalLabel, totalValue);
+
+        JButton closeButton = createBlackButton("Close", 130, 55);
+
+        closeButton.addActionListener(e -> {
+            cardLayout.show(mainPanel, "CLERK_HOME");
+        });
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(closeButton);
+
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(22, 12, 0, 12);
+        panel.add(buttonPanel, gbc);
+
+        return panel;
+    }
+
+    private void addBillRow(JPanel panel, GridBagConstraints gbc, int row, JLabel label, JLabel value) {
+        gbc.gridy = row;
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(8, 12, 8, 12);
+
+        gbc.gridx = 0;
+        gbc.weightx = 0;
+        panel.add(label, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        panel.add(value, gbc);
+    }
+
+    private JLabel createValueLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        label.setForeground(new Color(43, 58, 72));
+        return label;
+    }
+*/
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Modify Rooms");
