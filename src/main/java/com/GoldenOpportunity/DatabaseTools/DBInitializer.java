@@ -65,8 +65,6 @@ public class DBInitializer {
          * Intended to be called once at application startup.
          */
         public static void initialize() throws SQLException, IOException {
-            //ensureDbFolder(); //TODO: Removed as it seemed unnecessary given the database will be
-            //TODO: created regardless
             // Opening a connection will also create the file on first use.
             try (Connection conn = getConnection()) {
                 DBUtil.ensureDbFolder();
@@ -168,7 +166,7 @@ public class DBInitializer {
                     );
                     """;
 
-                String createGuests = """
+            String createGuests = """
                     CREATE TABLE IF NOT EXISTS guests (
                     guest_id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL,
@@ -180,7 +178,7 @@ public class DBInitializer {
                 );
             """;
 
-                String createGuestReservationView = """
+            String createGuestReservationView = """
                 CREATE VIEW IF NOT EXISTS guest_reservation_summary AS
                 SELECT
                 g.guest_id,
@@ -202,10 +200,10 @@ public class DBInitializer {
                 st.execute(createGuests);
                 ensureGuestsResIdColumn(conn, st);
                 migrateReservationIdsToResId(conn, st);
-                st.execute("DROP INDEX IF EXISTS idx_reservations_guest_id");
-                st.execute("DROP TABLE IF EXISTS Reservations");
-                st.execute("DROP TABLE IF EXISTS ReservedRooms");
-                st.execute("DROP VIEW IF EXISTS guest_reservation_summary");
+                //st.execute("DROP INDEX IF EXISTS idx_reservations_guest_id");
+                //st.execute("DROP VIEW IF EXISTS guest_reservation_summary");
+                //st.execute("DROP TABLE IF EXISTS ReservedRooms");
+                //st.execute("DROP TABLE IF EXISTS Reservations");
                 st.execute(createGuestReservationView);
                 st.execute(createProductDescriptions);
             }
