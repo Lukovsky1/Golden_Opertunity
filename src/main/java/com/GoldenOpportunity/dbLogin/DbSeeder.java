@@ -17,10 +17,10 @@ public class DbSeeder {
         dao.initializeSchema(); // Create DB + tables on first run
 
         // Seed only if missing so you can safely run this multiple times.
-        seedIfMissing(dao, "admin1", "adminpass", "ADMIN", "admin@golden.com");
-        seedIfMissing(dao, "clerk1", "clerkpass", "CLERK", "clerk@golden.com");
-        seedIfMissing(dao, "guest1", "guestpass", "GUEST", "guest@golden.com");
-        seedIfMissing(dao, "guest2", "guestpass2", "GUEST", "guest2@golden.com");
+        seedIfMissing(dao, "admin1", "adminpass", "ADMIN", "admin@golden.com", "Admin One", "555-0101");
+        seedIfMissing(dao, "clerk1", "clerkpass", "CLERK", "clerk@golden.com", "Clerk One", "555-0102");
+        seedIfMissing(dao, "guest1", "guestpass", "GUEST", "guest@golden.com", "Guest One", "555-0103");
+        seedIfMissing(dao, "guest2", "guestpass2", "GUEST", "guest2@golden.com", "Guest Two", "555-0104");
 
         GuestReservationDao guestReservationDao = new GuestReservationDao();
         guestReservationDao.initializeSchema();
@@ -43,10 +43,11 @@ public class DbSeeder {
         System.out.println("SQLite database initialized and sample users ensured.");
     }
 
-    private static void seedIfMissing(UserDao dao, String username, String password, String role, String contact) {
+    private static void seedIfMissing(UserDao dao, String username, String password, String role,
+                                      String contact, String fullName, String phoneNumber) {
         try {
             if (dao.findByUsername(username) == null) {
-                dao.createUser(username, password, role, contact);
+                dao.createUser(username, password, role, contact, fullName, phoneNumber);
                 System.out.printf("Created user '%s' with role %s%n", username, role);
             } else {
                 System.out.printf("User '%s' already exists%n", username);

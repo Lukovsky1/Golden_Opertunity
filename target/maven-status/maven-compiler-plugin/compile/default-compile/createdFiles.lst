@@ -1,44 +1,3 @@
-<<<<<<< HEAD
-com\GoldenOpportunity\RoomDetailsPage.class
-com\GoldenOpportunity\RoomService.class
-com\GoldenOpportunity\Shop\Shop.class
-com\GoldenOpportunity\Criteria.class
-com\GoldenOpportunity\Login\Session.class
-com\GoldenOpportunity\AuthenticationController.class
-com\GoldenOpportunity\HotelBookingUI$1.class
-com\GoldenOpportunity\Login\enums\LoginOutcome.class
-com\GoldenOpportunity\Roles\Clerk.class
-com\GoldenOpportunity\Loader.class
-com\GoldenOpportunity\PaymentMethod.class
-com\GoldenOpportunity\Shop\ShopController.class
-com\GoldenOpportunity\Shop\ShopPage.class
-com\GoldenOpportunity\HotelHomePageUI$2.class
-com\GoldenOpportunity\Login\LoginResult.class
-com\GoldenOpportunity\MainUIFrame.class
-com\GoldenOpportunity\DateRange.class
-com\GoldenOpportunity\Room.class
-com\GoldenOpportunity\Login\enums\Role.class
-com\GoldenOpportunity\Shop\Product.class
-com\GoldenOpportunity\ReservationLoader.class
-com\GoldenOpportunity\Reservation.class
-com\GoldenOpportunity\HotelBookingUI.class
-com\GoldenOpportunity\HotelHomePageUI.class
-com\GoldenOpportunity\SearchController.class
-com\GoldenOpportunity\HotelBookingUI$2.class
-com\GoldenOpportunity\Roles\Guest.class
-com\GoldenOpportunity\Shop\ShoppingCart.class
-com\GoldenOpportunity\LoginPage.class
-com\GoldenOpportunity\User.class
-com\GoldenOpportunity\HotelHomePageUI$1.class
-com\GoldenOpportunity\AddRoomPage.class
-com\GoldenOpportunity\RoomUpdate.class
-com\GoldenOpportunity\Login\enums\AccountStatus.class
-com\GoldenOpportunity\Bed.class
-com\GoldenOpportunity\DBUtil.class
-com\GoldenOpportunity\Floor.class
-com\GoldenOpportunity\ReservationService.class
-com\GoldenOpportunity\Roles\Admin.class
-=======
 com/GoldenOpportunity/Roles/Admin.class
 com/GoldenOpportunity/PaymentMethod.class
 com/GoldenOpportunity/ReservationLoader.class
@@ -46,7 +5,6 @@ com/GoldenOpportunity/dbLogin/Database.class
 com/GoldenOpportunity/dbLogin/DbSeeder.class
 com/GoldenOpportunity/Roles/RolePermissions.class
 com/GoldenOpportunity/LoginPage.class
-com/GoldenOpportunity/DatabaseTools/DBIntializer.class
 com/GoldenOpportunity/AddRoomPage.class
 com/GoldenOpportunity/HotelHomePageUI.class
 com/GoldenOpportunity/Criteria.class
@@ -54,7 +12,6 @@ com/GoldenOpportunity/HotelBookingUI$2.class
 com/GoldenOpportunity/dbLogin/DbAuthenticationService.class
 com/GoldenOpportunity/Shop/Shop.class
 com/GoldenOpportunity/Shop/ShoppingCart.class
-com/GoldenOpportunity/Shop/ShopPage.class
 com/GoldenOpportunity/Login/LoginResult.class
 com/GoldenOpportunity/Login/enums/AccountStatus.class
 com/GoldenOpportunity/SignUpPage.class
@@ -85,8 +42,6 @@ com/GoldenOpportunity/ModifyRoomsPage$1.class
 com/GoldenOpportunity/ReservationService.class
 com/GoldenOpportunity/Roles/Clerk.class
 com/GoldenOpportunity/AuthenticationController.class
-com/GoldenOpportunity/Shop/Product.class
-com/GoldenOpportunity/HotelHomePageUI$2.class
 com/GoldenOpportunity/AdminPage$2.class
 com/GoldenOpportunity/SearchController.class
 com/GoldenOpportunity/Shop/ShopController.class
@@ -102,5 +57,5 @@ com/GoldenOpportunity/Login/Session.class
 com/GoldenOpportunity/RoomDetailsPage$1.class
 com/GoldenOpportunity/dbLogin/GuestReservationDao.class
 com/GoldenOpportunity/HotelHomePageUI$1.class
+com/GoldenOpportunity/DatabaseTools/DBIntializer1.class
 com/GoldenOpportunity/RoomService.class
->>>>>>> UserLogin

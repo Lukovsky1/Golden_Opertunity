@@ -25,21 +25,21 @@ public class UserDao {
 
     /** Lookup a user by exact username. Returns null when not found. */
     public DbUser findByUsername(String username) throws SQLException {
-        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info " +
+        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info, full_name, phone_number " +
                 "FROM users WHERE username = ?";
         return findOneByField(sql, username);
     }
 
     /** Lookup a user by exact email/contact info. Returns null when not found. */
     public DbUser findByEmail(String email) throws SQLException {
-        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info " +
+        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info, full_name, phone_number " +
                 "FROM users WHERE contact_info = ?";
         return findOneByField(sql, email);
     }
 
     /** Lookup a user by their given id */
     public DbUser findById(int id) throws SQLException {
-        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info " +
+        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info, full_name, phone_number " +
                 "FROM users WHERE id = ?";
         return findOneByField(sql, String.valueOf(id));
     }
@@ -58,7 +58,9 @@ public class UserDao {
                         rs.getString("role"),
                         rs.getString("account_status"),
                         rs.getInt("failed_login_count"),
-                        rs.getString("contact_info")
+                        rs.getString("contact_info"),
+                        rs.getString("full_name"),
+                        rs.getString("phone_number")
                 );
             }
         }
@@ -66,7 +68,7 @@ public class UserDao {
 
     /** Return all users for administrative display. */
     public List<DbUser> findAllUsers() throws SQLException {
-        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info " +
+        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info, full_name, phone_number " +
                 "FROM users ORDER BY username";
         List<DbUser> users = new ArrayList<>();
 
@@ -81,7 +83,9 @@ public class UserDao {
                         rs.getString("role"),
                         rs.getString("account_status"),
                         rs.getInt("failed_login_count"),
-                        rs.getString("contact_info")
+                        rs.getString("contact_info"),
+                        rs.getString("full_name"),
+                        rs.getString("phone_number")
                 ));
             }
         }
@@ -90,10 +94,11 @@ public class UserDao {
     }
 
     /** Create a new user with a freshly hashed password. Returns generated ID or -1 on failure. */
-    public int createUser(String username, String rawPassword, String role, String contactInfo) throws SQLException {
+    public int createUser(String username, String rawPassword, String role, String contactInfo,
+                          String fullName, String phoneNumber) throws SQLException {
         String now = Instant.now().toString();
-        String sql = "INSERT INTO users (username, password_hash, role, account_status, failed_login_count, contact_info, created_at, updated_at) " +
-                "VALUES (?, ?, ?, 'ACTIVE', 0, ?, ?, ?)";
+        String sql = "INSERT INTO users (username, password_hash, role, account_status, failed_login_count, contact_info, full_name, phone_number, created_at, updated_at) " +
+                "VALUES (?, ?, ?, 'ACTIVE', 0, ?, ?, ?, ?, ?)";
         String hash = PasswordHasher.hash(rawPassword); // PBKDF2 hash with salt
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -101,8 +106,10 @@ public class UserDao {
             ps.setString(2, hash);
             ps.setString(3, role);
             ps.setString(4, contactInfo);
-            ps.setString(5, now);
-            ps.setString(6, now);
+            ps.setString(5, fullName);
+            ps.setString(6, phoneNumber);
+            ps.setString(7, now);
+            ps.setString(8, now);
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) return keys.getInt(1);

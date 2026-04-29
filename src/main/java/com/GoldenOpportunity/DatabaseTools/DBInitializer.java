@@ -108,6 +108,8 @@ public class DBInitializer {
                 account_status TEXT NOT NULL DEFAULT 'ACTIVE',
                 failed_login_count INTEGER NOT NULL DEFAULT 0,
                 contact_info TEXT,
+                full_name TEXT NOT NULL DEFAULT '',
+                phone_number TEXT NOT NULL DEFAULT '',
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
@@ -193,6 +195,8 @@ public class DBInitializer {
                 conn.setAutoCommit(false);
 
                 st.execute(createUsers);
+                ensureUsersFullNameColumn(conn, st);
+                ensureUsersPhoneNumberColumn(conn, st);
                 st.execute(createUniqueEmailIndex);
                 st.execute(createRooms);
                 st.execute(createReservations);
@@ -220,7 +224,28 @@ public class DBInitializer {
                 DBLoader.loadData(conn, reservationFile, tableNames.get(tableNames.indexOf("Reservations")));
                 DBLoader.loadData(conn, reservedRoomsFile, tableNames.get(tableNames.indexOf("ReservedRooms")));
                 DBLoader.loadData(conn, shopFile, tableNames.get(tableNames.indexOf("ProductDescriptions")));
+    }
+
+    private static void ensureUsersFullNameColumn(Connection conn, Statement st) throws SQLException {
+        try (ResultSet rs = conn.getMetaData().getColumns(null, null, "users", "full_name")) {
+            if (!rs.next()) {
+                st.execute("ALTER TABLE users ADD COLUMN full_name TEXT NOT NULL DEFAULT ''");
+                st.execute("""
+                    UPDATE users
+                    SET full_name = username
+                    WHERE full_name IS NULL OR TRIM(full_name) = ''
+                """);
+            }
         }
+    }
+
+    private static void ensureUsersPhoneNumberColumn(Connection conn, Statement st) throws SQLException {
+        try (ResultSet rs = conn.getMetaData().getColumns(null, null, "users", "phone_number")) {
+            if (!rs.next()) {
+                st.execute("ALTER TABLE users ADD COLUMN phone_number TEXT NOT NULL DEFAULT ''");
+            }
+        }
+    }
 
     private static void ensureGuestsResIdColumn(Connection conn, Statement st) throws SQLException {
         try (ResultSet rs = conn.getMetaData().getColumns(null, null, "guests", "resId")) {
@@ -244,4 +269,3 @@ public class DBInitializer {
 
 
 }
-

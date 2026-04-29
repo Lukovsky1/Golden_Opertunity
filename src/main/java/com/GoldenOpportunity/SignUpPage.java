@@ -19,7 +19,9 @@ public class SignUpPage extends JPanel {
     private final AuthenticationController authController = new AuthenticationController();
 
     private JTextField usernameField;
+    private JTextField fullNameField;
     private JTextField emailField;
+    private JTextField phoneNumberField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private JLabel messageLabel;
@@ -55,13 +57,17 @@ public class SignUpPage extends JPanel {
         formPanel.add(titleLabel, gbc);
 
         usernameField = createResponsiveTextField();
+        fullNameField = createResponsiveTextField();
         emailField = createResponsiveTextField();
+        phoneNumberField = createResponsiveTextField();
         passwordField = createResponsivePasswordField();
         confirmPasswordField = createResponsivePasswordField();
 
         int row = 1;
         addFormRow(formPanel, gbc, row++, "Username:", usernameField);
+        addFormRow(formPanel, gbc, row++, "Full Name:", fullNameField);
         addFormRow(formPanel, gbc, row++, "Email:", emailField);
+        addFormRow(formPanel, gbc, row++, "Phone Number:", phoneNumberField);
         addFormRow(formPanel, gbc, row++, "Password:", passwordField);
         addFormRow(formPanel, gbc, row++, "Confirm Password:", confirmPasswordField);
 
@@ -126,11 +132,14 @@ public class SignUpPage extends JPanel {
 
     private void handleSignUp() {
         String username = usernameField.getText().trim();
+        String fullName = fullNameField.getText().trim();
         String email = emailField.getText().trim();
+        String phoneNumber = phoneNumberField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
         String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
 
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        if (username.isEmpty() || fullName.isEmpty() || email.isEmpty()
+                || phoneNumber.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             messageLabel.setForeground(Color.RED);
             messageLabel.setText("Please fill in all fields.");
             return;
@@ -148,13 +157,15 @@ public class SignUpPage extends JPanel {
             return;
         }
 
-        AuthResult result = authController.signUp(username, email, password);
+        AuthResult result = authController.signUp(username, email, password, fullName, phoneNumber);
         messageLabel.setForeground(result.isSuccess() ? new Color(0, 130, 0) : Color.RED);
         messageLabel.setText(result.getMessage());
 
         if (result.isSuccess()) {
             usernameField.setText("");
+            fullNameField.setText("");
             emailField.setText("");
+            phoneNumberField.setText("");
             passwordField.setText("");
             confirmPasswordField.setText("");
             JOptionPane.showMessageDialog(this, result.getMessage(), "Account Created", JOptionPane.INFORMATION_MESSAGE);
