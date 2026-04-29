@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 //TODO: Add validation functions to the criteria (ex: floorNum > 0 && <= 3)
-//TODO: Smoking may be extraneous because we have floor num
 public class Criteria {
     private int floorNum;
     private int roomNum;

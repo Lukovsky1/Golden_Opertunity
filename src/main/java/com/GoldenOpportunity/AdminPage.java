@@ -3,6 +3,7 @@ package com.GoldenOpportunity;
 import com.GoldenOpportunity.Login.AuthResult;
 import com.GoldenOpportunity.Login.enums.Role;
 import com.GoldenOpportunity.Roles.RolePermissions;
+import com.GoldenOpportunity.dbLogin.EmailValidator;
 import com.GoldenOpportunity.dbLogin.DbUser;
 import com.GoldenOpportunity.dbLogin.UserDao;
 
@@ -12,6 +13,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class AdminPage extends JPanel {
     private final AuthenticationController authController = new AuthenticationController();
     private final UserDao userDao = new UserDao();
     private final DefaultTableModel tableModel = new DefaultTableModel(
-            new Object[]{"Name", "Role", "Email"}, 0
+            new Object[]{"Full Name", "Username", "Role", "Email", "Phone"}, 0
     ) {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -47,8 +49,10 @@ public class AdminPage extends JPanel {
     private JTable userTable;
     private JPanel detailsPanel;
     private JLabel selectedNameLabel;
+    private JLabel selectedUsernameLabel;
     private JLabel selectedRoleLabel;
     private JLabel selectedEmailLabel;
+    private JLabel selectedPhoneLabel;
     private Timer drawerTimer;
     private int currentDrawerWidth;
     private DbUser selectedUser;
@@ -181,9 +185,11 @@ public class AdminPage extends JPanel {
         titleLabel.setForeground(TEXT_COLOR);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        selectedNameLabel = createInfoLabel("Name: ");
+        selectedNameLabel = createInfoLabel("Full Name: ");
+        selectedUsernameLabel = createInfoLabel("Username: ");
         selectedRoleLabel = createInfoLabel("Role: ");
         selectedEmailLabel = createInfoLabel("Email: ");
+        selectedPhoneLabel = createInfoLabel("Phone: ");
 
         JButton resetUsernameButton = new JButton("Reset Username");
         styleActionButton(resetUsernameButton, PANEL_BACKGROUND, TEXT_COLOR);
@@ -201,9 +207,13 @@ public class AdminPage extends JPanel {
         panel.add(Box.createVerticalStrut(18));
         panel.add(selectedNameLabel);
         panel.add(Box.createVerticalStrut(10));
+        panel.add(selectedUsernameLabel);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(selectedRoleLabel);
         panel.add(Box.createVerticalStrut(10));
         panel.add(selectedEmailLabel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(selectedPhoneLabel);
         panel.add(Box.createVerticalStrut(24));
         panel.add(resetUsernameButton);
         panel.add(Box.createVerticalStrut(12));
@@ -264,15 +274,19 @@ public class AdminPage extends JPanel {
 
     private void updateDetailsPanel() {
         if (selectedUser == null) {
-            selectedNameLabel.setText("Name: ");
+            selectedNameLabel.setText("Full Name: ");
+            selectedUsernameLabel.setText("Username: ");
             selectedRoleLabel.setText("Role: ");
             selectedEmailLabel.setText("Email: ");
+            selectedPhoneLabel.setText("Phone: ");
             return;
         }
 
-        selectedNameLabel.setText("Name: " + selectedUser.username);
+        selectedNameLabel.setText("Full Name: " + selectedUser.fullName);
+        selectedUsernameLabel.setText("Username: " + selectedUser.username);
         selectedRoleLabel.setText("Role: " + selectedUser.role);
         selectedEmailLabel.setText("Email: " + selectedUser.contactInfo);
+        selectedPhoneLabel.setText("Phone: " + selectedUser.phoneNumber);
     }
 
     private void refreshUsers() {
@@ -289,6 +303,13 @@ public class AdminPage extends JPanel {
             JOptionPane.showMessageDialog(
                     this,
                     "Unable to load users for the admin page.",
+                    "Admin Page Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Unable to load users for the admin page. File error",
                     "Admin Page Error",
                     JOptionPane.ERROR_MESSAGE
             );
@@ -369,7 +390,9 @@ public class AdminPage extends JPanel {
             return;
         }
         JTextField usernameField = new JTextField(18);
+        JTextField fullNameField = new JTextField(18);
         JTextField emailField = new JTextField(18);
+        JTextField phoneNumberField = new JTextField(18);
         JPasswordField passwordField = new JPasswordField(18);
         JPasswordField confirmPasswordField = new JPasswordField(18);
         JComboBox<String> roleDropdown = new JComboBox<>(new String[]{"ADMIN", "CLERK"});
@@ -384,9 +407,11 @@ public class AdminPage extends JPanel {
 
         addFormRow(formPanel, gbc, 0, "Role:", roleDropdown);
         addFormRow(formPanel, gbc, 1, "Username:", usernameField);
-        addFormRow(formPanel, gbc, 2, "Email:", emailField);
-        addFormRow(formPanel, gbc, 3, "Password:", passwordField);
-        addFormRow(formPanel, gbc, 4, "Confirm Password:", confirmPasswordField);
+        addFormRow(formPanel, gbc, 2, "Full Name:", fullNameField);
+        addFormRow(formPanel, gbc, 3, "Email:", emailField);
+        addFormRow(formPanel, gbc, 4, "Phone Number:", phoneNumberField);
+        addFormRow(formPanel, gbc, 5, "Password:", passwordField);
+        addFormRow(formPanel, gbc, 6, "Confirm Password:", confirmPasswordField);
 
         int result = JOptionPane.showConfirmDialog(
                 this,
@@ -401,18 +426,21 @@ public class AdminPage extends JPanel {
         }
 
         String username = usernameField.getText().trim();
+        String fullName = fullNameField.getText().trim();
         String email = emailField.getText().trim();
+        String phoneNumber = phoneNumberField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
         String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
         String role = (String) roleDropdown.getSelectedItem();
 
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        if (username.isEmpty() || fullName.isEmpty() || email.isEmpty()
+                || phoneNumber.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill in all fields.");
             return;
         }
 
-        if (!email.contains("@") || !email.contains(".")) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid email address.");
+        if (!EmailValidator.isValidEmail(email)) {
+            JOptionPane.showMessageDialog(this, EmailValidator.supportedDomainsMessage());
             return;
         }
 
@@ -421,7 +449,14 @@ public class AdminPage extends JPanel {
             return;
         }
 
-        AuthResult resultMessage = authController.createPrivilegedUser(username, email, password, role);
+        AuthResult resultMessage = authController.createPrivilegedUser(
+                username,
+                email,
+                password,
+                fullName,
+                phoneNumber,
+                role
+        );
         JOptionPane.showMessageDialog(
                 this,
                 resultMessage.getMessage(),
@@ -471,9 +506,11 @@ public class AdminPage extends JPanel {
 
             displayedUsers.add(user);
             tableModel.addRow(new Object[]{
+                    user.fullName,
                     user.username,
                     user.role,
-                    user.contactInfo
+                    user.contactInfo,
+                    user.phoneNumber
             });
         }
     }

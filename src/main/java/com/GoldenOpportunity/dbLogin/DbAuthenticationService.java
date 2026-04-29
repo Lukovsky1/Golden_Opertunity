@@ -35,11 +35,17 @@ public class DbAuthenticationService {
 
     /** Attempt to authenticate a user and return a UI-friendly result object. */
     public LoginResult logIn(String username, String password) {
+        String normalizedUsername = username == null ? "" : username.trim().toLowerCase();
+
+        if (EmailValidator.looksLikeEmail(normalizedUsername) && !EmailValidator.isValidEmail(normalizedUsername)) {
+            return new LoginResult(false, EmailValidator.supportedDomainsMessage(), null);
+        }
+
         try {
             // 1) Fetch user by username first, then fall back to email/contact info.
             DbUser user = userDao.findByUsername(username);
             if (user == null) {
-                user = userDao.findByEmail(username);
+                user = userDao.findByEmail(normalizedUsername);
             }
             if (user == null) {
                 // Do not reveal whether the username exists.
@@ -69,11 +75,20 @@ public class DbAuthenticationService {
         }
     }
 
-    public AuthResult signUp(String username, String email, String password) {
-        return createUserWithRole(username, email, password, "GUEST", "Account created successfully. Please log in.");
+    public AuthResult signUp(String username, String email, String password, String fullName, String phoneNumber) {
+        return createUserWithRole(
+                username,
+                email,
+                password,
+                fullName,
+                phoneNumber,
+                "GUEST",
+                "Account created successfully. Please log in."
+        );
     }
 
-    public AuthResult createPrivilegedUser(String username, String email, String password, String role) {
+    public AuthResult createPrivilegedUser(String username, String email, String password,
+                                           String fullName, String phoneNumber, String role) {
         String normalizedRole = role == null ? "" : role.trim().toUpperCase();
         if (!"ADMIN".equals(normalizedRole) && !"CLERK".equals(normalizedRole)) {
             return new AuthResult(false, "Only ADMIN and CLERK accounts can be created from the admin page.");
@@ -83,18 +98,29 @@ public class DbAuthenticationService {
                 username,
                 email,
                 password,
+                fullName,
+                phoneNumber,
                 normalizedRole,
                 normalizedRole + " account created successfully."
         );
     }
 
-    private AuthResult createUserWithRole(String username, String email, String password, String role, String successMessage) {
+    private AuthResult createUserWithRole(String username, String email, String password,
+                                          String fullName, String phoneNumber,
+                                          String role, String successMessage) {
         String normalizedUsername = username == null ? "" : username.trim();
         String normalizedEmail = email == null ? "" : email.trim().toLowerCase();
+        String normalizedFullName = fullName == null ? "" : fullName.trim();
+        String normalizedPhoneNumber = phoneNumber == null ? "" : phoneNumber.trim();
 
         try {
-            if (normalizedUsername.isEmpty() || normalizedEmail.isEmpty() || password == null || password.isBlank()) {
+            if (normalizedUsername.isEmpty() || normalizedEmail.isEmpty() || normalizedFullName.isEmpty()
+                    || normalizedPhoneNumber.isEmpty() || password == null || password.isBlank()) {
                 return new AuthResult(false, "All fields are required.");
+            }
+
+            if (!EmailValidator.isValidEmail(normalizedEmail)) {
+                return new AuthResult(false, EmailValidator.supportedDomainsMessage());
             }
 
             if (userDao.findByUsername(normalizedUsername) != null) {
@@ -104,7 +130,14 @@ public class DbAuthenticationService {
                 return new AuthResult(false, "That email is already in use.");
             }
 
-            int userId = userDao.createUser(normalizedUsername, password, role, normalizedEmail);
+            int userId = userDao.createUser(
+                    normalizedUsername,
+                    password,
+                    role,
+                    normalizedEmail,
+                    normalizedFullName,
+                    normalizedPhoneNumber
+            );
             if (userId < 0) {
                 return new AuthResult(false, "Unable to create account.");
             }

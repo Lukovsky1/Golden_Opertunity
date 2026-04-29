@@ -163,11 +163,12 @@ public class LoginPage extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         formPanel.add(titleLabel, gbc);
 
         // Initialize input fields
-        usernameField = new JTextField(20);
-        passwordField = new JPasswordField(20);
+        usernameField = createResponsiveTextField();
+        passwordField = createResponsivePasswordField();
 
         int row = 1;
 
@@ -180,6 +181,7 @@ public class LoginPage extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row++;
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         formPanel.add(messageLabel, gbc);
 
         // Buttons panel
@@ -206,9 +208,16 @@ public class LoginPage extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         formPanel.add(buttonPanel, gbc);
 
-        outerPanel.add(formPanel);
+        GridBagConstraints outerGbc = new GridBagConstraints();
+        outerGbc.gridx = 0;
+        outerGbc.gridy = 0;
+        outerGbc.weightx = 1.0;
+        outerGbc.fill = GridBagConstraints.HORIZONTAL;
+        outerGbc.anchor = GridBagConstraints.NORTH;
+        outerPanel.add(formPanel, outerGbc);
         return outerPanel;
     }
 
@@ -220,10 +229,26 @@ public class LoginPage extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = row;
+        gbc.weightx = 0.0;
         panel.add(new JLabel(labelText), gbc);
 
         gbc.gridx = 1;
+        gbc.weightx = 1.0;
         panel.add(component, gbc);
+    }
+
+    private JTextField createResponsiveTextField() {
+        JTextField field = new JTextField(24);
+        field.setPreferredSize(new Dimension(260, 36));
+        field.setMinimumSize(new Dimension(180, 36));
+        return field;
+    }
+
+    private JPasswordField createResponsivePasswordField() {
+        JPasswordField field = new JPasswordField(24);
+        field.setPreferredSize(new Dimension(260, 36));
+        field.setMinimumSize(new Dimension(180, 36));
+        return field;
     }
 
     /**
@@ -246,7 +271,6 @@ public class LoginPage extends JPanel {
             messageLabel.setForeground(Color.RED);
             messageLabel.setText(result.getMessage());
             passwordField.setText("");
-            messageLabel.setText(" ");
             return;
         }
 
