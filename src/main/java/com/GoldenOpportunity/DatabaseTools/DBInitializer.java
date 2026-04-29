@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +46,7 @@ public class DBInitializer {
      * A list of all valid table names.
      */
     private static final List<String> tableNames =  List.of("users", "Rooms", "Reservations", "ReservedRooms",
-                "ProductDescriptions");
+                "ProductDescriptions", "guests");
 
         private DBInitializer() {}
 
@@ -171,6 +168,29 @@ public class DBInitializer {
                     );
                     """;
 
+                String createGuests = """
+                    CREATE TABLE IF NOT EXISTS guests (
+                    guest_id INTEGER PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    email TEXT,
+                    resId TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY (guest_id) REFERENCES users(id) ON DELETE CASCADE
+                );
+            """;
+
+                String createGuestReservationView = """
+                CREATE VIEW IF NOT EXISTS guest_reservation_summary AS
+                SELECT
+                g.guest_id,
+                g.name,
+                g.email,
+                g.resId
+            FROM guests g
+            ORDER BY g.guest_id;
+        """;
+
             try (Statement st = conn.createStatement()) {
                 conn.setAutoCommit(false);
 
@@ -179,6 +199,14 @@ public class DBInitializer {
                 st.execute(createRooms);
                 st.execute(createReservations);
                 st.execute(createReservedRooms);
+                st.execute(createGuests);
+                ensureGuestsResIdColumn(conn, st);
+                migrateReservationIdsToResId(conn, st);
+                st.execute("DROP INDEX IF EXISTS idx_reservations_guest_id");
+                st.execute("DROP TABLE IF EXISTS Reservations");
+                st.execute("DROP TABLE IF EXISTS ReservedRooms");
+                st.execute("DROP VIEW IF EXISTS guest_reservation_summary");
+                st.execute(createGuestReservationView);
                 st.execute(createProductDescriptions);
             }
         }
@@ -195,4 +223,27 @@ public class DBInitializer {
                 DBLoader.loadData(conn, reservedRoomsFile, tableNames.get(tableNames.indexOf("ReservedRooms")));
                 DBLoader.loadData(conn, shopFile, tableNames.get(tableNames.indexOf("ProductDescriptions")));
         }
+
+    private static void ensureGuestsResIdColumn(Connection conn, Statement st) throws SQLException {
+        try (ResultSet rs = conn.getMetaData().getColumns(null, null, "guests", "resId")) {
+            if (!rs.next()) {
+                st.execute("ALTER TABLE guests ADD COLUMN resId TEXT");
+            }
+        }
     }
+
+    private static void migrateReservationIdsToResId(Connection conn, Statement st) throws SQLException {
+        try (ResultSet rs = conn.getMetaData().getColumns(null, null, "guests", "reservation_ids")) {
+            if (rs.next()) {
+                st.execute("""
+                    UPDATE guests
+                    SET resId = COALESCE(resId, reservation_ids)
+                    WHERE reservation_ids IS NOT NULL
+                """);
+            }
+        }
+    }
+
+
+}
+

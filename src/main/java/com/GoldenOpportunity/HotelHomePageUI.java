@@ -9,9 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,19 +23,16 @@ public class HotelHomePageUI extends JPanel {
     private JPanel mainPanel;
     private DatePicker startDate;
     private DatePicker endDate;
-    private JSpinner numGuests;
 
-    private RoomService roomService;
-    private ReservationService reservationService;
+    private UIState uiState;
 
-    public RoomService getRoomService(){return roomService;}
-    public ReservationService getReservationService(){return reservationService;}
-
-    public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
-        reservationService = new ReservationService();
-        roomService = new RoomService();
+        this.uiState = uiState;
+        uiState.reservationService = new ReservationService();
+        uiState.roomService = new RoomService();
+        uiState.searchController = new SearchController(uiState.roomService,uiState.reservationService);
 
         setLayout(new BorderLayout(10, 10));
 
@@ -47,6 +42,10 @@ public class HotelHomePageUI extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getVerticalScrollBar().setValue(0);
+        });
 
         add(scrollPane, BorderLayout.CENTER);
 
@@ -72,7 +71,7 @@ public class HotelHomePageUI extends JPanel {
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
         Map<String,JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
@@ -83,6 +82,8 @@ public class HotelHomePageUI extends JPanel {
             buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
             nav.add(buttonMap.get(item));
         }
+
+        uiState.registerLoginButton(buttonMap.get("Login"));
 
         buttonMap.get("Home").addActionListener(e -> {
             cardLayout.show(mainPanel,"HOME");
@@ -96,8 +97,32 @@ public class HotelHomePageUI extends JPanel {
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
         });
-        buttonMap.get("Sign Up").addActionListener(e -> {
-            cardLayout.show(mainPanel,"SIGNUP");
+        buttonMap.get("🛒").addActionListener(e -> {
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -150,37 +175,123 @@ public class HotelHomePageUI extends JPanel {
         JPanel search = new JPanel(new GridBagLayout());
         search.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         search.setBackground(Color.WHITE);
-        search.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
+        search.setMaximumSize(new Dimension(Integer.MAX_VALUE, 170));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 10, 8, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        // ================= ROW 1: LABELS =================
+        gbc.gridy = 0;
+
+        gbc.gridx = 0;
         search.add(new JLabel("Check-In Date"), gbc);
+
         gbc.gridx = 1;
         search.add(new JLabel("Check-out Date"), gbc);
+
         gbc.gridx = 2;
-        search.add(new JLabel("Number of Guests"), gbc);
+        search.add(new JLabel("Floor Number"), gbc);
+
         gbc.gridx = 3;
+        search.add(new JLabel("Room Number"), gbc);
+
+        gbc.gridx = 4;
         search.add(new JLabel("Room Type"), gbc);
 
+        gbc.gridx = 5;
+        search.add(new JLabel("Quality"), gbc);
+
+        // ================= ROW 2: INPUTS =================
         gbc.gridy = 1;
+
         gbc.gridx = 0;
-        startDate = new DatePicker(); // Calendar picker for check-in
+        startDate = new DatePicker();
         search.add(startDate, gbc);
 
         gbc.gridx = 1;
-        endDate = new DatePicker(); // Calendar picker for check-out
+        endDate = new DatePicker();
         search.add(endDate, gbc);
-        
+
         gbc.gridx = 2;
-        numGuests = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-        search.add(numGuests, gbc);
+        JComboBox<Integer> floorBox = new JComboBox<>(new Integer[]{1,2,3});
+        search.add(floorBox, gbc);
+
         gbc.gridx = 3;
-        search.add(new JComboBox<>(new String[]{"Standard", "Deluxe", "Suite"}), gbc);
+        JComboBox<Integer> roomNumberBox = new JComboBox<>(new Integer[]{
+                101,102,103,201,202,203,301,302,303
+        });
+        search.add(roomNumberBox, gbc);
 
         gbc.gridx = 4;
+        JComboBox<String> roomTypeBox = new JComboBox<>(new String[]{
+                "Any","Single","Double","Suite","Standard","Deluxe"
+        });
+        search.add(roomTypeBox, gbc);
+
+        gbc.gridx = 5;
+        JComboBox<String> qualityBox = new JComboBox<>(new String[]{
+                "Any","Standard","Business","Comfort","Executive"
+        });
+        search.add(qualityBox, gbc);
+
+        // ================= ROW 3: LABELS =================
+        gbc.gridy = 2;
+
+        gbc.gridx = 0;
+        search.add(new JLabel("Number of Beds"), gbc);
+
+        gbc.gridx = 1;
+        search.add(new JLabel("Rate"), gbc);
+
+        gbc.gridx = 2;
+        search.add(new JLabel("Smoking"), gbc);
+
+        gbc.gridx = 3;
+        gbc.gridwidth = 3;
+        search.add(new JLabel("Bed Types"), gbc);
+        gbc.gridwidth = 1;
+
+        // ================= ROW 4: INPUTS =================
+        gbc.gridy = 3;
+
+        gbc.gridx = 0;
+        JSpinner numBeds = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+        search.add(numBeds, gbc);
+
+        gbc.gridx = 1;
+        JComboBox<String> rateBox = new JComboBox<>(new String[]{
+                "Any","$0 - $100","$100 - $200","$200 - $300","$300+"
+        });
+        search.add(rateBox, gbc);
+
+        gbc.gridx = 2;
+        JCheckBox smokingBox = new JCheckBox("Smoking");
+        smokingBox.setBackground(Color.WHITE);
+        search.add(smokingBox, gbc);
+
+        // ===== FIXED 4 BED TYPE COMBO BOXES =====
+        JPanel bedTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        bedTypePanel.setBackground(Color.WHITE);
+
+        for (int i = 0; i < 4; i++) {
+            JComboBox<String> bedBox = new JComboBox<>(new String[]{
+                    "Any","King", "Queen", "Twin", "Full"
+            });
+            bedBox.setPreferredSize(new Dimension(90, 28));
+            bedTypePanel.add(bedBox);
+        }
+
+        gbc.gridx = 3;
+        gbc.gridwidth = 3;
+        search.add(bedTypePanel, gbc);
+        gbc.gridwidth = 1;
+
+        // ================= SEARCH BUTTON =================
+        gbc.gridx = 6;
+        gbc.gridy = 1;
+        gbc.gridheight = 3;
+
         JButton searchBtn = new JButton("Search");
         searchBtn.setBackground(new Color(50, 100, 230));
         searchBtn.setForeground(Color.WHITE);
@@ -188,13 +299,14 @@ public class HotelHomePageUI extends JPanel {
         searchBtn.setOpaque(true);
         searchBtn.setBorderPainted(false);
         searchBtn.setContentAreaFilled(true);
+        searchBtn.setPreferredSize(new Dimension(100, 35));
+
         search.add(searchBtn, gbc);
 
-        searchBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        gbc.gridheight = 1;
 
-            }
+        searchBtn.addActionListener(e -> {
+            // Your search logic here
         });
 
         return search;
@@ -207,9 +319,9 @@ public class HotelHomePageUI extends JPanel {
         JPanel rooms = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         rooms.setBackground(new Color(245, 245, 245));
 
-        rooms.add(createRoomCard(roomService.getAllRooms().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
-        rooms.add(createRoomCard(roomService.getAllRooms().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
-        rooms.add(createRoomCard(roomService.getAllRooms().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
 
         wrapper.add(rooms);
         return wrapper;
@@ -265,16 +377,13 @@ public class HotelHomePageUI extends JPanel {
                         return;
                     }
 
-                    mainPanel.add(new RoomDetailsPage(
-                            cardLayout,
-                            mainPanel,
-                            startDate.getDate(),
-                            endDate.getDate(),
-                            (int) numGuests.getValue(),
-                            room,
-                            imageFile,
-                            reservationService
-                    ), "DETAILS");
+                    uiState.startDate = startDate.getDate();
+                    uiState.endDate = endDate.getDate();
+                    uiState.numGuests = 1;
+                    uiState.room = room;
+                    uiState.imageFile = imageFile;
+
+                    mainPanel.add(new RoomDetailsPage(cardLayout,mainPanel,uiState), "DETAILS");
 
                     mainPanel.revalidate();
                     mainPanel.repaint();

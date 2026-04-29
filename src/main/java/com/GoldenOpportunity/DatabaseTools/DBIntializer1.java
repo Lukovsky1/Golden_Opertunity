@@ -1,12 +1,7 @@
 package com.GoldenOpportunity.DatabaseTools;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-public final class DBIntializer {
-    private DBIntializer() {}
+public final class DBIntializer1 {
+   /* private DBIntializer() {}
 
     public static void createSchema(Connection conn) throws SQLException {
         String createUsers = """
@@ -58,9 +53,9 @@ public final class DBIntializer {
             st.execute(createGuests);
             ensureGuestsResIdColumn(conn, st);
             migrateReservationIdsToResId(conn, st);
-            st.execute("DROP INDEX IF EXISTS idx_reservations_guest_id");
-            st.execute("DROP TABLE IF EXISTS reservations");
-            st.execute("DROP VIEW IF EXISTS guest_reservation_summary");
+            //st.execute("DROP INDEX IF EXISTS idx_reservations_guest_id");
+            //st.execute("DROP TABLE IF EXISTS reservations");
+            //st.execute("DROP VIEW IF EXISTS guest_reservation_summary");
             st.execute(createGuestReservationView);
         }
     }
@@ -83,5 +78,5 @@ public final class DBIntializer {
                 """);
             }
         }
-    }
+    } */
 }

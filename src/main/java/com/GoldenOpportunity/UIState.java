@@ -16,6 +16,7 @@ public class UIState {
     public String imageFile;
     public ReservationService reservationService;
     public RoomService roomService;
+    public SearchController searchController;
     public List<Room> potentialRooms = new ArrayList<>();
     public boolean isLoggedIn;
     private Session currentSession;

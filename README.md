@@ -13,7 +13,7 @@ SQLite user login database setup
 
 Code overview
 - `com.GoldenOpportunity.dbLogin.Database`: manages SQLite connection setup.
-- `com.GoldenOpportunity.DatabaseTools.DBIntializer`: creates the SQLite schema.
+- `com.GoldenOpportunity.DatabaseTools.DBIntializer1`: creates the SQLite schema.
 - `com.GoldenOpportunity.dbLogin.UserDao`: CRUD and login counters for `users`.
 - `com.GoldenOpportunity.dbLogin.PasswordHasher`: PBKDF2 hashing/verification.
 - `com.GoldenOpportunity.dbLogin.DbAuthenticationService`: login against SQLite (returns existing `LoginResult`/`Session`).

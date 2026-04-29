@@ -13,6 +13,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -290,6 +291,13 @@ public class AdminPage extends JPanel {
             JOptionPane.showMessageDialog(
                     this,
                     "Unable to load users for the admin page.",
+                    "Admin Page Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Unable to load users for the admin page. File error",
                     "Admin Page Error",
                     JOptionPane.ERROR_MESSAGE
             );

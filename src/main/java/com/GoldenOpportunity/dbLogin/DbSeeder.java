@@ -12,7 +12,7 @@ import java.sql.SQLException;
  */
 //TODO: Need to separate the seeding logic from the loadingInsertStatements
 public class DbSeeder {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, IOException {
         UserDao dao = new UserDao();
         dao.initializeSchema(); // Create DB + tables on first run
 
@@ -28,7 +28,7 @@ public class DbSeeder {
         guestReservationDao.assignReservationToGuest("guest2", "R-201");
         guestReservationDao.assignReservationToGuest("guest2", "R-202");
 
-        try {
+        /*try {
             LoadingInserts.createRooms(DBUtil.getConnection());
             LoadingInserts.createReservations(DBUtil.getConnection());
             LoadingInserts.createReservedRooms(DBUtil.getConnection());
@@ -37,7 +37,7 @@ public class DbSeeder {
             return;
         } catch (IOException e) {
             System.err.println(e.getMessage());
-        }
+        } */
 
 
         System.out.println("SQLite database initialized and sample users ensured.");

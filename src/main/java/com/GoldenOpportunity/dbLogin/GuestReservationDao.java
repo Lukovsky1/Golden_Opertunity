@@ -1,5 +1,10 @@
 package com.GoldenOpportunity.dbLogin;
 
+import com.GoldenOpportunity.DatabaseTools.DBInitializer;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
+import org.sqlite.core.DB;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,8 +14,8 @@ import java.sql.SQLException;
  * Synchronizes guest users and guest-to-reservation assignments into SQLite.
  */
 public class GuestReservationDao {
-    public void initializeSchema() throws SQLException {
-        Database.initialize();
+    public void initializeSchema() throws SQLException, IOException {
+        DBInitializer.initialize();
     }
 
     public int syncGuestUsersFromUsersTable() throws SQLException {
@@ -25,7 +30,7 @@ public class GuestReservationDao {
                 updated_at = excluded.updated_at
         """;
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             return ps.executeUpdate();
         }
@@ -60,7 +65,7 @@ public class GuestReservationDao {
             )
         """;
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, reservationId);
             ps.setString(2, reservationId);
@@ -82,7 +87,7 @@ public class GuestReservationDao {
             WHERE u.username = ?
         """;
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
