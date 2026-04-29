@@ -12,7 +12,8 @@ SQLite user login database setup
     - guest2 / guestpass2 (GUEST)
 
 Code overview
-- `com.GoldenOpportunity.dbLogin.Database`: manages SQLite connection and schema creation.
+- `com.GoldenOpportunity.dbLogin.Database`: manages SQLite connection setup.
+- `com.GoldenOpportunity.DatabaseTools.DBIntializer`: creates the SQLite schema.
 - `com.GoldenOpportunity.dbLogin.UserDao`: CRUD and login counters for `users`.
 - `com.GoldenOpportunity.dbLogin.PasswordHasher`: PBKDF2 hashing/verification.
 - `com.GoldenOpportunity.dbLogin.DbAuthenticationService`: login against SQLite (returns existing `LoginResult`/`Session`).
@@ -46,13 +47,12 @@ Runtime warnings
   - IntelliJ Run/Debug Config: `VM options` = `--enable-native-access=ALL-UNNAMED`
   - Plain CLI: `java --enable-native-access=ALL-UNNAMED -cp ... com.GoldenOpportunity.tools.AuthTester`
 
-Guest and reservation SQLite tables
-- Initialize and sync guest/reservation data: run `com.GoldenOpportunity.dbLogin.GuestReservationSeeder`
+Guest SQLite tables
+- Initialize and sync guest data: run `com.GoldenOpportunity.dbLogin.GuestReservationSeeder`
   - Example:
     - `java -cp target/Golden_Opertunity-1.0-SNAPSHOT-jar-with-dependencies.jar com.GoldenOpportunity.dbLogin.GuestReservationSeeder`
 - This creates:
   - `guests`: one row per `users.role = 'GUEST'`, using the existing user `id` as `guest_id`
-  - `reservations`: the SQLite reservations table used by the application data model
-  - `guest_reservation_summary`: a view for querying guests alongside their reservations
+  - `guest_reservation_summary`: a view for querying guests and their assigned `resId` values
 - Current behavior:
-  - `GuestReservationSeeder` no longer imports reservation data from CSV. It only ensures the SQLite schema exists and syncs guest rows from `users`.
+  - `GuestReservationSeeder` ensures the SQLite schema exists and syncs guest rows from `users`.

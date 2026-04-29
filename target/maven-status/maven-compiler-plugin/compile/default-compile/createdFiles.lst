@@ -46,6 +46,7 @@ com/GoldenOpportunity/dbLogin/Database.class
 com/GoldenOpportunity/dbLogin/DbSeeder.class
 com/GoldenOpportunity/Roles/RolePermissions.class
 com/GoldenOpportunity/LoginPage.class
+com/GoldenOpportunity/DatabaseTools/DBIntializer.class
 com/GoldenOpportunity/AddRoomPage.class
 com/GoldenOpportunity/HotelHomePageUI.class
 com/GoldenOpportunity/Criteria.class
