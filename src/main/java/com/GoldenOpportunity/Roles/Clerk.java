@@ -111,18 +111,23 @@ public class Clerk extends User {
             }
             penalty = penalty * 0.8;
             receipt.setPenalty(penalty);
+            receipt.calculateTotal();
         }
         return receipt;
     }
 
     public boolean checkout(String resID) throws SQLException {
-        boolean checkout = false;
         SearchController searchController = new SearchController(new RoomService(), new ReservationService());
         if(searchController.getResService().findReservation(resID).isCheckedIn()){
             searchController.getResService().deleteReservation(resID);
-            checkout = true;
+            return true;
         }
-        return checkout;
+        return false;
+    }
+
+    public boolean checkIn(String resID) throws SQLException{
+        String sql = "UPDATE Reservations SET checkedIn=? WHERE resId=?";
+        return true;
     }
 
     public Clerk findClerk(int id) {

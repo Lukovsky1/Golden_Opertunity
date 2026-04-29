@@ -29,6 +29,7 @@ public class Receipt {
     }
 
     public Double calculateTotal() throws SQLException {
+        total = 0.0;
         total = penalty + total;
 
         if(roomBill.isEmpty()){
@@ -42,6 +43,7 @@ public class Receipt {
         for(Map.Entry<Integer, Double> entry: roomBill.entrySet()){
             total = total + entry.getValue();
         }
+
         for(Map.Entry<String, Double> entry: shopItemBill.entrySet()){
             total = total + entry.getValue();
         }
