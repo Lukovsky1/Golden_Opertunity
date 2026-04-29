@@ -21,8 +21,8 @@ public class DbSeeder {
         GuestReservationDao guestReservationDao = new GuestReservationDao();
         guestReservationDao.initializeSchema();
         guestReservationDao.syncGuestUsersFromUsersTable();
-        guestReservationDao.seedReservationForGuest("guest2", "R-201", 101, "2026-05-15", "2026-05-18", 450.00);
-        guestReservationDao.seedReservationForGuest("guest2", "R-202", 204, "2026-06-02", "2026-06-05", 525.00);
+        guestReservationDao.assignReservationToGuest("guest2", "R-201");
+        guestReservationDao.assignReservationToGuest("guest2", "R-202");
 
         System.out.println("SQLite database initialized and sample users ensured.");
     }

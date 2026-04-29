@@ -1,7 +1,7 @@
 package com.GoldenOpportunity.dbLogin;
 
 /**
- * Initializes the guest/reservation SQLite schema and synchronizes guest users.
+ * Initializes the guest SQLite schema and synchronizes guest users.
  */
 public class GuestReservationSeeder {
     public static void main(String[] args) throws Exception {
@@ -9,7 +9,6 @@ public class GuestReservationSeeder {
         dao.initializeSchema();
 
         int guestCount = dao.syncGuestUsersFromUsersTable();
-        dao.refreshGuestReservationIds();
-        System.out.printf("SQLite guest/reservation schema ready. Guests synced: %d.%n", guestCount);
+        System.out.printf("SQLite guest schema ready. Guests synced: %d.%n", guestCount);
     }
 }

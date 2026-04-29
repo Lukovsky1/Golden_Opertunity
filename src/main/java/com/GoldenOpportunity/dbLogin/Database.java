@@ -1,10 +1,15 @@
 package com.GoldenOpportunity.dbLogin;
 
+import com.GoldenOpportunity.DatabaseTools.DBIntializer;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Responsibilities:
@@ -49,7 +54,7 @@ public final class Database {
         ensureDbFolder();
         // Opening a connection will also create the file on first use.
         try (Connection conn = getConnection()) {
-            createSchema(conn);
+            DBIntializer.createSchema(conn);
         }
     }
 
@@ -70,96 +75,4 @@ public final class Database {
         }
     }
 
-    /** Create tables needed for authentication if they do not already exist. */
-    private static void createSchema(Connection conn) throws SQLException {
-        // Users table stores credentials (hashed), role, and lockout metadata.
-        String createUsers = """
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL UNIQUE,
-                password_hash TEXT NOT NULL,
-                role TEXT NOT NULL,
-                account_status TEXT NOT NULL DEFAULT 'ACTIVE',
-                failed_login_count INTEGER NOT NULL DEFAULT 0,
-                contact_info TEXT,
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL
-            );
-        """;
-
-        String createUniqueEmailIndex = """
-            CREATE UNIQUE INDEX IF NOT EXISTS idx_users_contact_info_unique
-            ON users(contact_info)
-            WHERE contact_info IS NOT NULL AND contact_info <> '';
-        """;
-
-        String createGuests = """
-            CREATE TABLE IF NOT EXISTS guests (
-                guest_id INTEGER PRIMARY KEY,
-                name TEXT NOT NULL,
-                email TEXT,
-                reservation_ids TEXT,
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL,
-                FOREIGN KEY (guest_id) REFERENCES users(id) ON DELETE CASCADE
-            );
-        """;
-
-        String createReservations = """
-            CREATE TABLE IF NOT EXISTS reservations (
-                reservation_id TEXT PRIMARY KEY,
-                guest_id INTEGER,
-                room_number INTEGER NOT NULL,
-                start_date TEXT NOT NULL,
-                end_date TEXT NOT NULL,
-                bill REAL NOT NULL DEFAULT 0,
-                source TEXT NOT NULL DEFAULT 'APP',
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL,
-                FOREIGN KEY (guest_id) REFERENCES guests(guest_id) ON DELETE SET NULL
-            );
-        """;
-
-        String createReservationsGuestIndex = """
-            CREATE INDEX IF NOT EXISTS idx_reservations_guest_id
-            ON reservations(guest_id);
-        """;
-
-        String createGuestReservationView = """
-            CREATE VIEW IF NOT EXISTS guest_reservation_summary AS
-            SELECT
-                g.guest_id,
-                g.name,
-                g.email,
-                g.reservation_ids,
-                r.reservation_id,
-                r.room_number,
-                r.start_date,
-                r.end_date,
-                r.bill,
-                r.source
-            FROM guests g
-            LEFT JOIN reservations r ON r.guest_id = g.guest_id
-            ORDER BY g.guest_id, r.start_date, r.reservation_id;
-        """;
-
-        try (Statement st = conn.createStatement()) {
-            st.execute(createUsers);
-            st.execute(createUniqueEmailIndex);
-            st.execute(createGuests);
-            ensureGuestsReservationIdsColumn(conn, st);
-            st.execute(createReservations);
-            st.execute(createReservationsGuestIndex);
-            st.execute("DROP VIEW IF EXISTS guest_reservation_summary");
-            st.execute(createGuestReservationView);
-        }
-    }
-
-    private static void ensureGuestsReservationIdsColumn(Connection conn, Statement st) throws SQLException {
-        try (ResultSet rs = conn.getMetaData().getColumns(null, null, "guests", "reservation_ids")) {
-            if (!rs.next()) {
-                st.execute("ALTER TABLE guests ADD COLUMN reservation_ids TEXT");
-            }
-        }
-    }
 }
