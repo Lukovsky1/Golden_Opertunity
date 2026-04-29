@@ -54,5 +54,7 @@ public class Guest extends User {
         SearchController searchController = new SearchController(new RoomService(), new ReservationService());
     }
 
+    public Guest findGuest(int id){}
+
 
 }

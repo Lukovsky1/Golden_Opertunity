@@ -1,6 +1,6 @@
 package com.GoldenOpportunity.Shop;
 
-import com.GoldenOpportunity.PaymentMethod;
+import com.GoldenOpportunity.*;
 import com.GoldenOpportunity.Roles.Clerk;
 
 import java.util.ArrayList;
@@ -73,6 +73,9 @@ public class ShopService {
 
         Order order = new Order();
         order.createOrder(shoppingCart.getCartItems(), guestID, total);
+
+        //Add to receipt
+        SearchController searchController = new SearchController(new RoomService(),new ReservationService());
 
         shoppingCart.clearCart();
         clerk.notifyOrder(order);
