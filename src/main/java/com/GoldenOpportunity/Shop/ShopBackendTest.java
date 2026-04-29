@@ -8,7 +8,6 @@ import com.GoldenOpportunity.Roles.Clerk;
 import com.GoldenOpportunity.dbLogin.UserDao;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import java.util.List;
 public class ShopBackendTest {
     public static void main(String[] args) {
         // make sure the db/table/data exist first
-        //ShopDBInitializer.initializeDatabase();
         try {
             DBInitializer.initialize();
         } catch (SQLException e) {
@@ -71,10 +69,6 @@ public class ShopBackendTest {
         for (String item : storeView) {
             System.out.println(item);
         }
-
-        System.out.println();
-        System.out.println("view product details for product 1:");
-        System.out.println(shopController.viewProductDetails(1));
 
         System.out.println();
         System.out.println("add product 1 to cart for guest 3:");

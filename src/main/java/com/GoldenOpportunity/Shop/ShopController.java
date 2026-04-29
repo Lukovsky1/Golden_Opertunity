@@ -27,9 +27,13 @@ public class ShopController {
         return shopService.viewStore();
     }
 
+    // no longer needed because andrei and i decided to remove the intermediate page for browsing the shop
+    // i will leave it here in case of an emergency
+    /*
     public String viewProductDetails(int productID) {
         return shopService.viewProductDetails(productID);
     }
+     */
 
     public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart)  {
         try {

@@ -20,16 +20,21 @@ public class ShopService {
     // views all available products, the main store page
     public List<String> viewStore() {
         List<ProductDescription> availableProductDescriptions = shop.getAvailableProducts();
-        List<String> productSummaryList = new ArrayList<>();
+        List<String> productDetailsList = new ArrayList<>();
 
         for (ProductDescription productDescription : availableProductDescriptions) {
-            productSummaryList.add(productDescription.getSummary());
+            String productDetails = productDescription.getDetails();
+            String availability = shop.getAvailability(productDescription.getProductID());
+            productDetailsList.add(productDetails + ", Availability: " + availability);
         }
 
-        return productSummaryList;
+        return productDetailsList;
     }
 
     // more in depth
+    // no longer needed because andrei and i decided to remove the intermediate page for browsing the shop
+    // i will leave it here in case of an emergency
+    /*
     public String viewProductDetails(int productID) {
         ProductDescription productDescription = shop.findProduct(productID);
 
@@ -39,7 +44,7 @@ public class ShopService {
 
         String availability = shop.getAvailability(productID);
         return productDescription.getDetails() + ", Availability: " + availability;
-    }
+    }*/
 
     // adds a product to cart, assumes controller already handled auth and reservation checks
     public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart) {
