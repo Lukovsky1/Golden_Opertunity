@@ -210,28 +210,6 @@ public class ProfilePage extends JPanel {
 
         editProfileBtn.addActionListener(e -> updateProfileToEdit());
 
-        JLabel paymentLabel = new JLabel("Payment Information");
-        paymentLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
-        paymentLabel.setForeground(new Color(45, 55, 70));
-        paymentLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.add(paymentLabel);
-        panel.add(Box.createVerticalStrut(6));
-
-        cardNumberField = createTextField("****XXXX");
-        cardNameField = createTextField("John Doe");
-        expMonthField = createTextField("12");
-        expYearField = createTextField("2028");
-        cvvField = createTextField("***");
-
-        paymentPanel = new JPanel();
-        paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.Y_AXIS));
-        paymentPanel.setOpaque(false);
-        paymentPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        createPaymentViewPanel();
-
-        panel.add(paymentPanel);
-
         panel.add(Box.createVerticalStrut(30));
 
         JButton logoutBtn = createRedButton("Logout", 150, 50);
@@ -246,6 +224,7 @@ public class ProfilePage extends JPanel {
             );
 
             if (confirm == JOptionPane.YES_OPTION) {
+                handleSignOut();
                 cardLayout.show(mainPanel, "LOGIN");
             }
         });
@@ -505,83 +484,6 @@ private JPanel createReservationCard(String dates, String rooms) {
         fieldsPanel.add(Box.createVerticalStrut(28));
     }
 
-    private void createPaymentViewPanel() {
-        paymentPanel.removeAll();
-
-        JLabel paymentField = createLabelField("****XXXX");
-
-        editPaymentBtn = createBlackButton("Edit Payment Info", 210, 48);
-        editPaymentBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
-        editPaymentBtn.addActionListener(e -> updatePaymentToEdit());
-
-        paymentPanel.add(paymentField);
-        paymentPanel.add(Box.createVerticalStrut(10));
-        paymentPanel.add(editPaymentBtn);
-
-        paymentPanel.revalidate();
-        paymentPanel.repaint();
-    }
-
-    private void updatePaymentToEdit() {
-        paymentPanel.removeAll();
-
-        if (editPaymentBtn.getText().equals("Edit Payment Info")) {
-            paymentPanel.add(createTextPanel("Card Number", cardNumberField));
-            paymentPanel.add(Box.createVerticalStrut(8));
-
-            paymentPanel.add(createTextPanel("Name on Card", cardNameField));
-            paymentPanel.add(Box.createVerticalStrut(8));
-
-            paymentPanel.add(createTextPanel("Expiration Month", expMonthField));
-            paymentPanel.add(Box.createVerticalStrut(8));
-
-            paymentPanel.add(createTextPanel("Expiration Year", expYearField));
-            paymentPanel.add(Box.createVerticalStrut(8));
-
-            paymentPanel.add(createTextPanel("CVV", cvvField));
-            paymentPanel.add(Box.createVerticalStrut(10));
-
-            editPaymentBtn.setText("Save Payment Info");
-            paymentPanel.add(editPaymentBtn);
-        } else {
-            handlePaymentEdit();
-
-            JLabel paymentField = createLabelField("****" + getLastFour(cardNumberField.getText()));
-
-            editPaymentBtn.setText("Edit Payment Info");
-
-            paymentPanel.add(paymentField);
-            paymentPanel.add(Box.createVerticalStrut(10));
-            paymentPanel.add(editPaymentBtn);
-        }
-
-        paymentPanel.revalidate();
-        paymentPanel.repaint();
-
-        profilePanel.revalidate();
-        profilePanel.repaint();
-    }
-
-    private String getLastFour(String cardNumber) {
-        String cleaned = cardNumber.replaceAll("\\s+", "");
-
-        if (cleaned.length() < 4) {
-            return cleaned;
-        }
-
-        return cleaned.substring(cleaned.length() - 4);
-    }
-
-    private void handlePaymentEdit() {
-        String cardNumber = cardNumberField.getText();
-        String cardName = cardNameField.getText();
-        String expMonth = expMonthField.getText();
-        String expYear = expYearField.getText();
-        String cvv = cvvField.getText();
-
-        // TODO: save this payment info to your Guest, UIState, database, etc.
-    }
-
     private void handleEdit(){
         //TODO: get from text fields the new values to save.
     }
@@ -629,5 +531,10 @@ private JPanel createReservationCard(String dates, String rooms) {
     public void updatePage(){
         updateProfileToEdit();
         updateReservationPanel();
+    }
+
+    private void handleSignOut() {
+        uiState.setLoggedIn(false);
+        cardLayout.show(mainPanel, "HOME");
     }
 }

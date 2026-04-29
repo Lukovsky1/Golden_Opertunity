@@ -116,6 +116,7 @@ public class ClerkHomePage extends JPanel {
 
         JButton addRoomsButton = createSidebarButton("Add Rooms");
         JButton modifyRoomsButton = createSidebarButton("Modify Rooms");
+        JButton newReservation = createSidebarButton("New Reservation");
 
         addRoomsButton.addActionListener(e -> {
             cardLayout.show(mainPanel,"ADD_ROOMS");
@@ -123,11 +124,16 @@ public class ClerkHomePage extends JPanel {
         modifyRoomsButton.addActionListener(e -> {
             cardLayout.show(mainPanel,"MODIFY_ROOMS");
         });
+        newReservation.addActionListener(e -> {
+            cardLayout.show(mainPanel,"NEW_RESERVATION");
+        });
 
         sidebar.add(Box.createVerticalStrut(14));
         sidebar.add(addRoomsButton);
         sidebar.add(Box.createVerticalStrut(14));
         sidebar.add(modifyRoomsButton);
+        sidebar.add(Box.createVerticalStrut(14));
+        sidebar.add(newReservation);
         sidebar.add(Box.createVerticalGlue());
 
         return sidebar;

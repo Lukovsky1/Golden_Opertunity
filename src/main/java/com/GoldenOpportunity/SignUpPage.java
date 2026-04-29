@@ -17,8 +17,10 @@ public class SignUpPage extends JPanel {
 
     private final AuthenticationController authController = new AuthenticationController();
 
+    private JTextField nameField;
     private JTextField usernameField;
     private JTextField emailField;
+    private JTextField phoneField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private JLabel messageLabel;
@@ -34,7 +36,6 @@ public class SignUpPage extends JPanel {
         outerPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setPreferredSize(new Dimension(420, 360));
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(new CompoundBorder(
                 new LineBorder(new Color(220, 220, 220), 1, true),
@@ -53,14 +54,18 @@ public class SignUpPage extends JPanel {
         gbc.gridwidth = 2;
         formPanel.add(titleLabel, gbc);
 
+        nameField = new JTextField(20);
         usernameField = new JTextField(20);
         emailField = new JTextField(20);
+        phoneField = new JTextField(20);
         passwordField = new JPasswordField(20);
         confirmPasswordField = new JPasswordField(20);
 
         int row = 1;
-        addFormRow(formPanel, gbc, row++, "Username:", usernameField);
+        addFormRow(formPanel, gbc, row++, "Name:", nameField);
         addFormRow(formPanel, gbc, row++, "Email:", emailField);
+        addFormRow(formPanel, gbc, row++,"Phone Number:", phoneField);
+        addFormRow(formPanel, gbc, row++, "Username:", usernameField);
         addFormRow(formPanel, gbc, row++, "Password:", passwordField);
         addFormRow(formPanel, gbc, row++, "Confirm Password:", confirmPasswordField);
 
@@ -102,8 +107,22 @@ public class SignUpPage extends JPanel {
     private void handleSignUp() {
         String username = usernameField.getText().trim();
         String email = emailField.getText().trim();
+        String name = nameField.getText().trim();
+        String phone = phoneField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
         String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
+
+        if(!name.matches("\\p{L}+") || name.isEmpty()){
+            messageLabel.setForeground(Color.RED);
+            messageLabel.setText("Please enter a valid name.");
+            return;
+        }
+
+        if(!phone.matches("\\d+") || phone.length() != 10){
+            messageLabel.setForeground(Color.RED);
+            messageLabel.setText("Please enter a valid phone number.");
+            return;
+        }
 
         if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             messageLabel.setForeground(Color.RED);

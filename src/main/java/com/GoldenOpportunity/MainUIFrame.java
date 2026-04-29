@@ -23,6 +23,7 @@ public class MainUIFrame extends JFrame {
     private ClerkHomePage clerkHomePage;
     private AddRoomPage addRoomPage;
     private ModifyRoomsPage modifyRoomsPage;
+    private NewReservationPage newReservationPage;
     private AdminPage adminPage;
 
     //Must load database before all other operations
@@ -53,6 +54,7 @@ public class MainUIFrame extends JFrame {
         clerkHomePage = new ClerkHomePage(cardLayout, mainPanel, uiState);
         addRoomPage = new AddRoomPage(cardLayout,mainPanel,uiState);
         modifyRoomsPage = new ModifyRoomsPage(cardLayout,mainPanel,uiState);
+        newReservationPage = new NewReservationPage(cardLayout,mainPanel,uiState);
 
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
@@ -62,6 +64,7 @@ public class MainUIFrame extends JFrame {
         mainPanel.add(clerkHomePage,"CLERK_HOME");
         mainPanel.add(addRoomPage,"ADD_ROOMS");
         mainPanel.add(modifyRoomsPage, "MODIFY_ROOMS");
+        mainPanel.add(newReservationPage, "NEW_RESERVATION");
         mainPanel.add(adminPage, "ADMIN");
 
         add(mainPanel);

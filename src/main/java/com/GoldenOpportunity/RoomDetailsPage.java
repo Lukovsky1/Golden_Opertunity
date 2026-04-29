@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.GoldenOpportunity.Login.enums.Role;
 import com.github.lgooddatepicker.components.DatePicker;
 
 /**
@@ -331,8 +333,14 @@ public class RoomDetailsPage extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 uiState.potentialRooms.add(uiState.room);
-                cardLayout.show(mainPanel,"ROOMS");
                 JOptionPane.showMessageDialog(null, "Room was successfully added");
+
+                if(uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK){
+                    cardLayout.show(mainPanel,"NEW_RESERVATION");
+                }
+                else{
+                    cardLayout.show(mainPanel,"ROOMS");
+                }
             }
         });
 

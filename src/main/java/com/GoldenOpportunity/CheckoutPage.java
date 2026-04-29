@@ -1,5 +1,7 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Login.enums.Role;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -20,6 +22,25 @@ public class CheckoutPage extends JPanel {
     private JPanel mainPanel;
     private UIState uiState;
 
+    // Guest Info Fields
+    private JTextField firstNameField;
+    private JTextField lastNameField;
+    private JTextField emailField;
+    private JTextField memberNumberField;
+    private JTextField phoneField;
+    private JTextField addressField;
+    private JTextField cityField;
+    private JTextField stateField;
+    private JTextField postalCodeField;
+    private JComboBox<String> countryBox;
+
+    // Payment Info Fields
+    private JTextField cardNumberField;
+    private JComboBox<String> monthBox;
+    private JComboBox<String> yearBox;
+    private JTextField cvvField;
+    private JTextField billingZipField;
+
     public CheckoutPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
@@ -28,7 +49,12 @@ public class CheckoutPage extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBackground(new Color(245, 245, 245));
 
-        add(createHeader(), BorderLayout.NORTH);
+        if(uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK){
+            add(createClerkHeader(), BorderLayout.NORTH);
+        }
+        else{
+            add(createGuestHeader(), BorderLayout.NORTH);
+        }
 
         JScrollPane scrollPane = new JScrollPane(createMainContent());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -42,8 +68,55 @@ public class CheckoutPage extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
+    private JPanel createClerkHeader() throws IOException {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBorder(new EmptyBorder(15, 20, 15, 20));
+        header.setBackground(Color.WHITE);
+
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
+
+        int newHeight = 70;
+        int newWidth = (originalWidth * newHeight) / originalHeight;
+
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
+        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        nav.setBackground(Color.WHITE);
+        String profileIcon = "👤";
+
+        JButton homeButton = new JButton("Home");
+        homeButton.setFocusPainted(false);
+        homeButton.setBackground(Color.WHITE);
+        homeButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        homeButton.setPreferredSize(new Dimension(90, 35));
+        nav.add(homeButton);
+
+        JButton profileButton = new JButton(profileIcon);
+        profileButton.setFocusPainted(false);
+        profileButton.setBackground(Color.WHITE);
+        profileButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        profileButton.setPreferredSize(new Dimension(90, 35));
+        nav.add(profileButton);
+
+        profileButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"PROFILE");
+        });
+        homeButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"CLERK_HOME");
+        });
+
+        header.add(logoLabel, BorderLayout.WEST);
+        header.add(nav, BorderLayout.EAST);
+        return header;
+    }
+
     // ================= HEADER =================
-    private JPanel createHeader() throws IOException {
+    private JPanel createGuestHeader() throws IOException {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
@@ -144,18 +217,33 @@ public class CheckoutPage extends JPanel {
         JPanel box = createCardPanel();
 
         box.add(sectionTitle("Guest Information"));
-        box.add(twoFieldRow("First Name", "Last Name"));
-        box.add(twoFieldRow("Email Address", "Member Number"));
-        box.add(oneField("Phone Number"));
+
+        firstNameField = styledField();
+        lastNameField = styledField();
+        box.add(twoFieldRow("First Name", firstNameField, "Last Name", lastNameField));
+
+        emailField = styledField();
+        memberNumberField = styledField();
+        box.add(twoFieldRow("Email Address", emailField, "Member Number", memberNumberField));
+
+        phoneField = styledField();
+        box.add(oneField("Phone Number", phoneField));
 
         String[] countries = {"United States", "Canada", "United Kingdom", "Germany", "France", "India", "Japan", "Australia"};
-        JComboBox<String> countryBox = new JComboBox<>(countries);
+        countryBox = new JComboBox<>(countries);
         countryBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
 
         box.add(labeledComponent("Country/Region", countryBox));
-        box.add(oneField("Address Line"));
-        box.add(twoFieldRow("City", "State/Province"));
-        box.add(oneField("Postal Code"));
+
+        addressField = styledField();
+        box.add(oneField("Address Line", addressField));
+
+        cityField = styledField();
+        stateField = styledField();
+        box.add(twoFieldRow("City", cityField, "State/Province", stateField));
+
+        postalCodeField = styledField();
+        box.add(oneField("Postal Code", postalCodeField));
 
         return box;
     }
@@ -164,16 +252,16 @@ public class CheckoutPage extends JPanel {
         JPanel box = createCardPanel();
 
         box.add(sectionTitle("Payment Information"));
-        box.add(oneField("Credit/Debit Card Number"));
 
-        // Expiration row with labels
+        cardNumberField = styledField();
+        box.add(oneField("Credit/Debit Card Number", cardNumberField));
+
         JPanel expiryRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 0));
         expiryRow.setBackground(Color.WHITE);
         expiryRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-        expiryRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
         String[] months = {"01","02","03","04","05","06","07","08","09","10","11","12"};
-        JComboBox<String> monthBox = new JComboBox<>(months);
+        monthBox = new JComboBox<>(months);
         monthBox.setMaximumSize(new Dimension(80, 30));
 
         String[] years = new String[10];
@@ -181,7 +269,7 @@ public class CheckoutPage extends JPanel {
         for (int i = 0; i < 10; i++) {
             years[i] = String.valueOf(currentYear + i);
         }
-        JComboBox<String> yearBox = new JComboBox<>(years);
+        yearBox = new JComboBox<>(years);
         yearBox.setMaximumSize(new Dimension(100, 30));
 
         expiryRow.add(labeledComponent("Expiration Month", monthBox));
@@ -190,7 +278,9 @@ public class CheckoutPage extends JPanel {
         box.add(expiryRow);
         box.add(Box.createVerticalStrut(10));
 
-        box.add(twoFieldRow("CVV Number", "Billing Zip Code"));
+        cvvField = styledField();
+        billingZipField = styledField();
+        box.add(twoFieldRow("CVV Number", cvvField, "Billing Zip Code", billingZipField));
 
         return box;
     }
@@ -256,7 +346,12 @@ public class CheckoutPage extends JPanel {
 
                 removeAll();
                 try {
-                    add(createHeader(), BorderLayout.NORTH);
+                    if(uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK){
+                        add(createClerkHeader(), BorderLayout.NORTH);
+                    }
+                    else{
+                        add(createGuestHeader(), BorderLayout.NORTH);
+                    }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -270,6 +365,15 @@ public class CheckoutPage extends JPanel {
 
                 revalidate();
                 repaint();
+
+                if(uiState.potentialRooms.isEmpty()){
+                    if(uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK){
+                        cardLayout.show(mainPanel,"NEW_RESERVATION");
+                    }
+                    else{
+                        cardLayout.show(mainPanel,"ROOMS");
+                    }
+                }
             });
 
             roomCard.add(Box.createVerticalStrut(8));
@@ -310,7 +414,12 @@ public class CheckoutPage extends JPanel {
                 throw new RuntimeException(ex);
             }
             uiState.potentialRooms.clear();
-            cardLayout.show(mainPanel,"HOME");
+            if(uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK){
+                cardLayout.show(mainPanel,"NEW_RESERVATION");
+            }
+            else{
+                cardLayout.show(mainPanel,"HOME");
+            }
             JOptionPane.showMessageDialog(null, "Reservation was successfully made!");
         });
 
@@ -358,7 +467,7 @@ public class CheckoutPage extends JPanel {
         return field;
     }
 
-    private JPanel oneField(String label) {
+    private JPanel oneField(String label, JTextField field) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.WHITE);
@@ -366,8 +475,6 @@ public class CheckoutPage extends JPanel {
 
         JLabel jLabel = new JLabel(label);
         jLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JTextField field = styledField();
 
         panel.add(jLabel);
         panel.add(field);
@@ -376,19 +483,19 @@ public class CheckoutPage extends JPanel {
         return panel;
     }
 
-    private JPanel twoFieldRow(String l1, String l2) {
+    private JPanel twoFieldRow(String l1, JTextField f1, String l2, JTextField f2) {
         JPanel row = new JPanel(new GridLayout(1, 2, 15, 0));
         row.setBackground(Color.WHITE);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
         row.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        row.add(labeledField(l1));
-        row.add(labeledField(l2));
+        row.add(labeledField(l1, f1));
+        row.add(labeledField(l2, f2));
 
         return row;
     }
 
-    private JPanel labeledField(String label) {
+    private JPanel labeledField(String label, JTextField field) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.WHITE);
@@ -396,8 +503,6 @@ public class CheckoutPage extends JPanel {
 
         JLabel jLabel = new JLabel(label);
         jLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JTextField field = styledField();
 
         panel.add(jLabel);
         panel.add(field);
@@ -443,5 +548,13 @@ public class CheckoutPage extends JPanel {
         }
 
         return imgPanel;
+    }
+
+    private void validateGuestInfo(){
+
+    }
+
+    private void validatePaymentInfo(){
+
     }
 }
