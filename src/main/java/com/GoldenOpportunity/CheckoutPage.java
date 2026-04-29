@@ -5,6 +5,8 @@ import com.GoldenOpportunity.Login.enums.Role;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -408,6 +410,10 @@ public class CheckoutPage extends JPanel {
 
         double finalSum = sum;
         bookBtn.addActionListener(e -> {
+            if(!validateGuestInfo() || !validatePaymentInfo()){
+                return;
+            }
+
             try {
                 uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,uiState.endDate, finalSum);
             } catch (SQLException ex) {
@@ -550,11 +556,79 @@ public class CheckoutPage extends JPanel {
         return imgPanel;
     }
 
-    private void validateGuestInfo(){
+    private boolean validateGuestInfo(){
+        String firstName = firstNameField.getText().trim();
+        String lastName = lastNameField.getText().trim();
+        String email = emailField.getText().trim();
+        String phone = phoneField.getText().trim();
+        String address = addressField.getText().trim();
+        String city = cityField.getText().trim();
+        String state = stateField.getText().trim();
+        String postalCode = postalCodeField.getText().trim();
 
+        if(!firstName.matches("\\p{L}+") || firstName.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter a valid first name.");
+            return false;
+        }
+
+        if(!lastName.matches("\\p{L}+") || lastName.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter a valid last name.");
+            return false;
+        }
+
+        if(!phone.matches("\\d+") || phone.length() != 10){
+            JOptionPane.showMessageDialog(null, "Please enter a valid phone number.");
+            return false;
+        }
+
+        if (address.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid address.");
+            return false;
+        }
+
+        if (!email.contains("@") || !email.contains(".")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid email.");
+            return false;
+        }
+
+        if (city.isEmpty() || !city.matches("[a-zA-Z ]+")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid city.");
+            return false;
+        }
+
+        if (state.isEmpty() || !state.matches("[a-zA-Z ]+")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid state/province.");
+            return false;
+        }
+
+        if(!postalCode.matches("\\d+") || postalCode.length() != 5){
+            JOptionPane.showMessageDialog(null, "Please enter a valid postal code.");
+            return false;
+        }
+
+        return true;
     }
 
-    private void validatePaymentInfo(){
+    private boolean validatePaymentInfo(){
+        String cardNum = cardNumberField.getText().trim();
+        String cvv = cvvField.getText().trim();
+        String billingZip = billingZipField.getText().trim();
 
+        if(!cardNum.matches("\\d+") || cardNum.length() != 16){
+            JOptionPane.showMessageDialog(null, "Please enter a valid card number.");
+            return false;
+        }
+
+        if(!cvv.matches("\\d+") || cvv.length() != 3){
+            JOptionPane.showMessageDialog(null, "Please enter a valid cvv.");
+            return false;
+        }
+
+        if(!billingZip.matches("\\d+") || billingZip.length() != 5){
+            JOptionPane.showMessageDialog(null, "Please enter a valid billing zip code.");
+            return false;
+        }
+
+        return true;
     }
 }

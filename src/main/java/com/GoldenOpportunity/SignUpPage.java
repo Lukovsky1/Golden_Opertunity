@@ -112,7 +112,7 @@ public class SignUpPage extends JPanel {
         String password = new String(passwordField.getPassword()).trim();
         String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
 
-        if(!name.matches("\\p{L}+") || name.isEmpty()){
+        if(!name.matches("[a-zA-Z ]+") || name.isEmpty()){
             messageLabel.setForeground(Color.RED);
             messageLabel.setText("Please enter a valid name.");
             return;
@@ -147,6 +147,8 @@ public class SignUpPage extends JPanel {
         messageLabel.setText(result.getMessage());
 
         if (result.isSuccess()) {
+            nameField.setText("");
+            phoneField.setText("");
             usernameField.setText("");
             emailField.setText("");
             passwordField.setText("");

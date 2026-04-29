@@ -11,6 +11,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
@@ -194,6 +195,15 @@ public class NewReservationPage extends JPanel{
         searchPanel = new SearchBarPanel(uiState);
 
         searchPanel.addSearchListener(e -> {
+            DatePicker startDatePicker = searchPanel.getStartDatePicker();
+            DatePicker endDatePicker = searchPanel.getEndDatePicker();
+            if (startDatePicker.getDate() == null || endDatePicker.getDate() == null ||
+                    Period.between(startDatePicker.getDate(),endDatePicker.getDate()).getDays() < 1 ||
+                    startDatePicker.getDate().isBefore(LocalDate.now())) {
+                JOptionPane.showMessageDialog(null, "Please select valid dates");
+                return;
+            }
+
             try {
                 updateRooms(uiState.searchController.searchAvailableRooms(searchPanel.search()));
             } catch (SQLException ex) {
@@ -280,12 +290,13 @@ public class NewReservationPage extends JPanel{
         book.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         book.addActionListener(e -> {
-            DatePicker startDatePicker = searchPanel.getStartDatePicker();
-            DatePicker endDatePicker = searchPanel.getEndDatePicker();
             try {
                 // Check if user selected dates
+                DatePicker startDatePicker = searchPanel.getStartDatePicker();
+                DatePicker endDatePicker = searchPanel.getEndDatePicker();
                 if (startDatePicker.getDate() == null || endDatePicker.getDate() == null ||
-                        Period.between(startDatePicker.getDate(),endDatePicker.getDate()).getDays() < 1) {
+                        Period.between(startDatePicker.getDate(),endDatePicker.getDate()).getDays() < 1 ||
+                        startDatePicker.getDate().isBefore(LocalDate.now())) {
                     JOptionPane.showMessageDialog(null, "Please select valid dates");
                     return;
                 }

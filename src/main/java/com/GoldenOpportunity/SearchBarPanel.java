@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 import java.util.List;
@@ -171,14 +172,7 @@ public class SearchBarPanel extends JPanel{
     public Criteria search(){
         Criteria criteria = new Criteria();
 
-        if (startDatePicker.getDate() == null || endDatePicker.getDate() == null ||
-                Period.between(startDatePicker.getDate(),endDatePicker.getDate()).getDays() < 1) {
-            JOptionPane.showMessageDialog(null, "Please select valid dates");
-            return null;
-        }
-        else{
-            criteria.setDateRange(new DateRange(startDatePicker.getDate(),endDatePicker.getDate()));
-        }
+        criteria.setDateRange(new DateRange(startDatePicker.getDate(),endDatePicker.getDate()));
 
         if(!Objects.equals(floorBox.getSelectedItem(), "Any")){
             criteria.setFloorNum(Integer.parseInt(Objects.requireNonNull(floorBox.getSelectedItem()).toString()));

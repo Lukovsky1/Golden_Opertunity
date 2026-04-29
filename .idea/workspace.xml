@@ -4,28 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="New UI">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/NewReservationPage.java" afterDir="false" />
+    <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Connecting UI">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AddRoomPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AddRoomPage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/CheckoutPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/CheckoutPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ClerkHomePage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ClerkHomePage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ModifyRoomsPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ModifyRoomsPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ProfilePage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ProfilePage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/NewReservationPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/NewReservationPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SearchBarPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SearchBarPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SignUpPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SignUpPage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/golden.db" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/golden.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AddRoomPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AddRoomPage.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/CheckoutPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/CheckoutPage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ClerkHomePage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ClerkHomePage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/MainUIFrame.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/MainUIFrame.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ProfilePage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ProfilePage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/NewReservationPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/NewReservationPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SearchBarPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SearchBarPanel.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SignUpPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SignUpPage.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/golden.db" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/golden.db" afterDir="false" />
     </list>
@@ -389,7 +381,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777493380333</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Connecting UI">
+      <option name="closed" value="true" />
+      <created>1777501027701</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1777501027701</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Connecting UI">
+      <option name="closed" value="true" />
+      <created>1777501032966</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1777501032966</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -410,7 +418,8 @@
     <MESSAGE value="Revised Room Table. Added capacity, description, and image to room." />
     <MESSAGE value="Finish Search Use Case" />
     <MESSAGE value="New UI" />
-    <option name="LAST_COMMIT_MESSAGE" value="New UI" />
+    <MESSAGE value="Connecting UI" />
+    <option name="LAST_COMMIT_MESSAGE" value="Connecting UI" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
