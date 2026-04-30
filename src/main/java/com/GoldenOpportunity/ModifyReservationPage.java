@@ -412,6 +412,7 @@ public class ModifyReservationPage extends JPanel {
             //uiState.reservationService.modifyReservation(reservation.getId());
             if(uiState.getCurrentSession().getRole() == Role.CLERK){
                 clerkHomePage.updatePage();
+                JOptionPane.showMessageDialog(null, "Edit's Saved.");
                 cardLayout.show(mainPanel,"CLERK_HOME");
             }
             else if(uiState.getCurrentSession().getRole() == Role.GUEST){
@@ -435,10 +436,12 @@ public class ModifyReservationPage extends JPanel {
                     throw new RuntimeException(ex);
                 }
                 if(uiState.getCurrentSession().getRole() == Role.CLERK){
+                    JOptionPane.showMessageDialog(null, "Reservation Cancelled.");
                     clerkHomePage.updatePage();
                     cardLayout.show(mainPanel,"CLERK_HOME");
                 }
                 else if(uiState.getCurrentSession().getRole() == Role.GUEST){
+                    JOptionPane.showMessageDialog(null, "Reservation Cancelled.");
                     profilePage.updatePage();
                     cardLayout.show(mainPanel,"PROFILE");
                 }
@@ -636,6 +639,7 @@ public class ModifyReservationPage extends JPanel {
         JButton closeButton = createBlackButton("Close", 130, 55);
 
         closeButton.addActionListener(e -> {
+            clerkHomePage.updatePage();
             cardLayout.show(mainPanel, "CLERK_HOME");
         });
 
@@ -684,7 +688,7 @@ public class ModifyReservationPage extends JPanel {
             JPanel mainPanel = new JPanel(cardLayout);
 
             ModifyReservationPage clerkReservation = null;
-            //clerkReservation = new ModifyReservationPage(cardLayout, mainPanel,null,null);
+            clerkReservation = new ModifyReservationPage(cardLayout, mainPanel,null,null);
             mainPanel.add(clerkReservation, "MODIFY_ROOMS");
 
             frame.setContentPane(mainPanel);

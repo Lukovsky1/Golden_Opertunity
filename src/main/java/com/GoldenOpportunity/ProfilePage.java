@@ -487,20 +487,44 @@ private JPanel createReservationCard(String dates, String rooms) {
 
         try{
             userDao.updateFullName(id,nameField.getText().toString());
-            userDao.updatePassword(id,passwordField.getText().toString());
+            if(!passwordField.getText().isEmpty()){
+                userDao.updatePassword(id,passwordField.getText().toString());
+            }
             userDao.updateUsername(id,usernameField.getText().toString());
             userDao.updatePhoneNumber(id,phoneField.getText().toString());
             userDao.updateEmail(id,emailField.getText().toString());
-            throw new SQLException("Error with changing profile data");
         } catch(SQLException e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void updateProfileToEdit(){
-        fieldsPanel.removeAll();
+    private boolean validateGuestInfo(){
+        String name = nameField.getText().trim();
+        String email = emailField.getText().trim();
+        String phone = phoneField.getText().trim();
 
+        if(!name.matches("[a-zA-Z ]+") || name.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter a valid first name.");
+            return false;
+        }
+
+        if(!phone.matches("\\d+") || phone.length() != 10){
+            JOptionPane.showMessageDialog(null, "Please enter a valid phone number.");
+            return false;
+        }
+
+        if (!email.contains("@") || !email.contains(".")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid email.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void updateProfileToEdit(){
         if(editProfileBtn.getText().equals("Edit Profile")){
+            fieldsPanel.removeAll();
+
             passwordField.setText("");
             namePanel = createTextPanel("Name", nameField);
             emailPanel = createTextPanel("Email", emailField);
@@ -511,7 +535,13 @@ private JPanel createReservationCard(String dates, String rooms) {
             editProfileBtn.setText("Save Profile");
         }
         else{
+            if(!validateGuestInfo()){
+                return;
+            }
+
             handleEdit();
+
+            fieldsPanel.removeAll();
 
             namePanel = createLabelPanel("Name",createLabelField(nameField.getText()));
             emailPanel = createLabelPanel("Email", createLabelField(emailField.getText()));
