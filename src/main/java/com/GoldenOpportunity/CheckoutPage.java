@@ -1,6 +1,8 @@
 package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Login.enums.Role;
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
+import com.GoldenOpportunity.dbLogin.UserDao;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -418,13 +420,14 @@ public class CheckoutPage extends JPanel {
         bookBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         double finalSum = sum;
+        String name = firstNameField.getText().toString() + " " + lastNameField.getText().toString();
         bookBtn.addActionListener(e -> {
             if(!validateGuestInfo() || !validatePaymentInfo()){
                 return;
             }
 
             try {
-                uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,uiState.endDate, finalSum);
+                uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,uiState.endDate, finalSum, name);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }

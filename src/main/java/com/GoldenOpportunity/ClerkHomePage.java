@@ -10,6 +10,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class ClerkHomePage extends JPanel {
 
@@ -224,14 +225,13 @@ public class ClerkHomePage extends JPanel {
         cardsPanel.setOpaque(false);
         cardsPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 
-        //TODO: Add guest info in the database
-        /*
-        for (Guest guest : uiState.reservationService.getGuests()) {
-            for(Reservation reservation : guest.getReservations()){
-                cardsPanel.add(createReservationCard(guest,reservation));
+        try{
+            for(Reservation reservation : uiState.reservationService.getAllReservations()){
+                cardsPanel.add(createReservationCard(reservation));
             }
+        } catch (SQLException e){
+            e.printStackTrace();
         }
-        */
 
         JScrollPane scrollPane = new JScrollPane(cardsPanel);
         scrollPane.setBorder(null);
@@ -245,7 +245,7 @@ public class ClerkHomePage extends JPanel {
     // =========================
     // CARD
     // =========================
-    private JPanel createReservationCard(Guest guest,Reservation reservation) {
+    private JPanel createReservationCard(Reservation reservation) {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(Color.WHITE);
@@ -253,38 +253,21 @@ public class ClerkHomePage extends JPanel {
                 new LineBorder(new Color(190, 205, 218), 1),
                 new EmptyBorder(12, 12, 12, 12)
         ));
-        card.setPreferredSize(new Dimension(300, 300));
+        card.setPreferredSize(new Dimension(300, 260));
 
         Font textFont = new Font("SansSerif", Font.PLAIN, 15);
-        Font titleFont = new Font("SansSerif", Font.BOLD, 15);
+        Font titleFont = new Font("SansSerif", Font.BOLD, 16);
 
-        JLabel guestInfoTitle = new JLabel("Guest Information:");
-        guestInfoTitle.setFont(titleFont);
-        guestInfoTitle.setForeground(new Color(55, 70, 85));
-
-        String[] data = guest.getContactInfo().split(",");
-
-        String name = data[0];
-        String email = data[1];
-        String phone = data[2];
-
-        JLabel nameLabel = new JLabel("Name: " + name);
-        nameLabel.setFont(textFont);
+        JLabel nameLabel = new JLabel(reservation.getName());
+        nameLabel.setFont(titleFont);
         nameLabel.setForeground(new Color(55, 70, 85));
 
-        JLabel emailLabel = new JLabel("Email: " + email);
-        emailLabel.setFont(textFont);
-        emailLabel.setForeground(new Color(55, 70, 85));
-
-        JLabel phoneLabel = new JLabel("Phone: " + phone);
-        phoneLabel.setFont(textFont);
-        phoneLabel.setForeground(new Color(55, 70, 85));
-
+        // ===== RESERVATION INFO =====
         JLabel reservationTitle = new JLabel("Reservation:");
         reservationTitle.setFont(titleFont);
         reservationTitle.setForeground(new Color(55, 70, 85));
 
-        JLabel datesLabel = new JLabel(reservation.getDateRange().toString());
+        JLabel datesLabel = new JLabel("Dates: " + reservation.getDateRange().toString());
         datesLabel.setFont(textFont);
         datesLabel.setForeground(new Color(55, 70, 85));
 
@@ -301,46 +284,41 @@ public class ClerkHomePage extends JPanel {
         detailsButton.setForeground(Color.WHITE);
         detailsButton.setBackground(Color.BLACK);
         detailsButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        detailsButton.setPreferredSize(new Dimension(160, 42));
-        detailsButton.setMaximumSize(new Dimension(160, 42));
+        detailsButton.setPreferredSize(new Dimension(180, 42));
+        detailsButton.setMaximumSize(new Dimension(180, 42));
         detailsButton.setBorder(BorderFactory.createEmptyBorder());
         detailsButton.setOpaque(true);
         detailsButton.setContentAreaFilled(true);
 
         detailsButton.addActionListener(e -> {
             try {
-                mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,uiState), "CLERK_MODIFY_RESERVE");
+                mainPanel.add(new ModifyReservationPage(this, cardLayout, mainPanel, reservation, uiState),
+                        "CLERK_MODIFY_RESERVE");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
 
             mainPanel.revalidate();
             mainPanel.repaint();
-
-            cardLayout.show(mainPanel,"CLERK_MODIFY_RESERVE");
+            cardLayout.show(mainPanel, "CLERK_MODIFY_RESERVE");
         });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         buttonPanel.setOpaque(false);
         buttonPanel.add(detailsButton);
 
-        guestInfoTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // ===== ALIGN LEFT =====
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        emailLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        phoneLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         reservationTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         datesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         roomsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        checkedInStatus.setAlignmentX(Component.LEFT_ALIGNMENT);
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        card.add(guestInfoTitle);
-        card.add(Box.createVerticalStrut(8));
+        // ===== BUILD CARD =====
         card.add(nameLabel);
-        card.add(Box.createVerticalStrut(5));
-        card.add(emailLabel);
-        card.add(Box.createVerticalStrut(5));
-        card.add(phoneLabel);
-        card.add(Box.createVerticalStrut(28));
+        card.add(Box.createVerticalStrut(16));
+
         card.add(reservationTitle);
         card.add(Box.createVerticalStrut(8));
         card.add(datesLabel);

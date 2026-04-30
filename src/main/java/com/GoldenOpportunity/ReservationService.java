@@ -75,7 +75,7 @@ public class ReservationService {
      * @param end
      * @param bill
      */
-    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill)  throws SQLException {
+    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill, String name)  throws SQLException {
         //Creates a new reservation ID from the set of all valid reservation ids
         String newResId = createResId();
         if (newResId == null) {
@@ -91,7 +91,7 @@ public class ReservationService {
         //Reservation newRes = new Reservation(newResId, roomList, new DateRange(start, end), bill);
         //reserveList.add(newRes);
         String createReservation = """
-                INSERT INTO Reservations (resId, startDate, endDate, bill, checkedIn) VALUES (?,?,?,?,?);
+                INSERT INTO Reservations (resId, startDate, endDate, bill, checkedIn, name) VALUES (?,?,?,?,?,?);
                 """;
 
         String createReservedRooms = """
@@ -109,6 +109,7 @@ public class ReservationService {
             reservePstmt.setDouble(4, bill);
             //TODO: Ensure works
             reservePstmt.setBoolean(5, false);
+            reservePstmt.setString(6,name);
             reservePstmt.executeUpdate();
             conn.commit();
 
@@ -343,6 +344,7 @@ public class ReservationService {
         LocalDate endDate = LocalDate.parse(resRS.getString("endDate"));
         double bill = resRS.getDouble("bill");
         boolean checkedIn = resRS.getBoolean("checkedIn");
+        String name = resRS.getString("name");
 
         List<Room> roomList = new ArrayList<>();
 
@@ -360,7 +362,7 @@ public class ReservationService {
             System.err.println("Error building reservation: " + e.getMessage());
             throw e;
         }
-        return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill, checkedIn);
+        return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill, checkedIn, name);
     }
 
     //FIXME: Might be depreciated

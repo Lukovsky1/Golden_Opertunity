@@ -143,7 +143,8 @@ public class DBInitializer {
                       startDate TEXT NOT NULL,
                       endDate TEXT NOT NULL,
                       bill REAL NOT NULL,
-                      checkedIn BOOLEAN NOT NULL
+                      checkedIn BOOLEAN NOT NULL,
+                      name TEXT NOT NULL
                   );
                 """;
 

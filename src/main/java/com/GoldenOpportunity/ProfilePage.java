@@ -312,21 +312,18 @@ public class ProfilePage extends JPanel {
                 new EmptyBorder(14, 14, 14, 14)
         ));
 
+        //TODO: change when Lucas is finished
         if(dbUser != null){
-            Guest guest = Guest.getGuestFromID(dbUser.id);
-
-            if(guest.getReservations() != null){
-                for(Reservation reservation : guest.getReservations()){
-                    panel.add(createReservationCard(guest,reservation));
-                    panel.add(Box.createVerticalStrut(14));
-                }
+            for(Reservation reservation : uiState.reservationService.getAllReservations()) {
+                panel.add(createReservationCard(reservation));
+                panel.add(Box.createVerticalStrut(14));
             }
         }
 
         return panel;
     }
 
-    private JPanel createReservationCard(Guest guest, Reservation reservation) {
+    private JPanel createReservationCard(Reservation reservation) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBackground(new Color(243, 243, 243));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -366,7 +363,7 @@ public class ProfilePage extends JPanel {
 
         modifyBtn.addActionListener(e -> {
             try {
-                mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,
+                mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,reservation,
                         uiState), "GUEST_MODIFY_RESERVE");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

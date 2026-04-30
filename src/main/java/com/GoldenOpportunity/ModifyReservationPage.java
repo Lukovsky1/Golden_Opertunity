@@ -33,7 +33,7 @@ public class ModifyReservationPage extends JPanel {
     private DatePicker startDate;
     private DatePicker endDate;
 
-    public ModifyReservationPage(ClerkHomePage clerkHomePage, CardLayout cardLayout, JPanel mainPanel, Guest guest, Reservation reservation, UIState uiState) throws IOException {
+    public ModifyReservationPage(ClerkHomePage clerkHomePage, CardLayout cardLayout, JPanel mainPanel, Reservation reservation, UIState uiState) throws IOException {
         this.clerkHomePage = clerkHomePage;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
@@ -53,7 +53,7 @@ public class ModifyReservationPage extends JPanel {
         add(createBody(), BorderLayout.CENTER);
     }
 
-    public ModifyReservationPage(ProfilePage profilePage, CardLayout cardLayout, JPanel mainPanel, Guest guest, Reservation reservation, UIState uiState) throws IOException {
+    public ModifyReservationPage(ProfilePage profilePage, CardLayout cardLayout, JPanel mainPanel, Reservation reservation, UIState uiState) throws IOException {
         this.profilePage = profilePage;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
