@@ -78,6 +78,9 @@ public class ProductDetailsPage extends JPanel {
         buttonMap.get("Rooms").addActionListener(e -> cardLayout.show(mainPanel, "ROOMS"));
         buttonMap.get("Shop").addActionListener(e -> cardLayout.show(mainPanel, "SHOP"));
         buttonMap.get("Login").addActionListener(e -> cardLayout.show(mainPanel, "LOGIN"));
+        buttonMap.get("🛒").addActionListener(e -> {
+            cardLayout.show(mainPanel, "CART");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -318,6 +321,7 @@ public class ProductDetailsPage extends JPanel {
     }
     
     private boolean addSelectedQuantityToCart() {
+    	/*commented to not use shopcontroller
         for (int i = 0; i < selectedQuantity; i++) {
             String result = shopController.addProductToCart(
                     guestID,
@@ -329,6 +333,26 @@ public class ProductDetailsPage extends JPanel {
                 JOptionPane.showMessageDialog(this, result);
                 return false;
             }
+        }
+
+        return true;
+        */
+    	
+    	for (int i = 0; i < selectedQuantity; i++) {
+            int availableStock = shopController.getStock(product.getProductID());
+            int quantityInCart = shoppingCart.getQuantity(product.getProductID());
+
+            if (availableStock <= 0) {
+                JOptionPane.showMessageDialog(this, "Product is out of stock.");
+                return false;
+            }
+
+            if (quantityInCart >= availableStock) {
+                JOptionPane.showMessageDialog(this, "Not enough stock available.");
+                return false;
+            }
+
+            shoppingCart.addProductToCart(product);
         }
 
         return true;

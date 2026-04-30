@@ -203,27 +203,34 @@ public class CartPage extends JPanel {
         removeButton.setFocusPainted(false);
 
         plusButton.addActionListener(e -> {
-            String result = shopController.addProductToCart(
+            /*commented so the guest can add without signing in
+             * String result = shopController.addProductToCart(
             		getCurrentGuestID(),
                     product.getProductID(),
                     shoppingCart
             );
+*/
+        	 int availableStock = shopController.getStock(product.getProductID());
+        	    int quantityInCart = shoppingCart.getQuantity(product.getProductID());
 
-            if (result.equals("updatedCart")) {
-                refreshCartDisplay();
-            } else {
-                JOptionPane.showMessageDialog(this, result);
-            }
+        	    if (availableStock <= 0) {
+        	        JOptionPane.showMessageDialog(this, "Product is out of stock.");
+        	        return;
+        	    }
+
+        	    if (quantityInCart >= availableStock) {
+        	        JOptionPane.showMessageDialog(this, "Not enough stock available.");
+        	        return;
+        	    }
+
+        	    shoppingCart.addProductToCart(product);
+        	    refreshCartDisplay();
         });
 
         minusButton.addActionListener(e -> {
-            String result = shopController.removeProductFromCart(product.getProductID(), shoppingCart);
 
-            if (result.equals("updatedCart") || result.equals("removedFromCart")) {
-                refreshCartDisplay();
-            } else {
-                refreshCartDisplay();
-            }
+            shoppingCart.removeProductByID(product.getProductID());
+            refreshCartDisplay();
         });
 
         removeButton.addActionListener(e -> {
