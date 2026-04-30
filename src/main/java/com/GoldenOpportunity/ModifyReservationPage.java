@@ -2,6 +2,8 @@ package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Login.enums.Role;
 import com.GoldenOpportunity.Roles.Guest;
+import com.GoldenOpportunity.dbLogin.DbUser;
+import com.GoldenOpportunity.dbLogin.UserDao;
 import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.imageio.ImageIO;
@@ -288,9 +290,7 @@ public class ModifyReservationPage extends JPanel {
         panel.add(title, gbc);
 
         nameField = createTextField();
-
-        String[] data = guest.getContactInfo().split(",");
-        nameField.setText(data[0]);
+        populateGuestName();
 
         gbc.gridy = 1;
         gbc.gridx = 0;
@@ -493,6 +493,30 @@ public class ModifyReservationPage extends JPanel {
         panel.add(savePanel, gbc);
 
         return panel;
+    }
+
+    private void populateGuestName() {
+        if (uiState == null || uiState.getCurrentSession() == null) {
+            nameField.setText("");
+            return;
+        }
+
+        try {
+            UserDao userDao = new UserDao();
+            DbUser dbUser = userDao.findById(uiState.getCurrentSession().getUserId());
+            if (dbUser == null) {
+                nameField.setText("");
+                return;
+            }
+
+            if (dbUser.fullName != null && !dbUser.fullName.isBlank()) {
+                nameField.setText(dbUser.fullName);
+            } else {
+                nameField.setText(dbUser.username);
+            }
+        } catch (SQLException e) {
+            nameField.setText("");
+        }
     }
 
     private JButton createGreenButton(String text, int width, int height) {

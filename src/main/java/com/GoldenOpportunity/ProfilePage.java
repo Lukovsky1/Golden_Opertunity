@@ -580,7 +580,10 @@ private JPanel createReservationCard(String dates, String rooms) {
 
     private void updateReservationPanel(){
         reservationPanel.removeAll();
-        reservationPanel = createReservationsPanel();
+        JPanel refreshedReservationPanel = createReservationsPanel();
+        for (Component component : refreshedReservationPanel.getComponents()) {
+            reservationPanel.add(component);
+        }
         reservationPanel.revalidate();
         reservationPanel.repaint();
     }
