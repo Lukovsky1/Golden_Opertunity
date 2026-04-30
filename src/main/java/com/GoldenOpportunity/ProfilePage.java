@@ -483,8 +483,18 @@ private JPanel createReservationCard(String dates, String rooms) {
     }
 
     private void handleEdit(){
+        int id = dbUser.id;
 
-        //TODO: get from text fields the new values to save.
+        try{
+            userDao.updateFullName(id,nameField.getText().toString());
+            userDao.updatePassword(id,passwordField.getText().toString());
+            userDao.updateUsername(id,usernameField.getText().toString());
+            userDao.updatePhoneNumber(id,phoneField.getText().toString());
+            //userDao.updateEmail(id,emailField.getText().toString());
+            throw new SQLException("Error with changing profile data");
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     private void updateProfileToEdit(){
