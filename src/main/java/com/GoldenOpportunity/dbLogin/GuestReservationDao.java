@@ -104,23 +104,21 @@ public class GuestReservationDao {
     public List<String> findGuestResIDs(int id){
         List<String> reservations = new ArrayList<>();
         String sql = "SELECT resID FROM guests WHERE guest_id = ?";
+
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                while(rs.next()){
-                    reservations.add(rs.getString("resID"));
-                }
-                return reservations;
+            while (rs.next()) {
+                reservations.add(rs.getString("resID"));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return reservations;
     }
 }
