@@ -490,7 +490,7 @@ private JPanel createReservationCard(String dates, String rooms) {
             userDao.updatePassword(id,passwordField.getText().toString());
             userDao.updateUsername(id,usernameField.getText().toString());
             userDao.updatePhoneNumber(id,phoneField.getText().toString());
-            //userDao.updateEmail(id,emailField.getText().toString());
+            userDao.updateEmail(id,emailField.getText().toString());
             throw new SQLException("Error with changing profile data");
         } catch(SQLException e){
             System.out.println(e.getMessage());
