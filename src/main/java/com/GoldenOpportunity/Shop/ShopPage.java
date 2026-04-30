@@ -21,7 +21,7 @@ public class ShopPage extends JPanel {
     private UIState uiState;
     private JPanel productGridPanel;
     private JTextField searchTextField;
-    private java.util.List<Product> allProducts;
+    private java.util.List<ProductDescription> allProducts;
 
 
     public ShopPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
@@ -34,7 +34,7 @@ public class ShopPage extends JPanel {
         ProductRepo productRepo = new ProductRepo();
         shop = new Shop(productRepo);
         shoppingCart = new ShoppingCart();
-        allProducts = shop.getProducts();
+        allProducts = shop.getAvailableProducts();
 
         setLayout(new BorderLayout(10, 10));
 
@@ -172,11 +172,11 @@ public class ShopPage extends JPanel {
                 return;
             }
 
-            java.util.List<Product> filteredProducts = new java.util.ArrayList<>();
+            java.util.List<ProductDescription> filteredProducts = new java.util.ArrayList<>();
 
-            for (Product product : allProducts) {
-                if (product.getName().toLowerCase().contains(text)) {
-                    filteredProducts.add(product);
+            for (ProductDescription productDescription : allProducts) {
+                if (productDescription.getName().toLowerCase().contains(text)) {
+                    filteredProducts.add(productDescription);
                 }
             }
 
@@ -208,12 +208,12 @@ public class ShopPage extends JPanel {
         return topSection;
     }
 
-    private void displayProducts(List<Product> products) {
+    private void displayProducts(java.util.List<ProductDescription> products) {
         productGridPanel.removeAll();
 
-        for (Product product : products) {
+        for (ProductDescription productDescription : products) {
             try {
-                productGridPanel.add(createProductCard(product));
+                productGridPanel.add(createProductCard(productDescription));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -259,12 +259,12 @@ public class ShopPage extends JPanel {
         detailsButton.setFocusPainted(false);
 
         addButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, product.getName() + " added to cart.");
+            JOptionPane.showMessageDialog(this, productDescription.getName() + " added to cart.");
         });
 
         detailsButton.addActionListener(e -> {
             try {
-                String pageName = "PRODUCT_DETAILS_" + product.getProductID();
+                String pageName = "PRODUCT_DETAILS_" + productDescription.getProductID();
 
                 boolean pageExists = false;
                 for (Component component : mainPanel.getComponents()) {
@@ -275,7 +275,7 @@ public class ShopPage extends JPanel {
                 }
 
                 if (!pageExists) {
-                    ProductDetailsPage detailsPage = new ProductDetailsPage(cardLayout, mainPanel, product);
+                    ProductDetailsPage detailsPage = new ProductDetailsPage(cardLayout, mainPanel, productDescription, shop);
                     detailsPage.setName(pageName);
                     mainPanel.add(detailsPage, pageName);
                 }

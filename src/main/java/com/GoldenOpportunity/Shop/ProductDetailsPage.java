@@ -14,13 +14,15 @@ public class ProductDetailsPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private Product product;
+    private ProductDescription product;
+    private Shop shop;
     private JSpinner quantitySpinner;
 
-    public ProductDetailsPage(CardLayout cardLayout, JPanel mainPanel, Product product) throws IOException {
+    public ProductDetailsPage(CardLayout cardLayout, JPanel mainPanel, ProductDescription product, Shop shop) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.product = product;
+        this.shop = shop;
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -133,8 +135,7 @@ public class ProductDetailsPage extends JPanel {
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JTextArea descriptionArea = new JTextArea(
-                "This is a short description of the product. It provides a brief overview "
-                + "to help the customer understand what they are buying."
+                product.getDescription()
         );
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
@@ -148,7 +149,8 @@ public class ProductDetailsPage extends JPanel {
         JLabel priceLabel = new JLabel("Price: $" + String.format("%.2f", product.getPrice()));
         priceLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        JLabel stockLabel = new JLabel(product.getStock() > 0 ? "Stock: In Stock" : "Stock: Out of Stock");
+        int stock = getStock();
+        JLabel stockLabel = new JLabel(stock > 0 ? "Stock: In Stock" : "Stock: Out of Stock");
         stockLabel.setFont(new Font("Arial", Font.PLAIN, 16));
 
         JLabel detailsTitle = new JLabel("Details:");
@@ -157,7 +159,7 @@ public class ProductDetailsPage extends JPanel {
         JTextArea detailsArea = new JTextArea(
                 "• Product ID: " + product.getProductID() + "\n" +
                 "• Name: " + product.getName() + "\n" +
-                "• Available Stock: " + product.getStock()
+                "• Available Stock: " + stock
         );
         detailsArea.setFont(new Font("Arial", Font.PLAIN, 14));
         detailsArea.setEditable(false);
@@ -205,7 +207,8 @@ public class ProductDetailsPage extends JPanel {
         priceLabel.setFont(new Font("Arial", Font.BOLD, 26));
         priceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel stockLabel = new JLabel(product.getStock() > 0 ? "In Stock" : "Out of Stock");
+        int stock = getStock();
+        JLabel stockLabel = new JLabel(stock > 0 ? "In Stock" : "Out of Stock");
         stockLabel.setForeground(new Color(0, 118, 0));
         stockLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         stockLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -233,7 +236,7 @@ public class ProductDetailsPage extends JPanel {
                 quantitySpinner.commitEdit();
                 int value = (Integer) quantitySpinner.getValue();
 
-                if (value > product.getStock()) {
+                if (value > stock) {
                     stockErrorLabel.setText("Not enough stock available");
                 } else {
                     stockErrorLabel.setText(" ");
@@ -278,7 +281,7 @@ public class ProductDetailsPage extends JPanel {
                 quantitySpinner.commitEdit();
                 int quantity = (Integer) quantitySpinner.getValue();
 
-                if (quantity > product.getStock()) {
+                if (quantity > getStock()) {
                     stockErrorLabel.setText("Not enough stock available");
                     return;
                 }
@@ -296,7 +299,7 @@ public class ProductDetailsPage extends JPanel {
                 quantitySpinner.commitEdit();
                 int quantity = (Integer) quantitySpinner.getValue();
 
-                if (quantity > product.getStock()) {
+                if (quantity > getStock()) {
                     stockErrorLabel.setText("Not enough stock available");
                     return;
                 }
@@ -322,6 +325,11 @@ public class ProductDetailsPage extends JPanel {
         rightSection.add(buyNowButton);
 
         return rightSection;
+    }
+
+    private int getStock() {
+        ProductInventory inventory = shop.findInventory(product.getProductID());
+        return inventory == null ? 0 : inventory.getStock();
     }
 
     private JPanel createFooter() {
