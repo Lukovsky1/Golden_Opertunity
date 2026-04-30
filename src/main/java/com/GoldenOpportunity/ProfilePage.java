@@ -491,6 +491,7 @@ private JPanel createReservationCard(String dates, String rooms) {
         fieldsPanel.removeAll();
 
         if(editProfileBtn.getText().equals("Edit Profile")){
+            passwordField.setText("");
             namePanel = createTextPanel("Name", nameField);
             emailPanel = createTextPanel("Email", emailField);
             phonePanel = createTextPanel("Phone Number", phoneField);
@@ -506,7 +507,7 @@ private JPanel createReservationCard(String dates, String rooms) {
             emailPanel = createLabelPanel("Email", createLabelField(emailField.getText()));
             phonePanel = createLabelPanel("Phone Number", createLabelField(phoneField.getText()));
             usernamePanel = createLabelPanel("Username", createLabelField(usernameField.getText()));
-            passwordPanel = createLabelPanel("Password", createLabelField(passwordField.getText()));
+            passwordPanel = createLabelPanel("Password", createLabelField("**********"));
 
             editProfileBtn.setText("Edit Profile");
         }
@@ -544,7 +545,7 @@ private JPanel createReservationCard(String dates, String rooms) {
         emailField = createTextField(dbUser.contactInfo);
         phoneField = createTextField(dbUser.phoneNumber);
         usernameField = createTextField(dbUser.username);
-        passwordField = createTextField(dbUser.passwordHash);
+        passwordField = createTextField("**********");
 
         namePanel = createLabelPanel("Name",createLabelField(nameField.getText()));
         emailPanel = createLabelPanel("Email", createLabelField(emailField.getText()));
