@@ -3,8 +3,7 @@ package com.GoldenOpportunity;
 import java.util.HashMap;
 import java.util.Map;
 
-//TODO: Add validation functuions to the criteria (ex: floorNum > 0 && <= 3)
-//TODO: Smoking may be extraneous because we have floor num
+//TODO: Add validation functions to the criteria (ex: floorNum > 0 && <= 3)
 public class Criteria {
     private int floorNum;
     private int roomNum;
@@ -15,6 +14,9 @@ public class Criteria {
     private double rate;
     boolean smoking;
     DateRange dateRange;
+    int capacity;
+    String description;
+    String image;
 
 
     Criteria() {
@@ -27,6 +29,9 @@ public class Criteria {
         rate = 0;
         smoking = false;
         dateRange = null;
+        capacity = 0;
+        description = "";
+        image = "";
     }
 
     public int getFloorNum() {return floorNum;}
@@ -40,6 +45,9 @@ public class Criteria {
         return dateRange;
     }
     public Map<String, Integer> getBeds(){return beds;}
+    public int getCapacity() {return capacity;}
+    public String getDescription() {return description;}
+    public String getImage() {return image;}
 
     public void setFloorNum(int floorNum) {this.floorNum = floorNum;}
     public void setRoomNum(int roomNum) { this.roomNum = roomNum; }
@@ -50,6 +58,7 @@ public class Criteria {
     public void setRate(double rate) { this.rate = rate; }
     public void setDateRange(DateRange dateRange) { this.dateRange = dateRange; }
     public void setBeds(Map<String, Integer> beds){this.beds.putAll(beds);}
-
-
+    public void setCapacity(int capacity) {this.capacity = capacity;}
+    public void setDescription(String description) {this.description = description;}
+    public void setImage(String image) {this.image = image;}
 }

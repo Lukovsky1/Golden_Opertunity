@@ -18,20 +18,23 @@ public class ShopPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private Shop shop;
+    private ShopController shopController;
     private ShoppingCart shoppingCart;
     private JPanel productGridPanel;
     private JTextField searchTextField;
-    private java.util.List<Product> allProducts;
+    private java.util.List<ProductDescription> allProducts;
+    private int guestID;
     
 
-    public ShopPage(CardLayout cardLayout, JPanel mainPanel) throws IOException {
-        this.cardLayout = cardLayout;
-        this.mainPanel = mainPanel;
-
-        shop = new Shop("src/main/resources/testProductData.csv");
-        shoppingCart = new ShoppingCart();
-        allProducts = shop.getProducts();
+    public ShopPage(CardLayout cardLayout, JPanel mainPanel, ShopController shopController,
+            ShoppingCart shoppingCart, int guestID) throws IOException {
+		this.cardLayout = cardLayout;
+		this.mainPanel = mainPanel;
+		this.shopController = shopController;
+		this.shoppingCart = shoppingCart;
+		this.guestID = guestID;
+		
+		allProducts = shopController.viewStore();
 
         setLayout(new BorderLayout(10, 10));
 
@@ -180,9 +183,9 @@ public class ShopPage extends JPanel {
                 return;
             }
 
-            java.util.List<Product> filteredProducts = new java.util.ArrayList<>();
+            java.util.List<ProductDescription> filteredProducts = new java.util.ArrayList<>();
 
-            for (Product product : allProducts) {
+            for (ProductDescription product : allProducts) {
                 if (product.getName().toLowerCase().contains(text)) {
                     filteredProducts.add(product);
                 }
@@ -195,10 +198,6 @@ public class ShopPage extends JPanel {
             }
         });
         
-        clearBtn.addActionListener(e -> {
-            searchTextField.setText("");
-            displayProducts(allProducts);
-        });
 
         return search;
     }
@@ -221,10 +220,10 @@ public class ShopPage extends JPanel {
         return topSection;
     }
 
-    private void displayProducts(List<Product> products) {
+    private void displayProducts(List<ProductDescription> products) {
         productGridPanel.removeAll();
 
-        for (Product product : products) {
+        for (ProductDescription product : products) {
             try {
                 productGridPanel.add(createProductCard(product));
             } catch (IOException e) {
@@ -236,7 +235,7 @@ public class ShopPage extends JPanel {
         productGridPanel.repaint();
     }
 
-    private JPanel createProductCard(Product product) throws IOException {
+    private JPanel createProductCard(ProductDescription product) throws IOException {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
         card.setBackground(Color.WHITE);
@@ -260,7 +259,7 @@ public class ShopPage extends JPanel {
 
         JLabel price = new JLabel("Price: $" + String.format("%.2f",product.getPrice()));
 
-        JLabel stock = new JLabel("Stock: " + product.getStock());
+        JLabel stock = new JLabel("Stock: In Stock");
 
         JButton addButton = new JButton("Add to Cart");
         addButton.setBackground(new Color(255, 204, 0));
@@ -272,9 +271,19 @@ public class ShopPage extends JPanel {
         detailsButton.setFocusPainted(false);
 
         addButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, product.getName() + " added to cart.");
-        });
+            String result = shopController.addProductToCart(
+                    guestID,
+                    product.getProductID(),
+                    shoppingCart
+            );
 
+            if (result.equals("updatedCart")) {
+                JOptionPane.showMessageDialog(this, product.getName() + " added to cart.");
+            } else {
+                JOptionPane.showMessageDialog(this, result);
+            }
+        });
+        
         detailsButton.addActionListener(e -> {
             try {
                 String pageName = "PRODUCT_DETAILS_" + product.getProductID();
@@ -288,7 +297,14 @@ public class ShopPage extends JPanel {
                 }
 
                 if (!pageExists) {
-                    ProductDetailsPage detailsPage = new ProductDetailsPage(cardLayout, mainPanel, product);
+                	ProductDetailsPage detailsPage = new ProductDetailsPage(
+                	        cardLayout,
+                	        mainPanel,
+                	        product,
+                	        shopController,
+                	        shoppingCart,
+                	        guestID
+                	);
                     detailsPage.setName(pageName);
                     mainPanel.add(detailsPage, pageName);
                 }

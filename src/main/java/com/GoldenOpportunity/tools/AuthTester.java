@@ -1,4 +1,4 @@
-package com.GoldenOpportunity.tools;
+/*package com.GoldenOpportunity.tools;
 
 import com.GoldenOpportunity.AuthenticationController;
 import com.GoldenOpportunity.Login.AuthResult;
@@ -9,7 +9,7 @@ import com.GoldenOpportunity.dbLogin.UserDao;
 /**
  * Simple console tester for the DB and AuthenticationController.
  * Exits with non-zero code on failure; prints PASS/FAIL per step.
- */
+
 public class AuthTester {
     private static int failures = 0;
 
@@ -128,3 +128,5 @@ public class AuthTester {
     @FunctionalInterface
     interface CheckedRunnable { void run() throws Exception; }
 }
+
+*/

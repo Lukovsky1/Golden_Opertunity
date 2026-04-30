@@ -20,7 +20,7 @@ public class AuthenticationController {
     public AuthenticationController() {
         this.authService = new DbAuthenticationService();
     }
-
+g
     /**
      * Attempt to authenticate a user by username and password.
      * The returned {@link LoginResult} is designed to be consumed by UI.
@@ -29,7 +29,12 @@ public class AuthenticationController {
         return authService.logIn(username, password);
     }
 
-    public AuthResult signUp(String username, String email, String password) {
-        return authService.signUp(username, email, password);
+    public AuthResult signUp(String username, String email, String password, String fullName, String phoneNumber) {
+        return authService.signUp(username, email, password, fullName, phoneNumber);
+    }
+
+    public AuthResult createPrivilegedUser(String username, String email, String password,
+                                           String fullName, String phoneNumber, String role) {
+        return authService.createPrivilegedUser(username, email, password, fullName, phoneNumber, role);
     }
 }

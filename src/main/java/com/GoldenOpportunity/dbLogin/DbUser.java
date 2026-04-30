@@ -6,7 +6,7 @@ package com.GoldenOpportunity.dbLogin;
  * This keeps only what the auth flow needs and avoids coupling UI to JDBC.
  */
 public class DbUser {
-    /** Surrogate primary key in the users table. */
+    /** Primary key in the users table. */
     public final int id;
     /** Unique username for login. */
     public final String username;
@@ -20,9 +20,14 @@ public class DbUser {
     public final int failedLoginCount;
     /** Optional contact information for the user. */
     public final String contactInfo;
+    /** Full display name for the user. */
+    public final String fullName;
+    /** Phone number for the user. */
+    public final String phoneNumber;
 
     public DbUser(int id, String username, String passwordHash, String role,
-                  String accountStatus, int failedLoginCount, String contactInfo) {
+                  String accountStatus, int failedLoginCount, String contactInfo,
+                  String fullName, String phoneNumber) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -30,5 +35,7 @@ public class DbUser {
         this.accountStatus = accountStatus;
         this.failedLoginCount = failedLoginCount;
         this.contactInfo = contactInfo;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
     }
 }

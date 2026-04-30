@@ -1,5 +1,8 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Login.LoginResult;
+import com.GoldenOpportunity.Login.enums.Role;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -8,9 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.GoldenOpportunity.Login.LoginResult;
-import com.GoldenOpportunity.Login.enums.Role;
 
 /**
  * LoginPage represents the UI where a user (Guest, Clerk, or Admin)
@@ -25,24 +25,36 @@ public class LoginPage extends JPanel {
     // Label used to display feedback messages
     private JLabel messageLabel;
 
+    private final AuthenticationController authController = new AuthenticationController();
+
     private CardLayout cardLayout;
     private JPanel mainPanel;
-
-    // Hook into the DB-backed authentication
-    private final AuthenticationController authController = new AuthenticationController();
+    private UIState uiState;
 
     /**
      * Constructor: initializes the login window
      */
-    public LoginPage(CardLayout cardLayout,JPanel mainPanel) throws IOException {
+    public LoginPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.uiState = uiState;
 
         setSize(500, 450);
         setLayout(new BorderLayout());
 
         add(createHeader(), BorderLayout.NORTH);
-        add(createFormPanel(), BorderLayout.CENTER);
+        add(createMainContent(), BorderLayout.CENTER);
+    }
+
+    private JPanel createMainContent() throws IOException {
+        JPanel content = new JPanel(new GridLayout(1,2));
+        content.setBackground(new Color(243, 246, 249));
+        content.setBorder(new EmptyBorder(12, 15, 18, 15));
+
+        content.add(createFormPanel());
+        content.add(new SignUpPage());
+
+        return content;
     }
 
     /**
@@ -67,7 +79,7 @@ public class LoginPage extends JPanel {
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
         Map<String,JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
@@ -78,6 +90,8 @@ public class LoginPage extends JPanel {
             buttonMap.get(item).setPreferredSize(new Dimension(90, 35));
             nav.add(buttonMap.get(item));
         }
+
+        uiState.registerLoginButton(buttonMap.get("Login"));
 
         buttonMap.get("Home").addActionListener(e -> {
             cardLayout.show(mainPanel,"HOME");
@@ -91,8 +105,25 @@ public class LoginPage extends JPanel {
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
         });
-        buttonMap.get("Sign Up").addActionListener(e -> {
-            cardLayout.show(mainPanel,"SIGNUP");
+        buttonMap.get("🛒").addActionListener(e -> {
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            cardLayout.show(mainPanel,"PROFILE");
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -104,7 +135,7 @@ public class LoginPage extends JPanel {
      * Builds the main login form
      */
     private JPanel createFormPanel() {
-        JPanel outerPanel = new JPanel(new BorderLayout());
+        JPanel outerPanel = new JPanel(new GridBagLayout());
         outerPanel.setBackground(new Color(245, 245, 245));
         outerPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
 
@@ -120,11 +151,19 @@ public class LoginPage extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Initialize input fields
-        usernameField = new JTextField(20);
-        passwordField = new JPasswordField(20);
+        JLabel titleLabel = new JLabel("Login");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        formPanel.add(titleLabel, gbc);
 
-        int row = 0;
+        // Initialize input fields
+        usernameField = createResponsiveTextField();
+        passwordField = createResponsivePasswordField();
+
+        int row = 1;
 
         addFormRow(formPanel, gbc, row++, "Username / Email:", usernameField);
         addFormRow(formPanel, gbc, row++, "Password:", passwordField);
@@ -135,6 +174,7 @@ public class LoginPage extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row++;
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         formPanel.add(messageLabel, gbc);
 
         // Buttons panel
@@ -161,9 +201,16 @@ public class LoginPage extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         formPanel.add(buttonPanel, gbc);
 
-        outerPanel.add(formPanel, BorderLayout.CENTER);
+        GridBagConstraints outerGbc = new GridBagConstraints();
+        outerGbc.gridx = 0;
+        outerGbc.gridy = 0;
+        outerGbc.weightx = 1.0;
+        outerGbc.fill = GridBagConstraints.HORIZONTAL;
+        outerGbc.anchor = GridBagConstraints.NORTH;
+        outerPanel.add(formPanel, outerGbc);
         return outerPanel;
     }
 
@@ -175,10 +222,26 @@ public class LoginPage extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = row;
+        gbc.weightx = 0.0;
         panel.add(new JLabel(labelText), gbc);
 
         gbc.gridx = 1;
+        gbc.weightx = 1.0;
         panel.add(component, gbc);
+    }
+
+    private JTextField createResponsiveTextField() {
+        JTextField field = new JTextField(24);
+        field.setPreferredSize(new Dimension(260, 36));
+        field.setMinimumSize(new Dimension(180, 36));
+        return field;
+    }
+
+    private JPasswordField createResponsivePasswordField() {
+        JPasswordField field = new JPasswordField(24);
+        field.setPreferredSize(new Dimension(260, 36));
+        field.setMinimumSize(new Dimension(180, 36));
+        return field;
     }
 
     /**
@@ -191,32 +254,45 @@ public class LoginPage extends JPanel {
         String password = new String(passwordField.getPassword()).trim();
 
         if (username.isEmpty() || password.isEmpty()) {
+            messageLabel.setForeground(Color.RED);
             messageLabel.setText("Please enter both username/email and password.");
             return;
         }
 
-        // Authenticate via the controller
         LoginResult result = authController.logIn(username, password);
         if (!result.isSuccess()) {
             messageLabel.setForeground(Color.RED);
             messageLabel.setText(result.getMessage());
+            passwordField.setText("");
             return;
         }
 
-        // Success: update UI and optionally navigate
         messageLabel.setForeground(new Color(0, 130, 0));
         messageLabel.setText(result.getMessage());
+        usernameField.setText("");
+        passwordField.setText("");
+        messageLabel.setText(" ");
 
-        Role role = result.getSession() != null ? result.getSession().getRole() : null;
-        String roleText = role != null ? ("Role: " + role.name()) : "";
+        uiState.setCurrentSession(result.getSession());
+        Role role = result.getSession().getRole();
+        if (role == Role.GUEST) {
+            cardLayout.show(mainPanel, "HOME");
+            return;
+        }
+
+        if (role == Role.ADMIN) {
+            cardLayout.show(mainPanel, "ADMIN");
+            return;
+        }
+
+        if (role == Role.CLERK) {
+            cardLayout.show(mainPanel, "CLERK_HOME");
+            return;
+        }
+
         JOptionPane.showMessageDialog(this,
-                "Authentication successful. " + roleText,
+                "Authentication successful for role: " + role,
                 "Login Success",
                 JOptionPane.INFORMATION_MESSAGE);
-
-        // Simple navigation: return to HOME after successful login
-        if (cardLayout != null && mainPanel != null) {
-            cardLayout.show(mainPanel, "HOME");
-        }
     }
 }

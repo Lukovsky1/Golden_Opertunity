@@ -9,6 +9,10 @@ public class CheckoutPage extends JPanel {
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
+    private ShopController shopController;
+    private ShoppingCart shoppingCart;
+    private int guestID;
+
     private JTextField firstNameField;
     private JTextField lastNameField;
     private JTextField emailField;
@@ -24,9 +28,19 @@ public class CheckoutPage extends JPanel {
     private JTextField cvvField;
     private JTextField billingZipField;
 
-    public CheckoutPage(CardLayout cardLayout, JPanel mainPanel) {
+    private JPanel summaryItemsPanel;
+    private JLabel totalLabel;
+    private JLabel itemsLabel;
+
+    public CheckoutPage(CardLayout cardLayout, JPanel mainPanel,
+                        ShopController shopController,
+                        ShoppingCart shoppingCart,
+                        int guestID) {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.shopController = shopController;
+        this.shoppingCart = shoppingCart;
+        this.guestID = guestID;
 
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -37,6 +51,17 @@ public class CheckoutPage extends JPanel {
 
         add(scrollPane, BorderLayout.CENTER);
         add(createFooter(), BorderLayout.SOUTH);
+
+        refreshOrderSummary();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+
+        if (visible && summaryItemsPanel != null) {
+            refreshOrderSummary();
+        }
     }
 
     private JPanel createMainContent() {
@@ -120,14 +145,17 @@ public class CheckoutPage extends JPanel {
 
     private JPanel createSummaryPanel() {
         JPanel panel = createCardPanel();
-        panel.setPreferredSize(new Dimension(360, 280));
+        panel.setPreferredSize(new Dimension(360, 350));
         panel.setMaximumSize(new Dimension(360, Integer.MAX_VALUE));
 
         panel.add(sectionTitle("Order Summary"));
 
-        panel.add(leftLabel("Product 1: $XX.XX"));
-        panel.add(Box.createVerticalStrut(8));
-        panel.add(leftLabel("Product 2: $XX.XX"));
+        summaryItemsPanel = new JPanel();
+        summaryItemsPanel.setLayout(new BoxLayout(summaryItemsPanel, BoxLayout.Y_AXIS));
+        summaryItemsPanel.setBackground(Color.WHITE);
+        summaryItemsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        panel.add(summaryItemsPanel);
         panel.add(Box.createVerticalStrut(15));
 
         JSeparator separator = new JSeparator();
@@ -135,9 +163,14 @@ public class CheckoutPage extends JPanel {
         panel.add(separator);
         panel.add(Box.createVerticalStrut(15));
 
-        JLabel total = leftLabel("Total: $XXX.XX");
-        total.setFont(new Font("SansSerif", Font.BOLD, 18));
-        panel.add(total);
+        itemsLabel = leftLabel("Items: 0");
+
+        totalLabel = leftLabel("Total: $0.00");
+        totalLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+
+        panel.add(itemsLabel);
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(totalLabel);
 
         JButton placeOrderButton = new JButton("Place Order");
         placeOrderButton.setBackground(new Color(30, 170, 70));
@@ -147,19 +180,78 @@ public class CheckoutPage extends JPanel {
         placeOrderButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         placeOrderButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        placeOrderButton.addActionListener(e -> {
-            if (!validateGuestInfo() || !validatePaymentInfo()) {
-                return;
-            }
-
-            JOptionPane.showMessageDialog(this, "Order placed successfully!");
-            cardLayout.show(mainPanel, "SHOP");
-        });
+        placeOrderButton.addActionListener(e -> placeOrder());
 
         panel.add(Box.createVerticalStrut(20));
         panel.add(placeOrderButton);
 
         return panel;
+    }
+
+    private void refreshOrderSummary() {
+        summaryItemsPanel.removeAll();
+
+        if (shoppingCart.getCartItems().isEmpty()) {
+            JLabel emptyLabel = leftLabel("Your cart is empty.");
+            summaryItemsPanel.add(emptyLabel);
+        } else {
+            for (ProductDescription product : shoppingCart.getUniqueCartItems()) {
+                int quantity = shoppingCart.getQuantity(product.getProductID());
+                double lineTotal = quantity * product.getPrice();
+
+                JLabel itemLabel = leftLabel(
+                        product.getName() + " x " + quantity + ": $" + String.format("%.2f", lineTotal)
+                );
+
+                summaryItemsPanel.add(itemLabel);
+                summaryItemsPanel.add(Box.createVerticalStrut(8));
+            }
+        }
+
+        itemsLabel.setText("Items: " + shoppingCart.getCartItems().size());
+        totalLabel.setText("Total: $" + String.format("%.2f", shoppingCart.calculateTotal()));
+
+        summaryItemsPanel.revalidate();
+        summaryItemsPanel.repaint();
+    }
+
+    private void placeOrder() {
+        refreshOrderSummary();
+
+        if (shoppingCart.getCartItems().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Your cart is empty.");
+            return;
+        }
+
+        if (!validateGuestInfo() || !validatePaymentInfo()) {
+            return;
+        }
+
+        String billingName = firstNameField.getText().trim() + " " + lastNameField.getText().trim();
+        String billingEmail = emailField.getText().trim();
+        String cardNumber = cardNumberField.getText().trim();
+        String expirationDate = monthBox.getSelectedItem().toString() + "/" + yearBox.getSelectedItem().toString();
+        String cvv = cvvField.getText().trim();
+
+        PaymentDetails paymentDetails = new PaymentDetails(
+                billingName,
+                billingEmail,
+                cardNumber,
+                expirationDate,
+                cvv
+        );
+
+        String result = shopController.checkout(guestID, paymentDetails, shoppingCart);
+
+        if (result.equals("receipt")) {
+            JOptionPane.showMessageDialog(this, "Order placed successfully!");
+            refreshOrderSummary();
+
+            // Later we can change this to ORDER_CONFIRMATION
+            cardLayout.show(mainPanel, "SHOP");
+        } else {
+            JOptionPane.showMessageDialog(this, result);
+        }
     }
 
     private JPanel createCardPanel() {

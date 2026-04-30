@@ -1,37 +1,87 @@
 package com.GoldenOpportunity;
 
+//import com.GoldenOpportunity.Shop.Product;
 import com.GoldenOpportunity.Shop.ShopPage;
 import com.GoldenOpportunity.Shop.CartPage;
 import com.GoldenOpportunity.Shop.CheckoutPage;
+import com.GoldenOpportunity.DatabaseTools.DBInitializer;
+//import com.GoldenOpportunity.Shop.ShopPage;
+import com.GoldenOpportunity.Shop.ShopDBInitializer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.SQLException;
 
 // New main frame for all of the UI
 
 public class MainUIFrame extends JFrame {
 
+    private HotelBookingUI hotelBookingUI;
+    private HotelHomePageUI hotelHomePageUI;
+    private LoginPage loginPage;
+
+    private ShopPage shopPage;
+    private CartPage cartPage;
+    private CheckoutPage checkoutPage;
+
+    private ProfilePage profilePage;
+    private ClerkHomePage clerkHomePage;
+    private AddRoomPage addRoomPage;
+    private ModifyRoomsPage modifyRoomsPage;
+    private NewReservationPage newReservationPage;
+    private AdminPage adminPage;
+
+    //Must load database before all other operations
+    static {
+        try {
+            DBInitializer.initialize();
+        } catch (SQLException e) {
+            System.err.println("Error initializing DB, exiting program");
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Error reading DB Files, exiting program");
+            throw new RuntimeException(e);
+        }
+    }
+
     public MainUIFrame() throws IOException {
         CardLayout cardLayout = new CardLayout();
         JPanel mainPanel = new JPanel(cardLayout);
 
-        HotelHomePageUI hotelHomePageUI = new HotelHomePageUI(cardLayout,mainPanel);
-        HotelBookingUI hotelBookingUI = new HotelBookingUI(cardLayout,mainPanel,
-                hotelHomePageUI.getRoomService(),hotelHomePageUI.getReservationService());
-        LoginPage loginPage = new LoginPage(cardLayout,mainPanel);
-        SignUpPage signUpPage = new SignUpPage(cardLayout, mainPanel);
-        ShopPage shopPage = new ShopPage(cardLayout,mainPanel);
-        CartPage cartPage = new CartPage(cardLayout, mainPanel);
-        CheckoutPage checkoutPage = new CheckoutPage(cardLayout, mainPanel);
-        mainPanel.add(checkoutPage, "CHECKOUT");
+        UIState uiState = new UIState();
+
+        hotelHomePageUI = new HotelHomePageUI(cardLayout, mainPanel, uiState);
+        hotelBookingUI = hotelHomePageUI.hotelBookingUI;
+        loginPage = new LoginPage(cardLayout, mainPanel, uiState);
+
+        shopPage = new ShopPage(cardLayout, mainPanel, uiState);
+        cartPage = new CartPage(cardLayout, mainPanel, uiState);
+        checkoutPage = new CheckoutPage(cardLayout, mainPanel, uiState);
+
+        profilePage = new ProfilePage(cardLayout, mainPanel, uiState);
+        adminPage = new AdminPage(cardLayout, mainPanel, uiState);
+        clerkHomePage = new ClerkHomePage(cardLayout, mainPanel, uiState);
+        addRoomPage = new AddRoomPage(cardLayout, mainPanel, uiState);
+        modifyRoomsPage = new ModifyRoomsPage(cardLayout, mainPanel, uiState);
+        newReservationPage = new NewReservationPage(cardLayout, mainPanel, uiState);
+
+        uiState.setProfilePage(profilePage);
 
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
-        mainPanel.add(loginPage,"LOGIN");
-        mainPanel.add(signUpPage, "SIGNUP");
-        mainPanel.add(shopPage,"SHOP");
+        mainPanel.add(loginPage, "LOGIN");
+
+        mainPanel.add(shopPage, "SHOP");
         mainPanel.add(cartPage, "CART");
+        mainPanel.add(checkoutPage, "CHECKOUT");
+
+        mainPanel.add(profilePage, "PROFILE");
+        mainPanel.add(clerkHomePage, "CLERK_HOME");
+        mainPanel.add(addRoomPage, "ADD_ROOMS");
+        mainPanel.add(modifyRoomsPage, "MODIFY_ROOMS");
+        mainPanel.add(newReservationPage, "NEW_RESERVATION");
+        mainPanel.add(adminPage, "ADMIN");
 
         add(mainPanel);
 
@@ -45,9 +95,11 @@ public class MainUIFrame extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
+                // load shop database
+                //ShopDBInitializer.initializeDatabase();
                 new MainUIFrame().setVisible(true);
             } catch (IOException e) {
                 throw new RuntimeException(e);
