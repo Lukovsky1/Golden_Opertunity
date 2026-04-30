@@ -145,6 +145,46 @@ public class UserDao {
         }
     }
 
+    /** Update a user's full name. */
+    public void updateFullName(int userId, String newFullName) throws SQLException {
+        String now = Instant.now().toString();
+        String sql = "UPDATE users SET full_name = ?, updated_at = ? WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newFullName);
+            ps.setString(2, now);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    /** Update a user's phone number. */
+    public void updatePhoneNumber(int userId, String newPhoneNumber) throws SQLException {
+        String now = Instant.now().toString();
+        String sql = "UPDATE users SET phone_number = ?, updated_at = ? WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPhoneNumber);
+            ps.setString(2, now);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    /** Update a user's full name and phone number together. */
+    public void updateUserProfile(int userId, String newFullName, String newPhoneNumber) throws SQLException {
+        String now = Instant.now().toString();
+        String sql = "UPDATE users SET full_name = ?, phone_number = ?, updated_at = ? WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newFullName);
+            ps.setString(2, newPhoneNumber);
+            ps.setString(3, now);
+            ps.setInt(4, userId);
+            ps.executeUpdate();
+        }
+    }
+
     /**
      * Increment the failed-login counter. If the counter reaches {@code maxAttempts}, lock the account.
      *
