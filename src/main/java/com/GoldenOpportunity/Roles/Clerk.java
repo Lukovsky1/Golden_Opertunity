@@ -127,6 +127,17 @@ public class Clerk extends User {
 
     public boolean checkIn(String resID) throws SQLException{
         String sql = "UPDATE Reservations SET checkedIn=? WHERE resId=?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setBoolean(1, true);
+            stmt.setString(2, resID);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 

@@ -58,7 +58,6 @@ public class Receipt {
         return true;
     }
 
-    //Needs to be implemented
     public boolean addShopItemToBill(String name, double price){
         shopItemBill.put(name, price);
         return true;

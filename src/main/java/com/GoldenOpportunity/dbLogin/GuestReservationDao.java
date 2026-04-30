@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Synchronizes guest users and guest-to-reservation assignments into SQLite.
@@ -97,5 +99,28 @@ public class GuestReservationDao {
                 return null;
             }
         }
+    }
+
+    public List<String> findGuestResIDs(int id){
+        List<String> reservations = new ArrayList<>();
+        String sql = "SELECT resID FROM guests WHERE guest_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                while(rs.next()){
+                    reservations.add(rs.getString("resID"));
+                }
+                return reservations;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

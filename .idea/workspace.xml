@@ -5,136 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Merge branch 'UserDataBaseUpdate' of https://github.com/Lukovsky1/Golden_Opertunity into RoomDatabase&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;src/main/java/com/GoldenOpportunity/AuthenticationController.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Criteria.java&#10;#&#9;src/main/java/com/GoldenOpportunity/DatabaseTools/DBInitializer.java&#10;#&#9;src/main/java/com/GoldenOpportunity/MainUIFrame.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Reservation.java&#10;#&#9;src/main/java/com/GoldenOpportunity/ReservationService.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Room.java&#10;#&#9;src/main/java/com/GoldenOpportunity/RoomService.java&#10;#&#9;src/main/java/com/GoldenOpportunity/SearchController.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Shop/ShopBackendTest.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Shop/ShopController.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Shop/ShopPage.java&#10;#&#9;src/main/resources/Hotel.db&#10;#&#9;src/main/resources/golden.db&#10;#&#9;src/main/resources/room_insertWBedTypes.sql&#10;#&#9;target/classes/Hotel.db&#10;#&#9;target/classes/com/GoldenOpportunity/Criteria.class&#10;#&#9;target/classes/com/GoldenOpportunity/DatabaseTools/DBInitializer.class&#10;#&#9;target/classes/com/GoldenOpportunity/MainUIFrame.class&#10;#&#9;target/classes/com/GoldenOpportunity/Reservation.class&#10;#&#9;target/classes/com/GoldenOpportunity/ReservationService.class&#10;#&#9;target/classes/com/GoldenOpportunity/Roles/Clerk.class&#10;#&#9;target/classes/com/GoldenOpportunity/Room.class&#10;#&#9;target/classes/com/GoldenOpportunity/RoomService.class&#10;#&#9;target/classes/com/GoldenOpportunity/SearchController.class&#10;#&#9;target/classes/com/GoldenOpportunity/Shop/ProductRepo.class&#10;#&#9;target/classes/com/GoldenOpportunity/Shop/ShopBackendTest.class&#10;#&#9;target/classes/com/GoldenOpportunity/Shop/ShopController.class&#10;#&#9;target/classes/golden.db&#10;#&#9;target/classes/room_insertWBedTypes.sql&#10;#&#9;target/classes/shop.sql">
-      <change afterPath="$PROJECT_DIR$/.idea/Golden_Opertunity.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/identifier.sqlite" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AdminPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/CheckoutPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ClerkHomePage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBIntializer1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/EditRoomPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ModifyReservationPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ModifyRoomsPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ProfilePage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Roles/RolePermissions.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/UIState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/EmailValidator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/GuestReservationDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/GuestReservationSeeder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AdminPage$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AdminPage$2.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AdminPage.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/CheckoutPage.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ClerkHomePage.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBIntializer1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/EditRoomPanel.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyReservationPage.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ProfilePage.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Roles/RolePermissions.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/UIState.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/EmailValidator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/GuestReservationDao.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/GuestReservationSeeder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/db-forest-config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/db-forest-config.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AddRoomPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AddRoomPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/AuthenticationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Bed.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Criteria.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Criteria.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelBookingUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/HotelHomePageUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/LoginPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/LoginPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/MainUIFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/RoomDetailsPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Receipt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Receipt.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Reservation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Reservation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Roles/Clerk.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Roles/Clerk.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Roles/Guest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Roles/Guest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Room.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SearchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SearchController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ProductRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ProductRepo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopBackendTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopBackendTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SignUpPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SignUpPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/Database.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/DbAuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/DbAuthenticationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/DbSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/DbSeeder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/DbUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/DbUser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/LoadingInserts.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/LoadingInserts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/UserDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/testDBMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/testDBMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/tools/AuthTester.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/tools/AuthTester.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Hotel.db" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Hotel.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Shop/ShopService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/GuestReservationDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/dbLogin/GuestReservationDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/golden.db" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/golden.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/reservation_insert.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/reservation_insert.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/room_insertWBedTypes.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/room_insertWBedTypes.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/shop.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/testReservationData1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/testReservationData1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/Golden_Opertunity-1.0-SNAPSHOT-jar-with-dependencies.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/Golden_Opertunity-1.0-SNAPSHOT-jar-with-dependencies.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/Golden_Opertunity-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/Golden_Opertunity-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Hotel.db" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Hotel.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AddRoomPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AddRoomPage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AuthenticationController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/AuthenticationController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Bed.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBInitializer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBInitializer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBLoader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBLoader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBUtil.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelBookingUI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/HotelHomePageUI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/beer.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/chocolate.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/coke.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/hat.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/keychain.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/mug.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/pen.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/popcorn.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/ramen.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/sprite.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/tshirt.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/water.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/lobby.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/CheckoutPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/CheckoutPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ClerkHomePage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ClerkHomePage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Criteria.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Criteria.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/cheetos.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/drpepper.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Images/Products/lays.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/LoginPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/LoginPage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/MainUIFrame.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/MainUIFrame.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ReservationLoader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ReservationLoader.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ReservationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ReservationService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomDetailsPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyReservationPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyReservationPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ModifyRoomsPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Receipt.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Receipt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Reservation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Reservation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Roles/Clerk.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Roles/Clerk.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Roles/Guest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Roles/Guest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Room.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SearchController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SearchController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ProductRepo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ProductRepo.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ShopBackendTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ShopBackendTest.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ShopController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ShopController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ShopPage.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SignUpPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/SignUpPage.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/Database.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/Database.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/DbAuthenticationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/DbAuthenticationService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/DbSeeder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/DbSeeder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/DbUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/DbUser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/LoadingInserts.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/LoadingInserts.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/UserDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/UserDao.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/functions.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/testDBMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/testDBMain.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/tools/AuthTester.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/tools/AuthTester.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ShopService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Shop/ShopService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/GuestReservationDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/dbLogin/GuestReservationDao.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/golden.db" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/golden.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/reservation_insert.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/reservation_insert.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/room_insertWBedTypes.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/room_insertWBedTypes.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/shop.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/shop.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/testReservationData1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/testReservationData1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,7 +125,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "Merging RoomDatabase",
+    "git-widget-placeholder": "RoomDatabase",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
@@ -249,7 +154,7 @@
       <recent name="C:\Users\andre\OneDrive\Documentos\Baylor_University\Software_Engineering_I\Repo\src\main\resources" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.HotelBookingUI">
+  <component name="RunManager">
     <configuration name="HotelBookingUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.GoldenOpportunity.HotelBookingUI" />
       <module name="Golden_Opertunity" />
@@ -523,7 +428,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777494320690</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Merge branch 'UserDataBaseUpdate' of https://github.com/Lukovsky1/Golden_Opertunity into RoomDatabase&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;src/main/java/com/GoldenOpportunity/AuthenticationController.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Criteria.java&#10;#&#9;src/main/java/com/GoldenOpportunity/DatabaseTools/DBInitializer.java&#10;#&#9;src/main/java/com/GoldenOpportunity/MainUIFrame.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Reservation.java&#10;#&#9;src/main/java/com/GoldenOpportunity/ReservationService.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Room.java&#10;#&#9;src/main/java/com/GoldenOpportunity/RoomService.java&#10;#&#9;src/main/java/com/GoldenOpportunity/SearchController.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Shop/ShopBackendTest.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Shop/ShopController.java&#10;#&#9;src/main/java/com/GoldenOpportunity/Shop/ShopPage.java&#10;#&#9;src/main/resources/Hotel.db&#10;#&#9;src/main/resources/golden.db&#10;#&#9;src/main/resources/room_insertWBedTypes.sql&#10;#&#9;target/classes/Hotel.db&#10;#&#9;target/classes/com/GoldenOpportunity/Criteria.class&#10;#&#9;target/classes/com/GoldenOpportunity/DatabaseTools/DBInitializer.class&#10;#&#9;target/classes/com/GoldenOpportunity/MainUIFrame.class&#10;#&#9;target/classes/com/GoldenOpportunity/Reservation.class&#10;#&#9;target/classes/com/GoldenOpportunity/ReservationService.class&#10;#&#9;target/classes/com/GoldenOpportunity/Roles/Clerk.class&#10;#&#9;target/classes/com/GoldenOpportunity/Room.class&#10;#&#9;target/classes/com/GoldenOpportunity/RoomService.class&#10;#&#9;target/classes/com/GoldenOpportunity/SearchController.class&#10;#&#9;target/classes/com/GoldenOpportunity/Shop/ProductRepo.class&#10;#&#9;target/classes/com/GoldenOpportunity/Shop/ShopBackendTest.class&#10;#&#9;target/classes/com/GoldenOpportunity/Shop/ShopController.class&#10;#&#9;target/classes/golden.db&#10;#&#9;target/classes/room_insertWBedTypes.sql&#10;#&#9;target/classes/shop.sql">
+      <option name="closed" value="true" />
+      <created>1777500239220</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1777500239220</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

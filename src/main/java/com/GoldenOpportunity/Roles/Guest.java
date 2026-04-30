@@ -1,10 +1,16 @@
 package com.GoldenOpportunity.Roles;
 
 import com.GoldenOpportunity.*;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
 import com.GoldenOpportunity.Login.enums.Role;
 
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /*

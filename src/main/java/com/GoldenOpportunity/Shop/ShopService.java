@@ -2,7 +2,9 @@ package com.GoldenOpportunity.Shop;
 
 import com.GoldenOpportunity.*;
 import com.GoldenOpportunity.Roles.Clerk;
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +60,7 @@ public class ShopService {
     }
 
     // simple checkout
-    public String checkout(int guestID, String paymentDetails, ShoppingCart shoppingCart) {
+    public String checkout(int guestID, String paymentDetails, ShoppingCart shoppingCart) throws SQLException {
         double total = shoppingCart.calculateTotal();
 
         if (total <= 0) {
@@ -75,7 +77,19 @@ public class ShopService {
         order.createOrder(shoppingCart.getCartItems(), guestID, total);
 
         //Add to receipt
-        SearchController searchController = new SearchController(new RoomService(),new ReservationService());
+        GuestReservationDao guest = new GuestReservationDao();
+        List<String> reservations = guest.findGuestResIDs(guestID);
+        SearchController searchController = new SearchController(new RoomService(), new ReservationService());
+        for(String resID: reservations){
+            if(searchController.getResService().findReservation(resID).isCheckedIn()){
+                for(ProductDescription p: shoppingCart.getCartItems()){
+                    String name = p.getName();
+                    double price = p.getPrice();
+                    searchController.getResService().findReservation(resID).getReceipt().addShopItemToBill(name, price);
+                }
+                break;
+            }
+        }
 
         shoppingCart.clearCart();
         clerk.notifyOrder(order);

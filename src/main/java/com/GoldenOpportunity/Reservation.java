@@ -13,7 +13,7 @@ public class Reservation {
     private Receipt receipt;
 
 
-    Reservation(String resId, List<Room> rooms, DateRange dateRange, double bill) {
+    Reservation(String resId, List<Room> rooms, DateRange dateRange, double bill, boolean checkedIn) {
         this.resId = resId;
         this.rooms = rooms;
         this.dateRange = dateRange;

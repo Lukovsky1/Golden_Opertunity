@@ -1,6 +1,7 @@
 package com.GoldenOpportunity;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -81,9 +82,9 @@ public class Room {
                 .noneMatch(r -> r.getDateRange().overlaps(range));
     }
 
-    boolean isRoomAvailable(DateRange range) {
+    boolean isRoomAvailable(DateRange range) throws SQLException {
         ReservationService resService = new ReservationService();
-        for (Reservation r : resService.getReservations()) {
+        for (Reservation r : resService.getAllReservations()) {
             if (r.getRooms().contains(this) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
