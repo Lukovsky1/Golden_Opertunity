@@ -171,6 +171,32 @@ public class UserDao {
         }
     }
 
+    /** Update a user's email/contact info. */
+    public void updateEmail(int userId, String newEmail) throws SQLException {
+        String normalizedEmail = newEmail == null ? "" : newEmail.trim().toLowerCase();
+        if (normalizedEmail.isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be empty.");
+        }
+        if (!EmailValidator.isValidEmail(normalizedEmail)) {
+            throw new IllegalArgumentException(EmailValidator.supportedDomainsMessage());
+        }
+
+        DbUser existingUser = findByEmail(normalizedEmail);
+        if (existingUser != null && existingUser.id != userId) {
+            throw new IllegalArgumentException("That email is already in use.");
+        }
+
+        String now = Instant.now().toString();
+        String sql = "UPDATE users SET contact_info = ?, updated_at = ? WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, normalizedEmail);
+            ps.setString(2, now);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        }
+    }
+
     /** Update a user's full name and phone number together. */
     public void updateUserProfile(int userId, String newFullName, String newPhoneNumber) throws SQLException {
         String now = Instant.now().toString();
