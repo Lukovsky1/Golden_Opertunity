@@ -244,10 +244,10 @@ public class CheckoutPage extends JPanel {
         String result = shopController.checkout(guestID, paymentDetails, shoppingCart);
 
         if (result.equals("receipt")) {
-            JOptionPane.showMessageDialog(this, "Order placed successfully!");
+            shoppingCart.clearCart();
             refreshOrderSummary();
 
-            // Later we can change this to ORDER_CONFIRMATION
+            JOptionPane.showMessageDialog(this, "Order placed successfully!");
             cardLayout.show(mainPanel, "SHOP");
         } else {
             JOptionPane.showMessageDialog(this, result);

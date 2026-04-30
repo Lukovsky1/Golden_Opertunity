@@ -149,7 +149,7 @@ public class CartPage extends JPanel {
                 new LineBorder(Color.LIGHT_GRAY),
                 new EmptyBorder(12, 12, 12, 12)
         ));
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
 
         JLabel imageLabel = createProductImageLabel(product);
 
@@ -157,15 +157,23 @@ public class CartPage extends JPanel {
         productInfo.setLayout(new BoxLayout(productInfo, BoxLayout.Y_AXIS));
         productInfo.setBackground(Color.WHITE);
 
+        int quantity = shoppingCart.getQuantity(product.getProductID());
+        double lineTotal = quantity * product.getPrice();
+
         JLabel nameLabel = new JLabel(product.getName());
         nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
         JLabel priceLabel = new JLabel("Price: $" + String.format("%.2f", product.getPrice()));
         priceLabel.setFont(new Font("Arial", Font.PLAIN, 13));
 
+        JLabel lineTotalLabel = new JLabel("Item total: $" + String.format("%.2f", lineTotal));
+        lineTotalLabel.setFont(new Font("Arial", Font.BOLD, 13));
+
         productInfo.add(nameLabel);
         productInfo.add(Box.createVerticalStrut(5));
         productInfo.add(priceLabel);
+        productInfo.add(Box.createVerticalStrut(5));
+        productInfo.add(lineTotalLabel);
 
         JPanel leftSide = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
         leftSide.setBackground(Color.WHITE);
@@ -175,8 +183,6 @@ public class CartPage extends JPanel {
         JPanel rightSide = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 10));
         rightSide.setBackground(Color.WHITE);
 
-        int quantity = shoppingCart.getQuantity(product.getProductID());
-
         JButton minusButton = new JButton("-");
         JLabel qtyValueLabel = new JLabel(String.valueOf(quantity), SwingConstants.CENTER);
         JButton plusButton = new JButton("+");
@@ -184,6 +190,9 @@ public class CartPage extends JPanel {
         minusButton.setPreferredSize(new Dimension(45, 30));
         qtyValueLabel.setPreferredSize(new Dimension(40, 30));
         plusButton.setPreferredSize(new Dimension(45, 30));
+
+        JButton detailsButton = new JButton("See Details");
+        detailsButton.setFocusPainted(false);
 
         JButton removeButton = new JButton("Remove");
         removeButton.setBackground(new Color(55, 65, 81));
@@ -205,8 +214,13 @@ public class CartPage extends JPanel {
         });
 
         minusButton.addActionListener(e -> {
-            shopController.removeProductFromCart(product.getProductID(), shoppingCart);
-            refreshCartDisplay();
+            String result = shopController.removeProductFromCart(product.getProductID(), shoppingCart);
+
+            if (result.equals("updatedCart") || result.equals("removedFromCart")) {
+                refreshCartDisplay();
+            } else {
+                refreshCartDisplay();
+            }
         });
 
         removeButton.addActionListener(e -> {
@@ -217,10 +231,47 @@ public class CartPage extends JPanel {
             refreshCartDisplay();
         });
 
+        detailsButton.addActionListener(e -> {
+            try {
+                String pageName = "PRODUCT_DETAILS_" + product.getProductID();
+
+                boolean pageExists = false;
+                for (Component component : mainPanel.getComponents()) {
+                    if (pageName.equals(component.getName())) {
+                        pageExists = true;
+                        break;
+                    }
+                }
+
+                if (!pageExists) {
+                    ProductDetailsPage detailsPage = new ProductDetailsPage(
+                            cardLayout,
+                            mainPanel,
+                            product,
+                            shopController,
+                            shoppingCart,
+                            guestID
+                    );
+
+                    detailsPage.setName(pageName);
+                    mainPanel.add(detailsPage, pageName);
+                }
+
+                mainPanel.revalidate();
+                mainPanel.repaint();
+                cardLayout.show(mainPanel, pageName);
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error opening product details.");
+            }
+        });
+
         rightSide.add(new JLabel("Qty:"));
         rightSide.add(minusButton);
         rightSide.add(qtyValueLabel);
         rightSide.add(plusButton);
+        rightSide.add(detailsButton);
         rightSide.add(removeButton);
 
         row.add(leftSide, BorderLayout.CENTER);
@@ -235,13 +286,34 @@ public class CartPage extends JPanel {
         imageLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
 
         try {
-            Image productImage = ImageIO.read(new File(product.getImage()));
+            Image productImage;
+
+            File imageFile = new File(product.getImage());
+
+            if (imageFile.exists()) {
+                productImage = ImageIO.read(imageFile);
+            } else {
+                java.net.URL imageUrl = getClass().getResource(product.getImage());
+
+                if (imageUrl == null) {
+                    imageUrl = getClass().getResource("/" + product.getImage());
+                }
+
+                if (imageUrl == null) {
+                    throw new IOException("Image not found: " + product.getImage());
+                }
+
+                productImage = ImageIO.read(imageUrl);
+            }
+
             Image scaledImage = productImage.getScaledInstance(70, 65, Image.SCALE_SMOOTH);
             imageLabel.setText("");
             imageLabel.setIcon(new ImageIcon(scaledImage));
+
         } catch (Exception e) {
             imageLabel.setOpaque(true);
             imageLabel.setBackground(new Color(220, 220, 220));
+            imageLabel.setText("Image");
         }
 
         return imageLabel;
