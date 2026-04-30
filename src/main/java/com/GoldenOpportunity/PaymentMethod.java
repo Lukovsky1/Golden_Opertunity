@@ -1,6 +1,7 @@
 package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Shop.PaymentDetails;
+import com.GoldenOpportunity.dbLogin.EmailValidator;
 
 public class PaymentMethod {
 
@@ -35,7 +36,8 @@ public class PaymentMethod {
             return false;
         }
 
-        if (!paymentDetails.getBillingEmail().contains("@")) {
+        // updated to use a better validator
+        if (!EmailValidator.isValidEmail(paymentDetails.getBillingEmail())) {
             return false;
         }
 
