@@ -1,12 +1,16 @@
 package com.GoldenOpportunity.Roles;
 
 import com.GoldenOpportunity.*;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
 import com.GoldenOpportunity.Login.enums.Role;
 import com.GoldenOpportunity.dbLogin.DbUser;
 import com.GoldenOpportunity.dbLogin.GuestReservationDao;
 import com.GoldenOpportunity.dbLogin.UserDao;
 
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -95,5 +99,4 @@ public class Guest extends User {
     public String toString() {
         return getUsername() + " (" +  getUserId() + "): " + "Email" + getContactInfo() + ", Reservations: " + reservations;
     }
-
 }

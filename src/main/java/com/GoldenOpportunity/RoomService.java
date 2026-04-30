@@ -1,23 +1,43 @@
 package com.GoldenOpportunity;
 
-import com.GoldenOpportunity.DatabaseTools.DBUtil;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.*;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
 
 public class RoomService {
-    //TODO: Delete repeating databaseZ
-    //String database = "jdbc:sqlite:src/main/resources/golden.db";
     public RoomService() {
         // No roomList, no roomMap — DB only
     }
 
+    public void createTable() {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS rooms (
+                    floorNum   INTEGER NOT NULL,
+                    roomNo     INTEGER PRIMARY KEY,
+                    numBeds    INTEGER NOT NULL,
+                    smoking    BOOLEAN NOT NULL,
+                    qLevel     TEXT NOT NULL,
+                    roomType   TEXT NOT NULL,
+                    rate       REAL NOT NULL,
+                    bedTypes   TEXT NOT NULL,
+                    capacity    INTEGER NOT NULL,
+                    description TEXT,
+                    image       TEXT
+                );
+                """;
 
+        try (Connection conn = DBUtil.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create table.", e);
+        }
+    }
 
     public void deleteRoomTable(){
-        String sql = "DROP TABLE IF EXISTS Rooms;";
+        String sql = "DROP TABLE IF EXISTS rooms;";
         try (Connection conn = DBUtil.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
@@ -31,7 +51,7 @@ public class RoomService {
         List<Room> rooms = new ArrayList<>();
 
         String sql = "SELECT floorNum, roomNo, numBeds, smoking, qLevel," +
-                " roomType, rate, bedTypes, capacity, description, image FROM Rooms";
+                " roomType, rate, bedTypes, capacity, description, image FROM rooms";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -71,7 +91,7 @@ public class RoomService {
     public List<Room> searchRoom(Criteria c) {
         List<Room> results = new ArrayList<>();
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM Rooms WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT * FROM rooms WHERE 1=1");
 
         List<Object> params = new ArrayList<>();
 
@@ -132,8 +152,7 @@ public class RoomService {
         return results;
     }
 
-    //TODO: Depreciated
-    /*public void loadRoomsFromCSV(String filename) throws FileNotFoundException {
+    public void loadRoomsFromCSV(String filename) throws FileNotFoundException {
         File file = new File(filename);
         Scanner fileScanner = new Scanner(file);
 
@@ -154,14 +173,17 @@ public class RoomService {
             Map<String, Integer> bedTypes = parseBedTypes(parts[5]);
             boolean smoking = Boolean.parseBoolean(parts[6]);
             double rate = Double.parseDouble(parts[7]);
+            int capacity = numBeds * 2;
+            String description = String.valueOf(roomNo) + " description";
+            String image = "insert image file path here";
 
-            createRoom(floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes);
+            createRoom(floorNum, roomNo, numBeds, smoking, qLevel, roomType,
+                    rate, bedTypes, capacity, description, image);
         }
 
         fileScanner.close();
-    } */
+    }
 
-    //TODO: Depreciated
     private String[] parseCSVLine(String line) {
         List<String> tokens = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -188,7 +210,7 @@ public class RoomService {
                            Map<String, Integer> bedTypesInput, int capacity,
                            String description, String image) {
 
-        String sql = "INSERT INTO Rooms (floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes, " +
+        String sql = "INSERT INTO rooms (floorNum, roomNo, numBeds, smoking, qLevel, roomType, rate, bedTypes, " +
                 "capacity, description, image) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -293,7 +315,7 @@ public class RoomService {
             }
         }
 
-        String sql = "UPDATE Rooms SET floorNum=?, numBeds=?, smoking=?, qLevel=?, roomType=?," +
+        String sql = "UPDATE rooms SET floorNum=?, numBeds=?, smoking=?, qLevel=?, roomType=?," +
                 " rate=?, bedTypes=?, capacity=?, description=?, image=? " +
                 "WHERE roomNo=?";
 

@@ -37,4 +37,5 @@ public class AuthenticationController {
                                            String fullName, String phoneNumber, String role) {
         return authService.createPrivilegedUser(username, email, password, fullName, phoneNumber, role);
     }
+    
 }
