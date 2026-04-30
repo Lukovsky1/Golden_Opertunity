@@ -1,0 +1,16 @@
+INSERT INTO ProductDescriptions (productID, name, price, stock, image, description) VALUES
+    (1, 'T-Shirt', 20.00, 5, 'src/main/java/com/GoldenOpportunity/Images/Products/tshirt.jpg', 'Comfortable hotel souvenir t-shirt'),
+    (2, 'Hat', 8.00, 2, 'src/main/java/com/GoldenOpportunity/Images/Products/hat.jpg', 'Classic hotel-branded hat'),
+    (3, 'Pen', 1.00, 7, 'src/main/java/com/GoldenOpportunity/Images/Products/pen.jpg', 'Smooth-writing souvenir pen'),
+    (4, 'Mug', 5.00, 3, 'src/main/java/com/GoldenOpportunity/Images/Products/mug.jpg', 'Ceramic Golden Opportunity mug'),
+    (5, 'Keychain', 1.00, 5, 'src/main/java/com/GoldenOpportunity/Images/Products/keychain.jpg', 'Small branded keychain'),
+    (6, 'Water', 1.50, 9, 'src/main/java/com/GoldenOpportunity/Images/Products/water.jpg', 'Bottled water'),
+    (7, 'Chocolate', 0.50, 15, 'src/main/java/com/GoldenOpportunity/Images/Products/chocolate.jpg', 'Single chocolate bar'),
+    (8, 'Coke', 2.00, 7, 'src/main/java/com/GoldenOpportunity/Images/Products/coke.jpg', 'Can of Coca-Cola'),
+    (9, 'Sprite', 2.00, 8, 'src/main/java/com/GoldenOpportunity/Images/Products/sprite.jpg', 'Can of Sprite'),
+    (10, 'Popcorn', 5.00, 9, 'src/main/java/com/GoldenOpportunity/Images/Products/popcorn.jpg', 'Microwave popcorn'),
+    (11, 'Ramen', 5.00, 10, 'src/main/java/com/GoldenOpportunity/Images/Products/ramen.jpg', 'Instant ramen cup'),
+    (12, 'Beer', 9.00, 10, 'src/main/java/com/GoldenOpportunity/Images/Products/beer.jpg', 'Single bottled beer'),
+    (13, 'Cheetos', 3.50, 12, 'src/main/java/com/GoldenOpportunity/Images/Products/cheetos.jpg', 'Crunchy bag of Cheetos'),
+    (14, 'Dr Pepper', 2.50, 8, 'src/main/java/com/GoldenOpportunity/Images/Products/drpepper.jpg', 'Can of Dr Pepper'),
+    (15, 'Lays', 3.00, 11, 'src/main/java/com/GoldenOpportunity/Images/Products/lays.jpg', 'Classic bag of Lays chips');

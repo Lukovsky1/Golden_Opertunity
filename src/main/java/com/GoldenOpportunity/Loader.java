@@ -1,6 +1,9 @@
 package com.GoldenOpportunity;
 
-//TODO: Must be implemented
+import java.sql.SQLException;
+
+//TODO: Depreciated, delete
 public abstract class Loader {
-    //protected List<T>
+    public abstract void createTable();
+    public abstract void loadData();
 }

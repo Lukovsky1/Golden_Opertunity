@@ -4,16 +4,13 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 import com.github.lgooddatepicker.components.DatePicker;
 
@@ -23,30 +20,35 @@ public class HotelHomePageUI extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private DatePicker startDate;
-    private DatePicker endDate;
-    private JSpinner numGuests;
+    private UIState uiState;
+    public HotelBookingUI hotelBookingUI;
 
-    private RoomService roomService;
-    private ReservationService reservationService;
+    private SearchBarPanel searchPanel;
+    private JPanel mainContentPanel;
 
-    public RoomService getRoomService(){return roomService;}
-    public ReservationService getReservationService(){return reservationService;}
-
-    public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel) throws IOException {
+    public HotelHomePageUI(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
-        reservationService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
-        roomService = new RoomService("src/main/resources/testRoomData1.csv");
+        this.uiState = uiState;
+        uiState.reservationService = new ReservationService();
+        uiState.roomService = new RoomService();
+        uiState.searchController = new SearchController(uiState.roomService,uiState.reservationService);
+        this.hotelBookingUI = new HotelBookingUI(this,cardLayout,mainPanel,uiState);
 
         setLayout(new BorderLayout(10, 10));
 
         add(createHeader(), BorderLayout.NORTH);
 
-        JScrollPane scrollPane = new JScrollPane(createMainContent());
+        mainContentPanel = createMainContent();
+
+        JScrollPane scrollPane = new JScrollPane(mainContentPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getVerticalScrollBar().setValue(0);
+        });
 
         add(scrollPane, BorderLayout.CENTER);
 
@@ -72,7 +74,7 @@ public class HotelHomePageUI extends JPanel {
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up"};
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
         Map<String,JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
@@ -84,10 +86,15 @@ public class HotelHomePageUI extends JPanel {
             nav.add(buttonMap.get(item));
         }
 
+        uiState.registerLoginButton(buttonMap.get("Login"));
+
         buttonMap.get("Home").addActionListener(e -> {
+            searchPanel.clearSearchPanel();
             cardLayout.show(mainPanel,"HOME");
         });
         buttonMap.get("Rooms").addActionListener(e -> {
+            searchPanel.saveToUIState();
+            hotelBookingUI.loadSearchFromUIState();
             cardLayout.show(mainPanel,"ROOMS");
         });
         buttonMap.get("Login").addActionListener(e -> {
@@ -96,8 +103,33 @@ public class HotelHomePageUI extends JPanel {
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
         });
-        buttonMap.get("Sign Up").addActionListener(e -> {
-            cardLayout.show(mainPanel,"SIGNUP");
+        buttonMap.get("🛒").addActionListener(e -> {
+            if(uiState.potentialRooms.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Please add a room first.");
+            }
+            else{
+                try {
+                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
+
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error processing booking");
+                }
+                cardLayout.show(mainPanel,"CHECKOUT");
+            }
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                uiState.updateProfilePanel();
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -111,9 +143,33 @@ public class HotelHomePageUI extends JPanel {
         main.setBorder(new EmptyBorder(10, 20, 10, 20));
         main.setBackground(new Color(245, 245, 245));
 
+        searchPanel = new SearchBarPanel(uiState);
+
+        searchPanel.addSearchListener(e -> {
+            DatePicker startDatePicker = searchPanel.getStartDatePicker();
+            DatePicker endDatePicker = searchPanel.getEndDatePicker();
+            if (startDatePicker.getDate() == null || endDatePicker.getDate() == null ||
+                    Period.between(startDatePicker.getDate(),endDatePicker.getDate()).getDays() < 1 ||
+                    startDatePicker.getDate().isBefore(LocalDate.now())) {
+                JOptionPane.showMessageDialog(null, "Please select valid dates");
+                return;
+            }
+            searchPanel.saveToUIState();
+            hotelBookingUI.loadSearchFromUIState();
+            try {
+                hotelBookingUI.updateRooms(uiState.searchController.searchAvailableRooms(searchPanel.search()));
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            cardLayout.show(mainPanel,"ROOMS");
+
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        });
+
         main.add(createHeroSection());
         main.add(Box.createVerticalStrut(15));
-        main.add(createSearchPanel());
+        main.add(searchPanel);
         main.add(Box.createVerticalStrut(20));
         main.add(sectionTitle("Featured Rooms"));
         main.add(createFeaturedRooms());
@@ -146,60 +202,6 @@ public class HotelHomePageUI extends JPanel {
         return hero;
     }
 
-    private JPanel createSearchPanel() {
-        JPanel search = new JPanel(new GridBagLayout());
-        search.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        search.setBackground(Color.WHITE);
-        search.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.gridx = 0; gbc.gridy = 0;
-        search.add(new JLabel("Check-In Date"), gbc);
-        gbc.gridx = 1;
-        search.add(new JLabel("Check-out Date"), gbc);
-        gbc.gridx = 2;
-        search.add(new JLabel("Number of Guests"), gbc);
-        gbc.gridx = 3;
-        search.add(new JLabel("Room Type"), gbc);
-
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        startDate = new DatePicker(); // Calendar picker for check-in
-        search.add(startDate, gbc);
-
-        gbc.gridx = 1;
-        endDate = new DatePicker(); // Calendar picker for check-out
-        search.add(endDate, gbc);
-        
-        gbc.gridx = 2;
-        numGuests = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-        search.add(numGuests, gbc);
-        gbc.gridx = 3;
-        search.add(new JComboBox<>(new String[]{"Standard", "Deluxe", "Suite"}), gbc);
-
-        gbc.gridx = 4;
-        JButton searchBtn = new JButton("Search");
-        searchBtn.setBackground(new Color(50, 100, 230));
-        searchBtn.setForeground(Color.WHITE);
-        searchBtn.setFocusPainted(false);
-        searchBtn.setOpaque(true);
-        searchBtn.setBorderPainted(false);
-        searchBtn.setContentAreaFilled(true);
-        search.add(searchBtn, gbc);
-
-        searchBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-
-        return search;
-    }
-
     private JPanel createFeaturedRooms() throws IOException {
         JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         wrapper.setBackground(new Color(245, 245, 245));
@@ -207,21 +209,21 @@ public class HotelHomePageUI extends JPanel {
         JPanel rooms = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         rooms.setBackground(new Color(245, 245, 245));
 
-        rooms.add(createRoomCard(roomService.getRoomList().get(4),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomStandard.jpg"));
-        rooms.add(createRoomCard(roomService.getRoomList().get(6),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomDeluxe.png"));
-        rooms.add(createRoomCard(roomService.getRoomList().get(8),"src/main/java/com/GoldenOpportunity/Images/Rooms/roomSuite.jpg"));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(4)));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(6)));
+        rooms.add(createRoomCard(uiState.roomService.getAllRooms().get(8)));
 
         wrapper.add(rooms);
         return wrapper;
     }
 
-    private JPanel createRoomCard(Room room,String imageFile) throws IOException {
+    private JPanel createRoomCard(Room cardRoom) throws IOException {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         card.setPreferredSize(new Dimension(280, 280));
         card.setBackground(Color.WHITE);
 
-        Image roomImage = ImageIO.read(new File(imageFile));
+        Image roomImage = ImageIO.read(new File(cardRoom.getImage()));
         Image scaledRoom = roomImage.getScaledInstance(260, 120, Image.SCALE_SMOOTH);
 
         JLabel image = new JLabel(new ImageIcon(scaledRoom));
@@ -232,17 +234,17 @@ public class HotelHomePageUI extends JPanel {
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
         info.setBackground(Color.WHITE);
 
-        info.add(new JLabel(room.getRoomType() + "Room"));
+        info.add(new JLabel(cardRoom.getRoomType() + " Room"));
         info.add(Box.createVerticalStrut(8));
         String desc = "";
-        for(Map.Entry<String,Integer> entry : room.getBedTypes().entrySet()){
+        for(Map.Entry<String,Integer> entry : cardRoom.getBedTypes().entrySet()){
             desc = desc.concat(entry.getValue() + " ");
             desc = desc.concat(entry.getKey() + ", ");
         }
         String finalDesc = desc.substring(0,desc.length()-2);
         info.add(new JLabel(finalDesc));
         info.add(Box.createVerticalStrut(10));
-        info.add(new JLabel("Price: $" + String.format("%.2f",room.getRate()) + " / night"));
+        info.add(new JLabel("Price: $" + String.format("%.2f",cardRoom.getRate()) + " / night"));
         info.add(Box.createVerticalStrut(10));
 
         JButton details = new JButton("Select / Book");
@@ -254,36 +256,36 @@ public class HotelHomePageUI extends JPanel {
         details.setContentAreaFilled(true);
         info.add(details);
 
-        details.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    // Check if user selected dates
-                    if (startDate.getDate() == null || endDate.getDate() == null ||
-                            Period.between(startDate.getDate(),endDate.getDate()).getDays() < 1) {
-                        JOptionPane.showMessageDialog(null, "Please select valid dates");
-                        return;
-                    }
-
-                    mainPanel.add(new RoomDetailsPage(
-                            cardLayout,
-                            mainPanel,
-                            startDate.getDate(),
-                            endDate.getDate(),
-                            (int) numGuests.getValue(),
-                            room,
-                            imageFile,
-                            reservationService
-                    ), "DETAILS");
-
-                    mainPanel.revalidate();
-                    mainPanel.repaint();
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Error processing booking");
+        details.addActionListener(e -> {
+            DatePicker startDatePicker = searchPanel.getStartDatePicker();
+            DatePicker endDatePicker = searchPanel.getEndDatePicker();
+            try {
+                // Check if user selected dates
+                if (startDatePicker.getDate() == null || endDatePicker.getDate() == null ||
+                        Period.between(startDatePicker.getDate(),endDatePicker.getDate()).getDays() < 1) {
+                    JOptionPane.showMessageDialog(null, "Please select valid dates");
+                    return;
                 }
-                cardLayout.show(mainPanel,"DETAILS");
+
+                if(uiState.containsRoom(cardRoom.getRoomNo())){
+                    JOptionPane.showMessageDialog(null, "Room already added");
+                    return;
+                }
+
+                uiState.startDate = startDatePicker.getDate();
+                uiState.endDate = endDatePicker.getDate();
+                uiState.numGuests = 1;
+                uiState.room = cardRoom;
+
+                mainPanel.add(new RoomDetailsPage(cardLayout, mainPanel,uiState), "DETAILS");
+
+                mainPanel.revalidate();
+                mainPanel.repaint();
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error processing booking");
             }
+            cardLayout.show(mainPanel,"DETAILS");
         });
 
         card.add(image, BorderLayout.NORTH);
@@ -324,5 +326,9 @@ public class HotelHomePageUI extends JPanel {
         footer.setBackground(Color.WHITE);
         footer.add(new JLabel("Contact Info: 123 Hotel St, City, Country | +123 456 7890 | info@goldenopportunity.com"));
         return footer;
+    }
+
+    public void loadSearchFromUIState() {
+        searchPanel.loadFromUIState();
     }
 }

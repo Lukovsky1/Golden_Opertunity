@@ -1,6 +1,7 @@
 package com.GoldenOpportunity;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +19,13 @@ public class Room {
     String qLevel;
     String roomType;
     double rate;
+    int capacity;
+    String description;
+    String image;
 
     Room(int floorNum, int rmNo, int b, boolean sm, String qlty,
-         String rmType, double r, Map<String, Integer> InputBedTypes){
+         String rmType, double r, Map<String, Integer> InputBedTypes,
+         int capacity, String description, String image){
         this.floorNum = floorNum;
         roomNo = rmNo;
         beds = b;
@@ -29,6 +34,9 @@ public class Room {
         roomType = rmType;
         rate = r;
         bedTypes = InputBedTypes;
+        this.capacity = capacity;
+        this.description = description;
+        this.image = image;
     }
 
     public int getFloorNum() {return floorNum;}
@@ -39,13 +47,21 @@ public class Room {
     public String getRoomType() { return roomType; }
     public double getRate() { return rate; }
     public Map<String, Integer> getBedTypes(){return bedTypes;}
+    public int getCapacity() {return capacity;}
+    public String getDescription() {return description;}
+    public String getImage() {return image;}
 
+    public void setFloorNum(int floorNum) {this.floorNum = floorNum;}
+    public void setRoomNo(int roomNo) {this.roomNo = roomNo; }
     public void setBeds(int beds) { this.beds = beds; }
     public void setSmoking(boolean smoking) { this.smoking = smoking; }
     public void setQLevel(String qLevel) { this.qLevel = qLevel; }
     public void setRoomType(String roomType) { this.roomType = roomType; }
     public void setRate(double rate) { this.rate = rate; }
     public void setBedTypes(Map<String, Integer> bedTypeInput){bedTypes.putAll(bedTypeInput);}
+    public void setCapacity(int capacity) {this.capacity = capacity;}
+    public void setDescription(String description) {this.description = description;}
+    public void setImage(String image) {this.image = image;}
 
     //String [] bedTypes = {"King", "Queen", "Twin", "Full"};
 
@@ -63,14 +79,15 @@ public class Room {
      * @param reservations - The list of reservations to be checked against
      */
     public boolean isAvailable(DateRange range, List<Reservation> reservations) {
-        return reservations.stream().filter(r -> r.getRoom().equals(this))
+        return reservations.stream().filter(r -> r.getRooms().contains(this))
                 .noneMatch(r -> r.getDateRange().overlaps(range));
     }
 
-    boolean isRoomAvailable(DateRange range) {
-        ReservationService resService = new ReservationService(Path.of("src/main/resources/testReservationData1.csv"));
-        for (Reservation r : resService.getReservations()) {
-            if (r.getRoom().equals(this) &&
+    boolean isRoomAvailable(DateRange range) throws SQLException {
+        ReservationService resService = new ReservationService();
+        List<Reservation> allReservations = resService.getAllReservations();
+        for (Reservation r : allReservations) {
+            if (r.getRooms().contains(this) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
             }
