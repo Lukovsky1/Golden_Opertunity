@@ -2,6 +2,7 @@ package com.GoldenOpportunity.dbLogin;
 
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 import com.GoldenOpportunity.DatabaseTools.DBUtil;
+import com.GoldenOpportunity.Login.enums.AccountStatus;
 import com.GoldenOpportunity.Reservation;
 import com.GoldenOpportunity.Roles.Guest;
 
@@ -265,7 +266,7 @@ public class UserDao {
         }
     }
 
-    /** Used for adding product to guest's cart
+    /** Checks to see if a guest is in an active session and that they are an actual guest
      *
      * @param guestID
      * @return
@@ -274,9 +275,8 @@ public class UserDao {
     public boolean isAuthenticated(int guestID) throws SQLException {
         try {
             DbUser guest = findById(guestID);
-            if (guest == null) return false;
-            if (guest.accountStatus.equals(ACTIVE)) return true;
-            return false;
+            if (guest == null || !guest.role.equals("GUEST")) return false;
+            return AccountStatus.valueOf(guest.accountStatus) == ACTIVE;
         } catch (SQLException e) {
             System.err.println("Error checking authentication from guest database");
             throw e;
