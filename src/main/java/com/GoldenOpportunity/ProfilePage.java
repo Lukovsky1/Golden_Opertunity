@@ -2,6 +2,7 @@ package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Roles.Guest;
 import com.GoldenOpportunity.dbLogin.DbUser;
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
 import com.GoldenOpportunity.dbLogin.UserDao;
 
 import javax.imageio.ImageIO;
@@ -13,6 +14,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,12 +43,14 @@ public class ProfilePage extends JPanel {
 
     private DbUser dbUser;
     private UserDao userDao;
+    private GuestReservationDao guestReservationDao;
 
     public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.uiState = uiState;
         userDao = new UserDao();
+        guestReservationDao = new GuestReservationDao();
 
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -134,7 +139,7 @@ public class ProfilePage extends JPanel {
     }
 
     // ================= SCROLLABLE CONTENT =================
-    private JScrollPane createScrollableContent() throws SQLException {
+    private JScrollPane createScrollableContent() {
         JPanel outer = new JPanel(new BorderLayout());
         outer.setBackground(new Color(245, 245, 245));
         outer.setBorder(new EmptyBorder(14, 14, 14, 14));
@@ -303,7 +308,7 @@ public class ProfilePage extends JPanel {
     }
 
     // ================= RIGHT PANEL =================
-    private JPanel createReservationsPanel() throws SQLException {
+    private JPanel createReservationsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(243, 243, 243));
@@ -313,8 +318,8 @@ public class ProfilePage extends JPanel {
         ));
 
         try{
-            if(dbUser != null){
-                for(Reservation reservation : uiState.reservationService.findReservationName(dbUser.fullName)) {
+            if (dbUser != null && uiState.getCurrentSession() != null) {
+                for (Reservation reservation : loadGuestReservations(uiState.getCurrentSession().getUserId())) {
                     panel.add(createReservationCard(reservation));
                     panel.add(Box.createVerticalStrut(14));
                 }
@@ -324,6 +329,20 @@ public class ProfilePage extends JPanel {
         }
 
         return panel;
+    }
+
+    private List<Reservation> loadGuestReservations(int guestId) throws SQLException {
+        ReservationService reservationService = uiState.reservationService != null
+                ? uiState.reservationService
+                : new ReservationService();
+        List<Reservation> reservations = new ArrayList<>();
+        for (String reservationId : guestReservationDao.findReservationIdsByGuestId(guestId)) {
+            Reservation reservation = reservationService.findReservation(reservationId);
+            if (reservation != null) {
+                reservations.add(reservation);
+            }
+        }
+        return reservations;
     }
 
     private JPanel createReservationCard(Reservation reservation) {
@@ -561,11 +580,7 @@ private JPanel createReservationCard(String dates, String rooms) {
 
     private void updateReservationPanel(){
         reservationPanel.removeAll();
-        try{
-            reservationPanel = createReservationsPanel();
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
+        reservationPanel = createReservationsPanel();
         reservationPanel.revalidate();
         reservationPanel.repaint();
     }

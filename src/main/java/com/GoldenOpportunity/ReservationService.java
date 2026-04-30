@@ -461,44 +461,6 @@ public class ReservationService {
             throw e;
         }
     }
-    //TODO: implement
-    public Reservation findReservationName(String name) throws SQLException {
-        String findRes = """
-                SELECT * FROM Reservations WHERE resId = ?;
-                """;
-        String findResRoom = """
-                SELECT * FROM ReservedRooms WHERE resId = ?;
-                """;
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement resPstmt = conn.prepareStatement(findRes);
-             PreparedStatement resRoomPstmt = conn.prepareStatement(findResRoom)) {
-            conn.setAutoCommit(false);
-            resPstmt.setString(1, reservationId);
-            resRoomPstmt.setString(1, reservationId);
-
-
-            ResultSet resRS = resPstmt.executeQuery();
-            ResultSet resRoomRS = resRoomPstmt.executeQuery();
-
-            //If there exists a reservation object in both tables
-            if (resRS.isBeforeFirst() && resRoomRS.isBeforeFirst()) {
-                Reservation userReservation = buildReservationFromResultSet(resRS, resRoomRS);
-                return userReservation;
-                // throw new NullPointerException("Reservation not found");
-            }
-            //If there doesn't exist a reservation object, then will return null
-            System.out.println("Reservation not found: " + reservationId);
-            return null;
-
-
-        } catch (SQLException e) {
-            System.err.println("Error finding reservation: " + e.getMessage());
-            DBUtil.getConnection().rollback();
-            throw e;
-        }
-    }
-
-
     /**
      * Given two result sets for both the Reservations and ReservedRooms
      * databases, this function will use them both to create a reservation
