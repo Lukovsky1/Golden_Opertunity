@@ -1,6 +1,8 @@
 package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Shop.ShopPage;
+import com.GoldenOpportunity.Shop.CartPage;
+import com.GoldenOpportunity.Shop.CheckoutPage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,12 +22,16 @@ public class MainUIFrame extends JFrame {
         LoginPage loginPage = new LoginPage(cardLayout,mainPanel);
         SignUpPage signUpPage = new SignUpPage(cardLayout, mainPanel);
         ShopPage shopPage = new ShopPage(cardLayout,mainPanel);
+        CartPage cartPage = new CartPage(cardLayout, mainPanel);
+        CheckoutPage checkoutPage = new CheckoutPage(cardLayout, mainPanel);
+        mainPanel.add(checkoutPage, "CHECKOUT");
 
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
         mainPanel.add(loginPage,"LOGIN");
         mainPanel.add(signUpPage, "SIGNUP");
         mainPanel.add(shopPage,"SHOP");
+        mainPanel.add(cartPage, "CART");
 
         add(mainPanel);
 

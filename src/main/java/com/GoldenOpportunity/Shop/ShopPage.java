@@ -107,6 +107,9 @@ public class ShopPage extends JPanel {
         buttonMap.get("Sign Up").addActionListener(e -> {
             cardLayout.show(mainPanel,"SIGNUP");
         });
+        buttonMap.get("🛒").addActionListener(e -> {
+            cardLayout.show(mainPanel, "CART");
+        });
 
         header.add(logoLabel, BorderLayout.WEST);
         header.add(nav, BorderLayout.EAST);
@@ -128,9 +131,36 @@ public class ShopPage extends JPanel {
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;   // important: text field expands
+        JPanel inputWrapper = new JPanel(new BorderLayout());
+        inputWrapper.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        inputWrapper.setBackground(Color.WHITE);
+
         searchTextField = new JTextField();
-        searchTextField.setPreferredSize(new Dimension(400, 30));
-        search.add(searchTextField, gbc);
+        searchTextField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JButton clearBtn = new JButton("X");
+        clearBtn.setBorder(BorderFactory.createEmptyBorder());
+        clearBtn.setFocusPainted(false);
+        clearBtn.setContentAreaFilled(false);
+        clearBtn.setForeground(Color.GRAY);
+        clearBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        clearBtn.addActionListener(e -> {
+            searchTextField.setText("");
+            displayProducts(allProducts);
+        });
+
+        inputWrapper.add(searchTextField, BorderLayout.CENTER);
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.setOpaque(false);
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 8)); // <-- pushes it left
+
+        rightPanel.add(clearBtn, BorderLayout.CENTER);
+
+        inputWrapper.add(rightPanel, BorderLayout.EAST);
+
+        // add wrapper instead of text field
+        search.add(inputWrapper, gbc);
         
         gbc.gridx = 2;
         gbc.weightx = 0;
@@ -163,6 +193,11 @@ public class ShopPage extends JPanel {
             if (filteredProducts.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "No products matched your search.");
             }
+        });
+        
+        clearBtn.addActionListener(e -> {
+            searchTextField.setText("");
+            displayProducts(allProducts);
         });
 
         return search;
