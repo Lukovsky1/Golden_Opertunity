@@ -60,4 +60,5 @@ public class UIState {
     public boolean hasRole(Role role) {
         return role != null && role == getCurrentRole();
     }
+
 }

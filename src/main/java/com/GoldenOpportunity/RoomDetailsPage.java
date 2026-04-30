@@ -17,7 +17,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
+import com.GoldenOpportunity.dbLogin.UserDao;
 import com.github.lgooddatepicker.components.DatePicker;
+
+import static com.GoldenOpportunity.Login.enums.Role.GUEST;
 
 /**
  * RoomDetailsPage represents the UI page where a guest can:
@@ -448,6 +453,14 @@ public class RoomDetailsPage extends JPanel {
             // Retrieve the newly created reservation
             String newReservation = //reservationService.findReservation("");
                     uiState.reservationService.createReservation(uiState.potentialRooms, checkInDate, checkOutDate, totalBill);
+
+            if (uiState.getCurrentRole().equals(GUEST) && uiState.isLoggedIn) {
+                GuestReservationDao guestReservationDao = new GuestReservationDao();
+                UserDao userDao = new UserDao();
+
+                String username = userDao.getUsernameFromId(uiState.getCurrentSession().getUserId());
+                guestReservationDao.assignReservationToGuest(username, newReservation);
+            }
 
             // Save reservation to CSV file
             //appendReservationToCsv(newReservation);
