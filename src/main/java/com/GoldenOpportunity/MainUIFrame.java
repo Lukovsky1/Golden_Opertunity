@@ -4,7 +4,7 @@ package com.GoldenOpportunity;
 import com.GoldenOpportunity.Shop.ShopPage;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 //import com.GoldenOpportunity.Shop.ShopPage;
-import com.GoldenOpportunity.Shop.ShopDBInitializer;
+//import com.GoldenOpportunity.Shop.ShopDBInitializer;
 
 import javax.swing.*;
 import java.awt.*;
