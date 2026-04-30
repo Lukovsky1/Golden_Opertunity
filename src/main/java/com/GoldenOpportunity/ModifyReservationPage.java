@@ -1,6 +1,10 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.Login.enums.Role;
 import com.GoldenOpportunity.Roles.RolePermissions;
+import com.GoldenOpportunity.dbLogin.DbUser;
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
+import com.GoldenOpportunity.dbLogin.UserDao;
 import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.imageio.ImageIO;
@@ -9,12 +13,16 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class ModifyReservationPage extends JPanel {
 
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
     private final UIState uiState;
+    private final UserDao userDao = new UserDao();
+    private final GuestReservationDao guestReservationDao = new GuestReservationDao();
+    private final ReservationService reservationService = new ReservationService();
 
     private JTextField nameField;
     private JTextField emailField;
@@ -22,6 +30,7 @@ public class ModifyReservationPage extends JPanel {
     private DatePicker startDate;
     private DatePicker endDate;
     private JTextField roomsField;
+    private JLabel reservationIdLabel;
 
     public ModifyReservationPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
@@ -38,9 +47,12 @@ public class ModifyReservationPage extends JPanel {
 
     @Override
     public void setVisible(boolean aFlag) {
-        if (aFlag && !RolePermissions.requireRole(this, uiState, "Modifying reservations", "HOME", cardLayout, mainPanel, com.GoldenOpportunity.Login.enums.Role.CLERK)) {
-            super.setVisible(false);
-            return;
+        if (aFlag) {
+            if (!RolePermissions.requireRole(this, uiState, "Modifying reservations", "HOME", cardLayout, mainPanel, Role.CLERK, Role.GUEST)) {
+                super.setVisible(false);
+                return;
+            }
+            loadSelectedReservation();
         }
         super.setVisible(aFlag);
     }
@@ -84,7 +96,7 @@ public class ModifyReservationPage extends JPanel {
             cardLayout.show(mainPanel,"PROFILE");
         });
         homeButton.addActionListener(e -> {
-            cardLayout.show(mainPanel,"CLERK_HOME");
+            cardLayout.show(mainPanel, uiState.hasRole(Role.CLERK) ? "CLERK_HOME" : "HOME");
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -97,7 +109,9 @@ public class ModifyReservationPage extends JPanel {
         bodyWrapper.setBackground(new Color(245, 245, 245));
         bodyWrapper.setBorder(new EmptyBorder(15, 0, 0, 0));
 
-        bodyWrapper.add(createSidebar(), BorderLayout.WEST);
+        if (uiState.hasRole(Role.CLERK)) {
+            bodyWrapper.add(createSidebar(), BorderLayout.WEST);
+        }
         bodyWrapper.add(createFormPanel(), BorderLayout.CENTER);
 
         return bodyWrapper;
@@ -157,7 +171,11 @@ public class ModifyReservationPage extends JPanel {
                 new EmptyBorder(20, 20, 20, 20)
         ));
 
-        JLabel title = new JLabel("Reservation:");
+        reservationIdLabel = new JLabel("Reservation:");
+        reservationIdLabel.setFont(new Font("SansSerif", Font.PLAIN, 34));
+        reservationIdLabel.setForeground(new Color(45, 60, 75));
+
+        JLabel title = reservationIdLabel;
         title.setFont(new Font("SansSerif", Font.PLAIN, 34));
         title.setForeground(new Color(45, 60, 75));
 
@@ -248,6 +266,16 @@ public class ModifyReservationPage extends JPanel {
         gbc.gridwidth = 2;
         form.add(roomsField, gbc);
 
+        JButton saveButton = new JButton("Save Changes");
+        saveButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        saveButton.setForeground(Color.WHITE);
+        saveButton.setBackground(new Color(55, 133, 76));
+        saveButton.setFocusPainted(false);
+        saveButton.setBorder(new EmptyBorder(12, 24, 12, 24));
+        saveButton.setOpaque(true);
+        saveButton.setContentAreaFilled(true);
+        saveButton.addActionListener(e -> handleSaveChanges());
+
         JButton cancelButton = new JButton("Cancel Reservation");
         cancelButton.setFont(new Font("SansSerif", Font.BOLD, 16));
         cancelButton.setForeground(Color.WHITE);
@@ -261,6 +289,11 @@ public class ModifyReservationPage extends JPanel {
         gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(26, 12, 12, 12);
+        form.add(saveButton, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
         form.add(cancelButton, gbc);
 
         return form;
@@ -305,6 +338,76 @@ public class ModifyReservationPage extends JPanel {
 
     public String getRoomsValue() {
         return roomsField.getText();
+    }
+
+    private void loadSelectedReservation() {
+        String reservationId = uiState.getSelectedReservationId();
+        if (reservationId == null || reservationId.isBlank()) {
+            reservationIdLabel.setText("Reservation:");
+            return;
+        }
+
+        try {
+            if (uiState.hasRole(Role.GUEST)
+                    && !guestReservationDao.guestOwnsReservation(uiState.getCurrentSession().getUserId(), reservationId)) {
+                JOptionPane.showMessageDialog(this, "You can only modify your own reservations.");
+                cardLayout.show(mainPanel, "PROFILE");
+                return;
+            }
+
+            DbUser user = userDao.findById(uiState.getCurrentSession().getUserId());
+            Reservation reservation = reservationService.findReservation(reservationId);
+            if (user == null || reservation == null) {
+                JOptionPane.showMessageDialog(this, "Unable to load the selected reservation.");
+                return;
+            }
+
+            reservationIdLabel.setText("Reservation: " + reservation.getId());
+            nameField.setText(user.fullName == null || user.fullName.isBlank() ? user.username : user.fullName);
+            emailField.setText(user.contactInfo == null ? "" : user.contactInfo);
+            phoneField.setText(user.phoneNumber == null ? "" : user.phoneNumber);
+            startDate.setDate(reservation.getDateRange().startDate());
+            endDate.setDate(reservation.getDateRange().endDate());
+            roomsField.setText(reservation.getRooms().stream()
+                    .map(room -> Integer.toString(room.getRoomNo()))
+                    .reduce((left, right) -> left + ", " + right)
+                    .orElse(""));
+            roomsField.setEditable(true);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Unable to load reservation details.");
+        }
+    }
+
+    private void handleSaveChanges() {
+        String reservationId = uiState.getSelectedReservationId();
+        if (reservationId == null || reservationId.isBlank()) {
+            JOptionPane.showMessageDialog(this, "No reservation selected.");
+            return;
+        }
+
+        if (startDate.getDate() == null || endDate.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Please select both dates.");
+            return;
+        }
+
+        try {
+            java.util.List<Room> updatedRooms = reservationService.parseRooms(roomsField.getText());
+            Reservation updatedReservation = reservationService.modifyReservation(
+                    reservationId,
+                    startDate.getDate(),
+                    endDate.getDate(),
+                    updatedRooms
+            );
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Reservation updated successfully.\nNew bill: $" + String.format("%.2f", updatedReservation.getBill())
+            );
+            cardLayout.show(mainPanel, "PROFILE");
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Unable to update reservation.");
+        }
     }
 
     public static void main(String[] args) {

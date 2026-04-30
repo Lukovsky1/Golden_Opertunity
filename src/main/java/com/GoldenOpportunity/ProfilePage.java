@@ -1,5 +1,9 @@
 package com.GoldenOpportunity;
 
+import com.GoldenOpportunity.dbLogin.DbUser;
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
+import com.GoldenOpportunity.dbLogin.UserDao;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -8,14 +12,26 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ProfilePage extends JPanel {
 
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
-    private UIState uiState;
+    private final UIState uiState;
+    private final UserDao userDao = new UserDao();
+    private final GuestReservationDao guestReservationDao = new GuestReservationDao();
+    private final ReservationService reservationService = new ReservationService();
+    private JLabel fullNameValueLabel;
+    private JLabel emailValueLabel;
+    private JLabel phoneValueLabel;
+    private JLabel usernameValueLabel;
+    private JPanel reservationsContainer;
 
     public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
@@ -27,6 +43,14 @@ public class ProfilePage extends JPanel {
 
         add(createHeader(), BorderLayout.NORTH);
         add(createScrollableContent(), BorderLayout.CENTER);
+    }
+
+    @Override
+    public void setVisible(boolean aFlag) {
+        if (aFlag) {
+            refreshProfileData();
+        }
+        super.setVisible(aFlag);
     }
 
     // ================= HEADER =================
@@ -133,15 +157,20 @@ public class ProfilePage extends JPanel {
                 new EmptyBorder(14, 14, 14, 14)
         ));
 
-        panel.add(createField("Name", "XXXXXXX"));
+        fullNameValueLabel = createValueLabel("XXXXXXX");
+        emailValueLabel = createValueLabel("XXXXXXX");
+        phoneValueLabel = createValueLabel("XXXXXXX");
+        usernameValueLabel = createValueLabel("XXXXXXX");
+
+        panel.add(createField("Name", fullNameValueLabel));
         panel.add(Box.createVerticalStrut(8));
-        panel.add(createField("Email", "XXXXXXX"));
+        panel.add(createField("Email", emailValueLabel));
         panel.add(Box.createVerticalStrut(8));
-        panel.add(createField("Phone Number", "XXXXXXX"));
+        panel.add(createField("Phone Number", phoneValueLabel));
         panel.add(Box.createVerticalStrut(8));
-        panel.add(createField("Username", "XXXXXXX"));
+        panel.add(createField("Username", usernameValueLabel));
         panel.add(Box.createVerticalStrut(8));
-        panel.add(createField("Password", "**********"));
+        panel.add(createField("Password", createValueLabel("**********")));
         panel.add(Box.createVerticalStrut(28));
 
         JButton editProfileBtn = createBlackButton("Edit Profile", 150, 50);
@@ -179,7 +208,7 @@ public class ProfilePage extends JPanel {
         return panel;
     }
 
-    private JPanel createField(String labelText, String value) {
+    private JPanel createField(String labelText, JLabel valueLabel) {
         JPanel wrapper = new JPanel();
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
         wrapper.setOpaque(false);
@@ -190,6 +219,14 @@ public class ProfilePage extends JPanel {
         label.setForeground(new Color(45, 55, 70));
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        wrapper.add(label);
+        wrapper.add(Box.createVerticalStrut(4));
+        wrapper.add(valueLabel);
+
+        return wrapper;
+    }
+
+    private JLabel createValueLabel(String value) {
         JLabel valueLabel = new JLabel(value);
         valueLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
         valueLabel.setForeground(Color.BLACK);
@@ -202,12 +239,7 @@ public class ProfilePage extends JPanel {
         valueLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         valueLabel.setPreferredSize(new Dimension(300, 48));
         valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        wrapper.add(label);
-        wrapper.add(Box.createVerticalStrut(4));
-        wrapper.add(valueLabel);
-
-        return wrapper;
+        return valueLabel;
     }
 
     // ================= RIGHT PANEL =================
@@ -220,24 +252,24 @@ public class ProfilePage extends JPanel {
                 new EmptyBorder(14, 14, 14, 14)
         ));
 
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "102, 103, 104"));
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "102, 103, 104"));
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "102, 103, 104"));
-        panel.add(Box.createVerticalStrut(14));
+        JLabel titleLabel = new JLabel("Reservations");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        titleLabel.setForeground(new Color(45, 55, 70));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Extra cards so scrolling can be seen
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "201, 202"));
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "305"));
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "401, 402, 403"));
+        reservationsContainer = new JPanel();
+        reservationsContainer.setLayout(new BoxLayout(reservationsContainer, BoxLayout.Y_AXIS));
+        reservationsContainer.setOpaque(false);
+        reservationsContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        panel.add(titleLabel);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(reservationsContainer);
 
         return panel;
     }
 
-    private JPanel createReservationCard(String dates, String rooms) {
+    private JPanel createReservationCard(Reservation reservation) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBackground(new Color(243, 243, 243));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -246,12 +278,20 @@ public class ProfilePage extends JPanel {
         ));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String dates = formatter.format(reservation.getDateRange().startDate())
+                + " - " + formatter.format(reservation.getDateRange().endDate());
+        String rooms = reservation.getRooms().stream()
+                .map(room -> Integer.toString(room.getRoomNo()))
+                .reduce((left, right) -> left + ", " + right)
+                .orElse("No rooms");
+
         // LEFT SIDE (INFO)
         JPanel infoPanel = new JPanel();
         infoPanel.setOpaque(false);
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-        JLabel reservationLabel = new JLabel("Reservation:");
+        JLabel reservationLabel = new JLabel("Reservation: " + reservation.getId());
         reservationLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
         reservationLabel.setForeground(new Color(45, 55, 70));
 
@@ -273,6 +313,7 @@ public class ProfilePage extends JPanel {
         buttonWrapper.setOpaque(false);
 
         JButton modifyBtn = createBlackButton("Modify Reservation", 225, 50);
+        modifyBtn.addActionListener(e -> openModifyReservationPage(reservation.getId()));
         buttonWrapper.add(modifyBtn); // GridBagLayout centers it automatically
 
         // ADD TO CARD
@@ -280,6 +321,90 @@ public class ProfilePage extends JPanel {
         card.add(buttonWrapper, BorderLayout.EAST);
 
         return card;
+    }
+
+    private void refreshProfileData() {
+        refreshUserDetails();
+        refreshReservations();
+    }
+
+    private void refreshUserDetails() {
+        if (uiState.getCurrentSession() == null) {
+            fullNameValueLabel.setText("Not logged in");
+            emailValueLabel.setText("Not logged in");
+            phoneValueLabel.setText("Not logged in");
+            usernameValueLabel.setText("Not logged in");
+            return;
+        }
+
+        try {
+            DbUser user = userDao.findById(uiState.getCurrentSession().getUserId());
+            if (user == null) {
+                fullNameValueLabel.setText("Unknown user");
+                emailValueLabel.setText("Unknown user");
+                phoneValueLabel.setText("Unknown user");
+                usernameValueLabel.setText("Unknown user");
+                return;
+            }
+
+            fullNameValueLabel.setText(user.fullName == null || user.fullName.isBlank() ? user.username : user.fullName);
+            emailValueLabel.setText(user.contactInfo == null || user.contactInfo.isBlank() ? "-" : user.contactInfo);
+            phoneValueLabel.setText(user.phoneNumber == null || user.phoneNumber.isBlank() ? "-" : user.phoneNumber);
+            usernameValueLabel.setText(user.username);
+        } catch (SQLException e) {
+            fullNameValueLabel.setText("Error loading user");
+            emailValueLabel.setText("Error loading user");
+            phoneValueLabel.setText("Error loading user");
+            usernameValueLabel.setText("Error loading user");
+        }
+    }
+
+    private void refreshReservations() {
+        reservationsContainer.removeAll();
+
+        List<Reservation> reservations = loadCurrentGuestReservations();
+        if (reservations.isEmpty()) {
+            JLabel emptyLabel = new JLabel("No reservations found for this guest.");
+            emptyLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            emptyLabel.setForeground(new Color(70, 80, 90));
+            emptyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            reservationsContainer.add(emptyLabel);
+        } else {
+            for (int i = 0; i < reservations.size(); i++) {
+                reservationsContainer.add(createReservationCard(reservations.get(i)));
+                if (i < reservations.size() - 1) {
+                    reservationsContainer.add(Box.createVerticalStrut(14));
+                }
+            }
+        }
+
+        reservationsContainer.revalidate();
+        reservationsContainer.repaint();
+    }
+
+    private List<Reservation> loadCurrentGuestReservations() {
+        if (uiState.getCurrentSession() == null) {
+            return List.of();
+        }
+
+        try {
+            List<String> reservationIds = guestReservationDao.findReservationIdsByGuestId(uiState.getCurrentSession().getUserId());
+            List<Reservation> reservations = new ArrayList<>();
+            for (String reservationId : reservationIds) {
+                Reservation reservation = reservationService.findReservation(reservationId);
+                if (reservation != null) {
+                    reservations.add(reservation);
+                }
+            }
+            return reservations;
+        } catch (SQLException e) {
+            return List.of();
+        }
+    }
+
+    private void openModifyReservationPage(String reservationId) {
+        uiState.setSelectedReservationId(reservationId);
+        cardLayout.show(mainPanel, "MODIFY_RESERVATION");
     }
 
     // ================= BUTTON HELPERS =================

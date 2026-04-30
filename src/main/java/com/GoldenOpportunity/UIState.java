@@ -19,6 +19,7 @@ public class UIState {
     public SearchController searchController;
     public List<Room> potentialRooms = new ArrayList<>();
     public boolean isLoggedIn;
+    private String selectedReservationId;
     private Session currentSession;
     private final List<JButton> loginButtons = new ArrayList<>();
 
@@ -59,5 +60,13 @@ public class UIState {
 
     public boolean hasRole(Role role) {
         return role != null && role == getCurrentRole();
+    }
+
+    public void setSelectedReservationId(String selectedReservationId) {
+        this.selectedReservationId = selectedReservationId;
+    }
+
+    public String getSelectedReservationId() {
+        return selectedReservationId;
     }
 }
