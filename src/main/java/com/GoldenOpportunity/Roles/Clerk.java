@@ -32,22 +32,14 @@ public class Clerk extends User {
 
 
     public boolean modifyInfo(int id, String username, String password, String contactInfo){
-        String sql = "UPDATE users SET username=?, password=?," +
-                "contact_info=?, updated_at=?" +
-                "WHERE id=?";
+        String sql = "UPDATE users SET username=?, password=?, contact_info=?, updated_at=? WHERE id=?";
 
         Clerk clerk = findClerk(id);
-        LocalDate currentDate = LocalDate.now();
-        String updatedAt = currentDate.toString();
-        if(username.isBlank()){
-            username = clerk.getUsername();
-        }
-        if(password.isBlank()){
-            password = clerk.getPassword();
-        }
-        if(contactInfo.isBlank()){
-            contactInfo = clerk.getContactInfo();
-        }
+        if (clerk == null) return false;
+
+        if (username.isBlank()) username = clerk.getUsername();
+        if (password.isBlank()) password = clerk.getPassword();
+        if (contactInfo.isBlank()) contactInfo = clerk.getContactInfo();
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -55,7 +47,7 @@ public class Clerk extends User {
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.setString(3, contactInfo);
-            stmt.setString(4, updatedAt);
+            stmt.setString(4, LocalDate.now().toString());
             stmt.setInt(5, id);
 
             stmt.executeUpdate();
@@ -79,40 +71,51 @@ public class Clerk extends User {
     }
 
     public Receipt cancelReservation(String resID) throws SQLException {
-        SearchController searchController = new SearchController(new RoomService(), new ReservationService());
-        Reservation reservation = searchController.getResService().findReservation(resID);
-        LocalDate current = LocalDate.now();
-        LocalDate startDate = reservation.getDateRange().startDate();
-        LocalDate twoDays = startDate.minusDays(2);
-        double total = 0.0;
+        SearchController sc = new SearchController(new RoomService(), new ReservationService());
+        Reservation reservation = sc.getResService().findReservation(resID);
+
+        if (reservation == null) return null;
+
+        LocalDate today = LocalDate.now();
+        LocalDate start = reservation.getDateRange().startDate();
+        LocalDate cutoff = start.minusDays(2);
+
         Receipt receipt = reservation.getReceipt();
-        if(!current.isBefore(twoDays)){
-            for(Room room: reservation.getRooms()){
-                total = total + room.getRate();
-            }
-            total = total * 0.8;
-            receipt.setPenalty(total);
-            receipt.addOnTotal(total);
+
+        if (!today.isBefore(cutoff)) {
+            double penalty = reservation.getRooms()
+                    .stream()
+                    .mapToDouble(Room::getRate)
+                    .sum() * 0.8;
+
+            receipt.setPenalty(penalty);
+            receipt.addOnTotal(penalty);
         }
-        searchController.getResService().deleteReservation(resID);
+
+        sc.getResService().deleteReservation(resID);
         return receipt;
     }
 
     public Receipt generateBilling(String resID) throws SQLException {
-        SearchController searchController = new SearchController(new RoomService(), new ReservationService());
-        LocalDate endDate = searchController.getResService().findReservation(resID).getDateRange().endDate();
-        LocalDate currentDate = LocalDate.now();
-        double penalty = 0.0;
-        Receipt receipt = searchController.getResService().findReservation(resID).getReceipt();
-        if(currentDate.isBefore(endDate)){
-            List<Room> roomsList = searchController.getResService().findReservation(resID).getRooms();
-            for(Room room: roomsList){
-                penalty = penalty + room.getRate();
-            }
-            penalty = penalty * 0.8;
+        SearchController sc = new SearchController(new RoomService(), new ReservationService());
+        Reservation reservation = sc.getResService().findReservation(resID);
+
+        if (reservation == null) return null;
+
+        Receipt receipt = reservation.getReceipt();
+        LocalDate today = LocalDate.now();
+        LocalDate end = reservation.getDateRange().endDate();
+
+        if (today.isBefore(end)) {
+            double penalty = reservation.getRooms()
+                    .stream()
+                    .mapToDouble(Room::getRate)
+                    .sum() * 0.8;
+
             receipt.setPenalty(penalty);
-            receipt.calculateTotal();
         }
+
+        receipt.calculateTotal();
         return receipt;
     }
 
