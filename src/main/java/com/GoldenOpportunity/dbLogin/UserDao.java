@@ -2,6 +2,8 @@ package com.GoldenOpportunity.dbLogin;
 
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 import com.GoldenOpportunity.DatabaseTools.DBUtil;
+import com.GoldenOpportunity.Reservation;
+import com.GoldenOpportunity.Roles.Guest;
 
 import java.io.IOException;
 import java.sql.*;
@@ -43,6 +45,34 @@ public class UserDao {
                 "FROM users WHERE id = ?";
         return findOneByField(sql, String.valueOf(id));
     }
+
+    //TODO:
+    public List<DbUser> findByRole(String role) throws SQLException {
+        String sql = "SELECT id, username, password_hash, role, account_status, failed_login_count, contact_info, full_name, phone_number " +
+                "FROM users WHERE role = ?";
+
+        try (Connection connection = DBUtil.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, role);
+            ResultSet rs = preparedStatement.executeQuery();
+            List<DbUser> allRolesUser = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                        String username = rs.getString("username");
+                        String password = rs.getString("password_hash");
+                        String assignedRole = rs.getString("role");
+                        String status = rs.getString("account_status");
+                        int failedCount = rs.getInt("failed_login_count");
+                        String contact = rs.getString("contact_info");
+                        String fullName = rs.getString("full_name");
+                        String phone = rs.getString("phone_number");
+                        allRolesUser.add(new DbUser(id, username, password, assignedRole, status, failedCount, contact,
+                        fullName, phone));
+            }
+        }
+        return new ArrayList<>();
+    }
+
 
     private DbUser findOneByField(String sql, String value) throws SQLException {
         try (Connection conn = DBUtil.getConnection();

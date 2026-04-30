@@ -1,6 +1,7 @@
 package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.DatabaseTools.DBUtil;
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
 
 import javax.swing.*;
 import java.sql.*;
@@ -255,10 +256,30 @@ public class ReservationService {
 
 
     //TODO: Must implement (Only need to get the date range and the checked in status)
-    public boolean hasValidReservation(int guestID) {
-        //try (Connection conn = DBUtil.getConnection();)
-        //
+    public boolean hasValidReservation(int guestID) throws SQLException {
+        String checked = "SELECT checkedIn, startDate, endDate FROM Reservations WHERE resId = ?;";
 
+        GuestReservationDao guestReservationDao = new GuestReservationDao();
+        List<String> resIds = guestReservationDao.findGuestReservations(guestID);
+
+        boolean validRes = false;
+
+        for (String resId : resIds) {
+            try (Connection conn = DBUtil.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(checked);) {
+                pstmt.setString(1, resId);
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    validRes = rs.getBoolean("checkedIn");
+                    LocalDate startDate = rs.getDate("startDate").toLocalDate();
+                    LocalDate endDate = rs.getDate("endDate").toLocalDate();
+
+                    if (validRes && (startDate.isAfter(LocalDate.now()) && endDate.isBefore(LocalDate.now()))) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -301,11 +322,6 @@ public class ReservationService {
             DBUtil.getConnection().rollback();
             throw e;
         }
-        /*
-        if (reservationMap.containsKey(reservationId)) {
-            return reservationMap.get(reservationId.toUpperCase());
-        } */
-        //return null;
     }
 
 
