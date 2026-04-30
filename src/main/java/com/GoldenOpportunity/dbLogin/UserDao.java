@@ -69,8 +69,11 @@ public class UserDao {
                         allRolesUser.add(new DbUser(id, username, password, assignedRole, status, failedCount, contact,
                         fullName, phone));
             }
+            return allRolesUser;
+        } catch (NullPointerException e) {
+            System.err.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
-        return new ArrayList<>();
     }
 
 
@@ -316,7 +319,19 @@ public class UserDao {
         }
     }
 
-    /** Cgheused for adding product to guest's cart
+    public String getUsernameFromId(int id) throws SQLException {
+        String sql = "SELECT username FROM users WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getString(1);
+                return null;
+            }
+        }
+    }
+
+    /** Used for adding product to guest's cart
      *
      * @param guestID
      * @return

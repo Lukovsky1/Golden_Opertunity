@@ -79,8 +79,8 @@ public class testDBMain {
         }
         try {
             GuestReservationDao guestReservationDao = new GuestReservationDao();
-            System.out.println(reservationService.hasValidReservation(4));
-            List<String> resIds = guestReservationDao.findGuestReservations(4);
+            System.out.println(reservationService.hasValidReservation(5));
+            List<String> resIds = guestReservationDao.findGuestReservations(5);
             List<Guest> guests = Guest.getAllGuests();
 
             resIds.stream().forEach(System.out::println);

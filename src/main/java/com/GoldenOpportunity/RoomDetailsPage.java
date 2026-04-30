@@ -19,7 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.GoldenOpportunity.Login.enums.Role;
+
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
+import com.GoldenOpportunity.dbLogin.UserDao;
 import com.github.lgooddatepicker.components.DatePicker;
+
+import static com.GoldenOpportunity.Login.enums.Role.GUEST;
 
 /**
  * RoomDetailsPage represents the UI page where a guest can:
@@ -423,5 +428,66 @@ public class RoomDetailsPage extends JPanel {
                 totalValueLabel.setText("$0");
             }
         }
+    }
+}
+
+            //TODO: Must account for multiple rooms and their rates (List<Room>)
+            double totalBill = nights * uiState.room.getRate();
+
+            //uiState.reservationService.createReservation(uiState.potentialRooms, checkInDate, checkOutDate, totalBill);
+
+            //TODO: Must edit so the new reservationID is given back to the user instead of the reservation
+            // Retrieve the newly created reservation
+            String newReservation = //reservationService.findReservation("");
+                    uiState.reservationService.createReservation(uiState.potentialRooms, checkInDate, checkOutDate, totalBill);
+
+            if (uiState.getCurrentRole().equals(GUEST) && uiState.isLoggedIn) {
+                GuestReservationDao guestReservationDao = new GuestReservationDao();
+                UserDao userDao = new UserDao();
+
+                String username = userDao.getUsernameFromId(uiState.getCurrentSession().getUserId());
+                guestReservationDao.assignReservationToGuest(username, newReservation);
+            }
+
+            // Save reservation to CSV file
+            //appendReservationToCsv(newReservation);
+
+            nightsValueLabel.setText(String.valueOf(nights));
+            totalValueLabel.setText("$" + totalBill);
+
+            // Show confirmation
+            JOptionPane.showMessageDialog(this,
+                    "Reservation created successfully.\nReservation ID: " + newReservation);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * appendReservationToCsv:
+     * Appends a newly created reservation to the CSV file.
+     * Converts reservation data into a CSV line format.
+     */
+    private void appendReservationToCsv(Reservation reservation) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(RESERVATION_FILE, true));
+
+        //TODO: Edit to align with database and also use multiple rooms in a reservation
+        // Extract relevant data from the reservation
+        String roomIds = null;
+        StringBuilder builder = new StringBuilder();
+        for (Room room : reservation.getRooms()) {
+            builder.append(room.getRoomNo()).append("& ");
+        }
+        roomIds = builder.toString();
+        //String roomId = String.valueOf(reservation.getRooms().getRoomNo());
+        String start = reservation.getDateRange().startDate().format(DateTimeFormatter.ofPattern("M/d/yy"));
+        String end = reservation.getDateRange().endDate().format(DateTimeFormatter.ofPattern("M/d/yy"));
+
+        // Write new reservation line to file
+        writer.newLine();
+        writer.write(reservation.getId() + "," + roomIds + "," + start + "," + end);
+        writer.close();
     }
 }
