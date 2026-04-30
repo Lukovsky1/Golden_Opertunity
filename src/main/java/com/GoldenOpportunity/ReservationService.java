@@ -262,7 +262,7 @@ public class ReservationService {
         GuestReservationDao guestReservationDao = new GuestReservationDao();
         List<String> resIds = guestReservationDao.findGuestReservations(guestID);
 
-        boolean validRes = false;
+        boolean checkIn = false;
 
         for (String resId : resIds) {
             try (Connection conn = DBUtil.getConnection();
@@ -270,11 +270,13 @@ public class ReservationService {
                 pstmt.setString(1, resId);
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
-                    validRes = rs.getBoolean("checkedIn");
+                    checkIn = rs.getBoolean("checkedIn");
                     LocalDate startDate = rs.getDate("startDate").toLocalDate();
                     LocalDate endDate = rs.getDate("endDate").toLocalDate();
 
-                    if (validRes && (startDate.isAfter(LocalDate.now()) && endDate.isBefore(LocalDate.now()))) {
+                    //The system will see if the reservation is checked in and if it is currently within the
+                    //date range specified
+                    if (checkIn && (!startDate.isAfter(LocalDate.now()) && !endDate.isBefore(LocalDate.now()))) {
                         return true;
                     }
                 }

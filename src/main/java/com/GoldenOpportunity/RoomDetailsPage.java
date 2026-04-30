@@ -454,6 +454,7 @@ public class RoomDetailsPage extends JPanel {
             String newReservation = //reservationService.findReservation("");
                     uiState.reservationService.createReservation(uiState.potentialRooms, checkInDate, checkOutDate, totalBill);
 
+            //Will bind a reservation to the given guest
             if (uiState.getCurrentRole().equals(GUEST) && uiState.isLoggedIn) {
                 GuestReservationDao guestReservationDao = new GuestReservationDao();
                 UserDao userDao = new UserDao();

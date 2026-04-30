@@ -1,8 +1,14 @@
 package com.GoldenOpportunity.Roles;
 
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
+import com.GoldenOpportunity.ReservationService;
 import com.GoldenOpportunity.Shop.Order;
 import com.GoldenOpportunity.User;
 import com.GoldenOpportunity.Login.enums.Role;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Concrete user type representing a front-desk clerk.
@@ -25,4 +31,20 @@ public class Clerk extends User {
     public void notifyOrder(Order order) {
         System.out.println("Clerk notified for order #" + order.getOrderID());
     }
+
+    //TODO: Implement
+    /*public void checkIn(String resId) throws SQLException {
+        String check = "UPDATE Reservations SET checkIn = 1 WHERE resId = " + resId + ";";
+        try {
+        Connection conn = DBUtil.getConnection();
+        Statement stmt = conn.createStatement();
+
+        conn.setAutoCommit(false);
+        stmt.execute(check);
+        conn.commit();
+        } catch (SQLException e) {
+
+
+        }
+    }*/
 }
