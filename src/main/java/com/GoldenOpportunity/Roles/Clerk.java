@@ -31,7 +31,7 @@ public class Clerk extends User {
     }
 
 
-    public boolean modifyInfo(int id, String username, String password, String contactInfo){
+    public boolean modifyInfo(int id, String username, String password, String contactInfo) throws SQLException {
         String sql = "UPDATE users SET username=?, password=?, contact_info=?, updated_at=? WHERE id=?";
 
         Clerk clerk = findClerk(id);
@@ -53,7 +53,8 @@ public class Clerk extends User {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+            throw e;
         }
         return true;
     }
@@ -129,23 +130,28 @@ public class Clerk extends User {
     }
 
     public boolean checkIn(String resID) throws SQLException{
-        String sql = "UPDATE Reservations SET checkedIn=? WHERE resId=?";
+        String sql = "UPDATE Reservations SET checkedIn= ? WHERE resId = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            conn.setAutoCommit(false);
 
             stmt.setBoolean(1, true);
             stmt.setString(2, resID);
 
             stmt.executeUpdate();
+            conn.commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
+            DBUtil.getConnection().rollback();
+            throw e;
         }
         return true;
     }
 
-    public Clerk findClerk(int id) {
-        String sql = "SELECT * FROM users WHERE id = ?";
+     static public Clerk findClerk(int id) throws SQLException {
+        String sql = "SELECT * FROM users WHERE id = ? AND role = 'CLERK'";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -155,18 +161,18 @@ public class Clerk extends User {
             if (rs.next()) {
                 return buildClerkFromResultSet(rs);
             }
+            return null;
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw e;
         }
-
-        return null;
     }
 
-    private Clerk buildClerkFromResultSet(ResultSet rs) throws SQLException{
+    static private Clerk buildClerkFromResultSet(ResultSet rs) throws SQLException{
         int id = rs.getInt("id");
         String username = rs.getString("username");
-        String password = rs.getString("password");
+        String password = rs.getString("password_hash");
         String contactInfo = rs.getString("contact_info");
 
         return new Clerk(id, username, password, contactInfo);

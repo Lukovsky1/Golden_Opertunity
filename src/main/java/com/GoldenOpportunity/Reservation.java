@@ -18,7 +18,7 @@ public class Reservation {
         this.rooms = rooms;
         this.dateRange = dateRange;
         this.bill =  bill;
-        this.checkedIn = false;
+        this.checkedIn = checkedIn;
         receipt = new Receipt();
     }
     public String getId() {

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
+import com.GoldenOpportunity.Roles.Clerk;
 import com.GoldenOpportunity.Roles.Guest;
 import com.GoldenOpportunity.dbLogin.GuestReservationDao;
 
@@ -85,6 +86,15 @@ public class testDBMain {
 
             resIds.stream().forEach(System.out::println);
             guests.stream().forEach(System.out::println);
+
+            Clerk newClerk = Clerk.findClerk(2);
+
+            guestReservationDao.assignReservationToGuest("guest1", "R-001");
+
+            assert newClerk != null;
+            newClerk.checkIn("R-001");
+
+            System.out.println(reservationService.findReservation("R-001").isCheckedIn());
 
 
         } catch (SQLException e) {

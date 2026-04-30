@@ -59,8 +59,17 @@ public class Receipt {
     }
 
     public boolean addShopItemToBill(String name, double price){
-        shopItemBill.put(name, price);
-        return true;
+        try {
+            shopItemBill.put(name, price);
+            return true;
+        }
+        catch(ClassCastException e){
+            System.err.println("Error in adding shop item to bill");
+            return false;
+        }catch(NullPointerException e){
+            System.err.println("Invalid item");
+            return false;
+        }
     }
 
     public double getPenalty() {return penalty;}

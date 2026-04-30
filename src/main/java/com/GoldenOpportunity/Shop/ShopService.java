@@ -78,7 +78,7 @@ public class ShopService {
 
         //Add to receipt
         GuestReservationDao guest = new GuestReservationDao();
-        List<String> reservations = guest.findGuestResIDs(guestID);
+        List<String> reservations = guest.findGuestReservations(guestID);
         SearchController searchController = new SearchController(new RoomService(), new ReservationService());
         for(String resID: reservations){
             if(searchController.getResService().findReservation(resID).isCheckedIn()){
