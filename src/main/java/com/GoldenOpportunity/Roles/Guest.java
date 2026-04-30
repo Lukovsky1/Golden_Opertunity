@@ -68,9 +68,9 @@ public class Guest extends User {
 
         List<String> reservationIDs = guestReservationDao.findGuestReservations(id);
         List<Reservation> reservations = new ArrayList<>();
-        if (reservationIDs == null ||  reservationIDs.isEmpty() ) {
+        /* if (reservationIDs == null ||  reservationIDs.isEmpty() ) {
             return null;
-        }
+        } */
         for (String reserveIDs : reservationIDs) {
             reservations.add(resService.findReservation(reserveIDs));
         }
