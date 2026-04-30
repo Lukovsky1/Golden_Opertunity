@@ -41,7 +41,7 @@ public class ProfilePage extends JPanel {
     private DbUser dbUser;
     private UserDao userDao;
 
-    public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
+    public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException, SQLException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.uiState = uiState;
@@ -134,7 +134,7 @@ public class ProfilePage extends JPanel {
     }
 
     // ================= SCROLLABLE CONTENT =================
-    private JScrollPane createScrollableContent() {
+    private JScrollPane createScrollableContent() throws SQLException {
         JPanel outer = new JPanel(new BorderLayout());
         outer.setBackground(new Color(245, 245, 245));
         outer.setBorder(new EmptyBorder(14, 14, 14, 14));
@@ -303,7 +303,7 @@ public class ProfilePage extends JPanel {
     }
 
     // ================= RIGHT PANEL =================
-    private JPanel createReservationsPanel() {
+    private JPanel createReservationsPanel() throws SQLException {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(243, 243, 243));
@@ -312,23 +312,20 @@ public class ProfilePage extends JPanel {
                 new EmptyBorder(14, 14, 14, 14)
         ));
 
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "102, 103, 104"));
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "102, 103, 104"));
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "102, 103, 104"));
-        panel.add(Box.createVerticalStrut(14));
+        if(dbUser != null){
+            Guest guest = Guest.getGuestFromID(dbUser.id);
 
-        // Extra cards so scrolling can be seen
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "201, 202"));
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "305"));
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(createReservationCard("xx/xx/xxxx - xx/xx/xxxx", "401, 402, 403"));
+            if(guest.getReservations() != null){
+                for(Reservation reservation : guest.getReservations()){
+                    panel.add(createReservationCard(guest,reservation));
+                    panel.add(Box.createVerticalStrut(14));
+                }
+            }
+        }
 
         return panel;
     }
-/*
+
     private JPanel createReservationCard(Guest guest, Reservation reservation) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBackground(new Color(243, 243, 243));
@@ -369,7 +366,8 @@ public class ProfilePage extends JPanel {
 
         modifyBtn.addActionListener(e -> {
             try {
-                mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,uiState), "GUEST_MODIFY_RESERVE");
+                mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,
+                        uiState), "GUEST_MODIFY_RESERVE");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -386,7 +384,7 @@ public class ProfilePage extends JPanel {
 
         return card;
     }
-*/
+
 private JPanel createReservationCard(String dates, String rooms) {
     JPanel card = new JPanel(new BorderLayout(10, 10));
     card.setBackground(new Color(243, 243, 243));
@@ -563,14 +561,13 @@ private JPanel createReservationCard(String dates, String rooms) {
 
     private void updateReservationPanel(){
         reservationPanel.removeAll();
-        reservationPanel = createReservationsPanel();
+        try{
+            reservationPanel = createReservationsPanel();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
         reservationPanel.revalidate();
         reservationPanel.repaint();
-    }
-
-    public void updatePage(){
-        updateProfileToEdit();
-        updateReservationPanel();
     }
 
     private void handleSignOut() {
@@ -602,5 +599,7 @@ private JPanel createReservationCard(String dates, String rooms) {
 
         profilePanel.revalidate();
         profilePanel.repaint();
+
+        updateReservationPanel();
     }
 }

@@ -39,7 +39,7 @@ public class MainUIFrame extends JFrame {
         }
     }
 
-    public MainUIFrame() throws IOException {
+    public MainUIFrame() throws IOException, SQLException {
         CardLayout cardLayout = new CardLayout();
         JPanel mainPanel = new JPanel(cardLayout);
 
@@ -88,6 +88,8 @@ public class MainUIFrame extends JFrame {
                 //ShopDBInitializer.initializeDatabase();
                 new MainUIFrame().setVisible(true);
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         });
