@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
+import com.GoldenOpportunity.Roles.Guest;
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
 
 import static java.lang.System.exit;
 
@@ -71,6 +73,19 @@ public class testDBMain {
         try {
             //Print reservation with ID R-024
             System.out.println(reservationService.findReservation("R-024"));
+
+        } catch (SQLException e) {
+            System.err.println("Error finding reservation: " + e.getMessage());
+        }
+        try {
+            GuestReservationDao guestReservationDao = new GuestReservationDao();
+            System.out.println(reservationService.hasValidReservation(4));
+            List<String> resIds = guestReservationDao.findGuestReservations(4);
+            List<Guest> guests = Guest.getAllGuests();
+
+            resIds.stream().forEach(System.out::println);
+            guests.stream().forEach(System.out::println);
+
 
         } catch (SQLException e) {
             System.err.println("Error finding reservation: " + e.getMessage());

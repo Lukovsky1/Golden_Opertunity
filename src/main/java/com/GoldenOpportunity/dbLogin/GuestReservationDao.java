@@ -2,6 +2,7 @@ package com.GoldenOpportunity.dbLogin;
 
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 import com.GoldenOpportunity.DatabaseTools.DBUtil;
+import com.GoldenOpportunity.Roles.Guest;
 import org.sqlite.core.DB;
 
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Synchronizes guest users and guest-to-reservation assignments into SQLite.
@@ -98,4 +101,29 @@ public class GuestReservationDao {
             }
         }
     }
+
+    //TODO:
+    public List<String> findGuestReservations(int guestId) throws SQLException {
+        String sql = "SELECT resId FROM guests WHERE guest_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, guestId);
+
+            ResultSet rs = pstmt.executeQuery();
+            String [] guestsResIds = rs.getString(1).trim().split(",");
+            return List.of(guestsResIds);
+
+
+        } catch (SQLException e) {
+            System.err.println("Error while trying to find guest reservations: " + e.getMessage());
+            throw e;
+        }
+        catch (NullPointerException e) {
+            System.out.println("This guest has no current reservations");
+        }
+        return null;
+    }
+
+
 }
