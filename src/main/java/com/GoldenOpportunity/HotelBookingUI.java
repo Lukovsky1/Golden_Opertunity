@@ -119,6 +119,7 @@ public class HotelBookingUI extends JPanel {
                 cardLayout.show(mainPanel,"LOGIN");
             }
             else{
+                uiState.updateProfilePanel();
                 cardLayout.show(mainPanel,"PROFILE");
                 mainPanel.revalidate();
                 mainPanel.repaint();

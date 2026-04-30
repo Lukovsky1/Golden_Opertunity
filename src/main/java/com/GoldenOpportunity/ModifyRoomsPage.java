@@ -88,7 +88,15 @@ public class ModifyRoomsPage extends JPanel {
         nav.add(profileButton);
 
         profileButton.addActionListener(e -> {
-            cardLayout.show(mainPanel,"PROFILE");
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                uiState.updateProfilePanel();
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
         homeButton.addActionListener(e -> {
             cardLayout.show(mainPanel,"CLERK_HOME");

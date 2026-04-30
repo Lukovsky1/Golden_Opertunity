@@ -5,6 +5,7 @@ import com.GoldenOpportunity.Login.enums.Role;
 import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.swing.*;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,12 @@ public class UIState {
     public String searchRate = "Any";
     public boolean searchSmoking = false;
     public List<String> searchBedTypes = new ArrayList<>();
+
+    private ProfilePage profilePage;
+
+    public void setProfilePage(ProfilePage profilePage){
+        this.profilePage = profilePage;
+    }
 
     public void registerLoginButton(JButton loginButton) {
         if (loginButton == null) {
@@ -83,5 +90,13 @@ public class UIState {
             }
         }
         return flag;
+    }
+
+    public void updateProfilePanel() {
+        try{
+            profilePage.updateProfilePage();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Roles.Guest;
+import com.GoldenOpportunity.dbLogin.DbUser;
+import com.GoldenOpportunity.dbLogin.UserDao;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,6 +12,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,19 +38,14 @@ public class ProfilePage extends JPanel {
     private JTextField usernameField;
     private JTextField passwordField;
 
-    private JPanel paymentPanel;
-    private JButton editPaymentBtn;
-
-    private JTextField cardNumberField;
-    private JTextField cardNameField;
-    private JTextField expMonthField;
-    private JTextField expYearField;
-    private JTextField cvvField;
+    private DbUser dbUser;
+    private UserDao userDao;
 
     public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.uiState = uiState;
+        userDao = new UserDao();
 
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -194,11 +192,11 @@ public class ProfilePage extends JPanel {
         usernameField = createTextField("x");
         passwordField = createTextField("x");
 
-        namePanel = createLabelPanel("Name",createLabelField("x"));
-        emailPanel = createLabelPanel("Email", createLabelField("x"));
-        phonePanel = createLabelPanel("Phone Number", createLabelField("x"));
-        usernamePanel = createLabelPanel("Username", createLabelField("x"));
-        passwordPanel = createLabelPanel("Password", createLabelField("x"));
+        namePanel = createLabelPanel("Name",createLabelField(nameField.getText()));
+        emailPanel = createLabelPanel("Email", createLabelField(emailField.getText()));
+        phonePanel = createLabelPanel("Phone Number", createLabelField(phoneField.getText()));
+        usernamePanel = createLabelPanel("Username", createLabelField(usernameField.getText()));
+        passwordPanel = createLabelPanel("Password", createLabelField(passwordField.getText()));
 
         addFieldsToPanel();
 
@@ -485,6 +483,7 @@ private JPanel createReservationCard(String dates, String rooms) {
     }
 
     private void handleEdit(){
+
         //TODO: get from text fields the new values to save.
     }
 
@@ -503,11 +502,11 @@ private JPanel createReservationCard(String dates, String rooms) {
         else{
             handleEdit();
 
-            namePanel = createLabelPanel("Name",createLabelField("x"));
-            emailPanel = createLabelPanel("Email", createLabelField("x"));
-            phonePanel = createLabelPanel("Phone Number", createLabelField("x"));
-            usernamePanel = createLabelPanel("Username", createLabelField("x"));
-            passwordPanel = createLabelPanel("Password", createLabelField("x"));
+            namePanel = createLabelPanel("Name",createLabelField(nameField.getText()));
+            emailPanel = createLabelPanel("Email", createLabelField(emailField.getText()));
+            phonePanel = createLabelPanel("Phone Number", createLabelField(phoneField.getText()));
+            usernamePanel = createLabelPanel("Username", createLabelField(usernameField.getText()));
+            passwordPanel = createLabelPanel("Password", createLabelField(passwordField.getText()));
 
             editProfileBtn.setText("Edit Profile");
         }
@@ -536,5 +535,31 @@ private JPanel createReservationCard(String dates, String rooms) {
     private void handleSignOut() {
         uiState.setLoggedIn(false);
         cardLayout.show(mainPanel, "HOME");
+    }
+
+    public void updateProfilePage() throws SQLException {
+        dbUser = userDao.findById(uiState.getCurrentSession().getUserId());
+
+        nameField = createTextField(dbUser.fullName);
+        emailField = createTextField(dbUser.contactInfo);
+        phoneField = createTextField(dbUser.phoneNumber);
+        usernameField = createTextField(dbUser.username);
+        passwordField = createTextField(dbUser.passwordHash);
+
+        namePanel = createLabelPanel("Name",createLabelField(nameField.getText()));
+        emailPanel = createLabelPanel("Email", createLabelField(emailField.getText()));
+        phonePanel = createLabelPanel("Phone Number", createLabelField(phoneField.getText()));
+        usernamePanel = createLabelPanel("Username", createLabelField(usernameField.getText()));
+        passwordPanel = createLabelPanel("Password", createLabelField(passwordField.getText()));
+
+        fieldsPanel.removeAll();
+
+        addFieldsToPanel();
+
+        fieldsPanel.revalidate();
+        fieldsPanel.repaint();
+
+        profilePanel.revalidate();
+        profilePanel.repaint();
     }
 }
