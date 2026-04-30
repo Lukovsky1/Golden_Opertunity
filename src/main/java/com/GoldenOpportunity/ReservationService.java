@@ -461,7 +461,7 @@ public class ReservationService {
             throw e;
         }
     }
-
+    //TODO: implement
     public Reservation findReservationName(String name) throws SQLException {
         String findRes = """
                 SELECT * FROM Reservations WHERE resId = ?;
