@@ -59,6 +59,7 @@ public class Guest extends User {
         SearchController searchController = new SearchController(new RoomService(), new ReservationService());
     }
 
+    //Can return a null value
     static public Guest getGuestFromID(int id) throws SQLException {
         UserDao userDao = new UserDao();
         DbUser dbUser = userDao.findById(id);
@@ -67,6 +68,9 @@ public class Guest extends User {
 
         List<String> reservationIDs = guestReservationDao.findGuestReservations(id);
         List<Reservation> reservations = new ArrayList<>();
+        if (reservationIDs == null ||  reservationIDs.isEmpty() ) {
+            return null;
+        }
         for (String reserveIDs : reservationIDs) {
             reservations.add(resService.findReservation(reserveIDs));
         }
@@ -87,5 +91,9 @@ public class Guest extends User {
         return guests;
     }
 
+    @Override
+    public String toString() {
+        return getUsername() + " (" +  getUserId() + "): " + "Email" + getContactInfo() + ", Reservations: " + reservations;
+    }
 
 }

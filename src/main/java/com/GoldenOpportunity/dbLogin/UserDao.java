@@ -69,8 +69,11 @@ public class UserDao {
                         allRolesUser.add(new DbUser(id, username, password, assignedRole, status, failedCount, contact,
                         fullName, phone));
             }
+            return allRolesUser;
+        } catch (NullPointerException e) {
+            System.err.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
-        return new ArrayList<>();
     }
 
 

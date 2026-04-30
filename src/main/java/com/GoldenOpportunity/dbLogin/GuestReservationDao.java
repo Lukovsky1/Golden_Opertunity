@@ -111,7 +111,7 @@ public class GuestReservationDao {
             pstmt.setInt(1, guestId);
 
             ResultSet rs = pstmt.executeQuery();
-            String [] guestsResIds = rs.getString(1).trim().split(",");
+            String [] guestsResIds = rs.getString(1).replace(" ", "").split(",");
             return List.of(guestsResIds);
 
 
@@ -122,7 +122,7 @@ public class GuestReservationDao {
         catch (NullPointerException e) {
             System.out.println("This guest has no current reservations");
         }
-        return null;
+        return new ArrayList<>();
     }
 
 
