@@ -30,10 +30,10 @@ public class ProductDescription {
 
     // new functions
 
+    // this is for tests only, shouldnt be used anywhere else
     // basic summary
     public String getSummary() {
-        return "Product ID: " + productID +
-                ", Name: " + name +
+        return  "Name: " + name +
                 ", Price: $" + price +
                 ", Image: " + image;
     }

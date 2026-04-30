@@ -67,4 +67,23 @@ public class ProductRepo {
 
         return inventoryList;
     }
+
+    public boolean reduceStock(int productID, int quantity) {
+        String sql = "UPDATE ProductDescriptions SET stock = stock - ? WHERE productID = ? AND stock >= ?";
+
+        try (Connection connection = DBUtil.getConnection();
+             java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, quantity);
+            statement.setInt(2, productID);
+            statement.setInt(3, quantity);
+
+            int rowsUpdated = statement.executeUpdate();
+
+            return rowsUpdated > 0;
+        }
+        catch (SQLException e) {
+            throw new RuntimeException("error reducing product stock in database", e);
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package com.GoldenOpportunity.Shop;
+/*package com.GoldenOpportunity.Shop;
 
 import com.GoldenOpportunity.AuthenticationController;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
@@ -65,10 +65,14 @@ public class ShopBackendTest {
         ShoppingCart shoppingCart = new ShoppingCart();
 
         System.out.println("view store:");
-        List<String> storeView = shopController.viewStore();
-        for (String item : storeView) {
-            System.out.println(item);
-        }
+        //List<String> storeView = shopController.viewStore();
+        //for (String item : storeView) {
+        //    System.out.println(item);
+        //}
+
+        System.out.println();
+        System.out.println("view product details for product 1:");
+        System.out.println(shopController.viewProductDetails(1));
 
         System.out.println();
         System.out.println("add product 1 to cart for guest 3:");
@@ -84,4 +88,4 @@ public class ShopBackendTest {
         System.out.println("cart total after checkout:");
         System.out.println(shoppingCart.calculateTotal());
     }
-}
+}*/

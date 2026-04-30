@@ -68,4 +68,30 @@ public class Shop {
 
         return inventory.getAvailability();
     }
+
+    public int getStock(int productID) {
+        ProductInventory inventory = inventoryMap.get(productID);
+
+        if (inventory == null) {
+            return 0;
+        }
+
+        return inventory.getStock();
+    }
+
+    public boolean reduceStock(int productID, int quantity) {
+        ProductInventory inventory = inventoryMap.get(productID);
+
+        if (inventory == null || inventory.getStock() < quantity) {
+            return false;
+        }
+
+        boolean updated = productRepo.reduceStock(productID, quantity);
+
+        if (updated) {
+            inventory.setStock(inventory.getStock() - quantity);
+        }
+
+        return updated;
+    }
 }
