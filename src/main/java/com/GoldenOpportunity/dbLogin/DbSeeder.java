@@ -25,8 +25,7 @@ public class DbSeeder {
         GuestReservationDao guestReservationDao = new GuestReservationDao();
         guestReservationDao.initializeSchema();
         guestReservationDao.syncGuestUsersFromUsersTable();
-        guestReservationDao.assignReservationToGuest("guest2", "R-201");
-        guestReservationDao.assignReservationToGuest("guest2", "R-202");
+        guestReservationDao.replaceReservationsForGuest("guest2", java.util.List.of("R-001", "R-002"));
 
         /*try {
             LoadingInserts.createRooms(DBUtil.getConnection());

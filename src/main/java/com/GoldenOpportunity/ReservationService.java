@@ -284,6 +284,142 @@ public class ReservationService {
         return false;
     }
 
+    public Reservation modifyReservation(String reservationId, LocalDate newStartDate, LocalDate newEndDate) throws SQLException {
+        Reservation existingReservation = findReservation(reservationId);
+        if (existingReservation == null) {
+            throw new IllegalArgumentException("Reservation not found.");
+        }
+        return modifyReservation(reservationId, newStartDate, newEndDate, existingReservation.getRooms());
+    }
+
+    public Reservation modifyReservation(String reservationId, LocalDate newStartDate, LocalDate newEndDate,
+                                         List<Room> newRooms) throws SQLException {
+        if (reservationId == null || reservationId.isBlank()) {
+            throw new IllegalArgumentException("Reservation ID is required.");
+        }
+        if (newStartDate == null || newEndDate == null) {
+            throw new IllegalArgumentException("Both start and end dates are required.");
+        }
+        if (!newStartDate.isBefore(newEndDate)) {
+            throw new IllegalArgumentException("End date must be after start date.");
+        }
+        if (newRooms == null || newRooms.isEmpty()) {
+            throw new IllegalArgumentException("At least one room is required.");
+        }
+
+        Reservation existingReservation = findReservation(reservationId);
+        if (existingReservation == null) {
+            throw new IllegalArgumentException("Reservation not found.");
+        }
+        if (existingReservation.isCheckedIn()) {
+            throw new IllegalArgumentException("Checked-in reservations cannot be modified.");
+        }
+        if (!roomsAreAvailableForUpdate(existingReservation.getId(), newRooms, new DateRange(newStartDate, newEndDate))) {
+            throw new IllegalArgumentException("Selected dates are not available for this reservation.");
+        }
+
+        long nights = java.time.temporal.ChronoUnit.DAYS.between(newStartDate, newEndDate);
+        double newBill = newRooms.stream()
+                .mapToDouble(Room::getRate)
+                .sum() * nights;
+
+        String updateReservationSql = """
+                UPDATE Reservations
+                SET startDate = ?, endDate = ?, bill = ?
+                WHERE resId = ?
+                """;
+        String deleteReservedRoomsSql = "DELETE FROM ReservedRooms WHERE resId = ?";
+        String insertReservedRoomSql = "INSERT INTO ReservedRooms (resId, roomNo, floorNum) VALUES (?, ?, ?)";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement updateReservationPs = conn.prepareStatement(updateReservationSql);
+             PreparedStatement deleteReservedRoomsPs = conn.prepareStatement(deleteReservedRoomsSql);
+             PreparedStatement insertReservedRoomPs = conn.prepareStatement(insertReservedRoomSql)) {
+            conn.setAutoCommit(false);
+
+            updateReservationPs.setString(1, newStartDate.toString());
+            updateReservationPs.setString(2, newEndDate.toString());
+            updateReservationPs.setDouble(3, newBill);
+            updateReservationPs.setString(4, reservationId);
+            updateReservationPs.executeUpdate();
+
+            deleteReservedRoomsPs.setString(1, reservationId);
+            deleteReservedRoomsPs.executeUpdate();
+
+            for (Room room : newRooms) {
+                insertReservedRoomPs.setString(1, reservationId);
+                insertReservedRoomPs.setInt(2, room.getRoomNo());
+                insertReservedRoomPs.setInt(3, room.getFloorNum());
+                insertReservedRoomPs.addBatch();
+            }
+            insertReservedRoomPs.executeBatch();
+            conn.commit();
+        } catch (SQLException e) {
+            try (Connection conn = DBUtil.getConnection()) {
+                conn.rollback();
+            } catch (SQLException ignored) {}
+            throw e;
+        }
+
+        return findReservation(reservationId);
+    }
+
+    private boolean roomsAreAvailableForUpdate(String reservationIdToModify, List<Room> requestedRooms,
+                                               DateRange requestedRange) throws SQLException {
+        for (Room room : requestedRooms) {
+            List<Reservation> roomReservations = getReservationsForRoom(room);
+            for (Reservation roomReservation : roomReservations) {
+                if (roomReservation.getId().equalsIgnoreCase(reservationIdToModify)) {
+                    continue;
+                }
+                if (roomReservation.getDateRange().overlaps(requestedRange)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public List<Room> parseRooms(String rawRooms) throws SQLException {
+        if (rawRooms == null || rawRooms.isBlank()) {
+            throw new IllegalArgumentException("At least one room is required.");
+        }
+
+        RoomService roomService = new RoomService();
+        List<Room> rooms = new ArrayList<>();
+        Set<Integer> seenRoomNumbers = new HashSet<>();
+
+        for (String token : rawRooms.split(",")) {
+            String trimmedToken = token.trim();
+            if (trimmedToken.isEmpty()) {
+                continue;
+            }
+
+            int roomNumber;
+            try {
+                roomNumber = Integer.parseInt(trimmedToken);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Room numbers must be comma-separated integers.");
+            }
+
+            if (!seenRoomNumbers.add(roomNumber)) {
+                continue;
+            }
+
+            Room room = roomService.findRoom(roomNumber);
+            if (room == null) {
+                throw new IllegalArgumentException("Room " + roomNumber + " does not exist.");
+            }
+            rooms.add(room);
+        }
+
+        if (rooms.isEmpty()) {
+            throw new IllegalArgumentException("At least one room is required.");
+        }
+
+        return rooms;
+    }
+
     /**
      * findReservation: Searches for a reservation via it's ID
      * @param reservationId ID of the sought after reservation
