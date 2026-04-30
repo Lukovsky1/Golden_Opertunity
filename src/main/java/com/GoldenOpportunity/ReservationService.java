@@ -284,16 +284,16 @@ public class ReservationService {
         return false;
     }
 
-    public Reservation modifyReservation(String reservationId, LocalDate newStartDate, LocalDate newEndDate) throws SQLException {
+    public Reservation modifyReservation(String reservationId, LocalDate newStartDate, LocalDate newEndDate, String name) throws SQLException {
         Reservation existingReservation = findReservation(reservationId);
         if (existingReservation == null) {
             throw new IllegalArgumentException("Reservation not found.");
         }
-        return modifyReservation(reservationId, newStartDate, newEndDate, existingReservation.getRooms());
+        return modifyReservation(reservationId, newStartDate, newEndDate, existingReservation.getRooms(), name);
     }
 
     public Reservation modifyReservation(String reservationId, LocalDate newStartDate, LocalDate newEndDate,
-                                         List<Room> newRooms) throws SQLException {
+                                         List<Room> newRooms, String name) throws SQLException {
         if (reservationId == null || reservationId.isBlank()) {
             throw new IllegalArgumentException("Reservation ID is required.");
         }
@@ -325,7 +325,7 @@ public class ReservationService {
 
         String updateReservationSql = """
                 UPDATE Reservations
-                SET startDate = ?, endDate = ?, bill = ?
+                SET startDate = ?, endDate = ?, bill = ?, name = ?
                 WHERE resId = ?
                 """;
         String deleteReservedRoomsSql = "DELETE FROM ReservedRooms WHERE resId = ?";
@@ -340,7 +340,8 @@ public class ReservationService {
             updateReservationPs.setString(1, newStartDate.toString());
             updateReservationPs.setString(2, newEndDate.toString());
             updateReservationPs.setDouble(3, newBill);
-            updateReservationPs.setString(4, reservationId);
+            updateReservationPs.setString(4, name);
+            updateReservationPs.setString(5, reservationId);
             updateReservationPs.executeUpdate();
 
             deleteReservedRoomsPs.setString(1, reservationId);
@@ -435,6 +436,42 @@ public class ReservationService {
         try (Connection conn = DBUtil.getConnection();
             PreparedStatement resPstmt = conn.prepareStatement(findRes);
             PreparedStatement resRoomPstmt = conn.prepareStatement(findResRoom)) {
+            conn.setAutoCommit(false);
+            resPstmt.setString(1, reservationId);
+            resRoomPstmt.setString(1, reservationId);
+
+
+            ResultSet resRS = resPstmt.executeQuery();
+            ResultSet resRoomRS = resRoomPstmt.executeQuery();
+
+            //If there exists a reservation object in both tables
+            if (resRS.isBeforeFirst() && resRoomRS.isBeforeFirst()) {
+                Reservation userReservation = buildReservationFromResultSet(resRS, resRoomRS);
+                return userReservation;
+                // throw new NullPointerException("Reservation not found");
+            }
+            //If there doesn't exist a reservation object, then will return null
+            System.out.println("Reservation not found: " + reservationId);
+            return null;
+
+
+        } catch (SQLException e) {
+            System.err.println("Error finding reservation: " + e.getMessage());
+            DBUtil.getConnection().rollback();
+            throw e;
+        }
+    }
+
+    public Reservation findReservationName(String name) throws SQLException {
+        String findRes = """
+                SELECT * FROM Reservations WHERE resId = ?;
+                """;
+        String findResRoom = """
+                SELECT * FROM ReservedRooms WHERE resId = ?;
+                """;
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement resPstmt = conn.prepareStatement(findRes);
+             PreparedStatement resRoomPstmt = conn.prepareStatement(findResRoom)) {
             conn.setAutoCommit(false);
             resPstmt.setString(1, reservationId);
             resRoomPstmt.setString(1, reservationId);

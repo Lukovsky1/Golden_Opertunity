@@ -12,6 +12,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class ProfilePage extends JPanel {
     private DbUser dbUser;
     private UserDao userDao;
 
-    public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException, SQLException {
+    public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.uiState = uiState;
@@ -311,12 +312,15 @@ public class ProfilePage extends JPanel {
                 new EmptyBorder(14, 14, 14, 14)
         ));
 
-        //TODO: change when Lucas is finished
-        if(dbUser != null){
-            for(Reservation reservation : uiState.reservationService.getAllReservations()) {
-                panel.add(createReservationCard(reservation));
-                panel.add(Box.createVerticalStrut(14));
+        try{
+            if(dbUser != null){
+                for(Reservation reservation : uiState.reservationService.findReservationName(dbUser.fullName)) {
+                    panel.add(createReservationCard(reservation));
+                    panel.add(Box.createVerticalStrut(14));
+                }
             }
+        } catch (SQLException e){
+            e.printStackTrace();
         }
 
         return panel;
