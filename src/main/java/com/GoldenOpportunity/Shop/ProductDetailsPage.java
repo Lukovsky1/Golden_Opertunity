@@ -321,7 +321,6 @@ public class ProductDetailsPage extends JPanel {
     }
     
     private boolean addSelectedQuantityToCart() {
-    	/*commented to not use shopcontroller
         for (int i = 0; i < selectedQuantity; i++) {
             String result = shopController.addProductToCart(
                     guestID,
@@ -333,26 +332,6 @@ public class ProductDetailsPage extends JPanel {
                 JOptionPane.showMessageDialog(this, result);
                 return false;
             }
-        }
-
-        return true;
-        */
-    	
-    	for (int i = 0; i < selectedQuantity; i++) {
-            int availableStock = shopController.getStock(product.getProductID());
-            int quantityInCart = shoppingCart.getQuantity(product.getProductID());
-
-            if (availableStock <= 0) {
-                JOptionPane.showMessageDialog(this, "Product is out of stock.");
-                return false;
-            }
-
-            if (quantityInCart >= availableStock) {
-                JOptionPane.showMessageDialog(this, "Not enough stock available.");
-                return false;
-            }
-
-            shoppingCart.addProductToCart(product);
         }
 
         return true;

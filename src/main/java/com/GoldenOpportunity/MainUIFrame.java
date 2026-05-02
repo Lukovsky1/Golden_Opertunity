@@ -82,7 +82,7 @@ public class MainUIFrame extends JFrame {
 
         ShoppingCart shoppingCart = new ShoppingCart();
 
-        int guestID = 1; // temporary until login gives the real guest ID
+        int guestID = -1; // fallback only; real ID comes from uiState after login
 
         shopPage = new ShopPage(cardLayout, mainPanel, shopController, shoppingCart, guestID, uiState);
         cartPage = new CartPage(cardLayout, mainPanel, shopController, shoppingCart, guestID, uiState);

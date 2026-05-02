@@ -1,8 +1,10 @@
 package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Login.enums.Role;
+
 import com.GoldenOpportunity.dbLogin.GuestReservationDao;
 import com.GoldenOpportunity.dbLogin.UserDao;
+import com.GoldenOpportunity.dbLogin.DbUser;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.time.Year;
 import java.util.HashMap;
 import java.util.Map;
+import java.time.YearMonth;
 
 public class CheckoutPage extends JPanel {
 
@@ -61,6 +64,7 @@ public class CheckoutPage extends JPanel {
         }
 
         JScrollPane scrollPane = new JScrollPane(createMainContent());
+        autofillGuestInfo();
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -420,24 +424,33 @@ public class CheckoutPage extends JPanel {
         bookBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         double finalSum = sum;
-        String name = firstNameField.getText().toString() + " " + lastNameField.getText().toString();
         bookBtn.addActionListener(e -> {
-            if(!validateGuestInfo() || !validatePaymentInfo()){
+            if (!validateGuestInfo() || !validatePaymentInfo()) {
                 return;
             }
 
+            String name = firstNameField.getText().trim() + " " + lastNameField.getText().trim();
+
             try {
-                uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,uiState.endDate, finalSum, name);
+                uiState.reservationService.createReservation(
+                        uiState.potentialRooms,
+                        uiState.startDate,
+                        uiState.endDate,
+                        finalSum,
+                        name
+                );
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
+
             uiState.potentialRooms.clear();
-            if(uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK){
-                cardLayout.show(mainPanel,"NEW_RESERVATION");
+
+            if (uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK) {
+                cardLayout.show(mainPanel, "NEW_RESERVATION");
+            } else {
+                cardLayout.show(mainPanel, "HOME");
             }
-            else{
-                cardLayout.show(mainPanel,"HOME");
-            }
+
             JOptionPane.showMessageDialog(null, "Reservation was successfully made!");
         });
 
@@ -567,8 +580,49 @@ public class CheckoutPage extends JPanel {
 
         return imgPanel;
     }
+    
+    private void autofillGuestInfo() {
+        if (uiState == null || uiState.getCurrentSession() == null) {
+            return;
+        }
 
-    private boolean validateGuestInfo(){
+        try {
+            int userId = uiState.getCurrentSession().getUserId();
+
+            UserDao userDao = new UserDao();
+            DbUser user = userDao.findById(userId);
+
+            if (user == null) {
+                return;
+            }
+
+            if (user.fullName != null && !user.fullName.isBlank()) {
+                String[] nameParts = user.fullName.trim().split(" ", 2);
+
+                firstNameField.setText(nameParts[0]);
+
+                if (nameParts.length > 1) {
+                    lastNameField.setText(nameParts[1]);
+                }
+            }
+
+            if (user.contactInfo != null && !user.contactInfo.isBlank()) {
+                emailField.setText(user.contactInfo);
+            }
+
+            if (user.phoneNumber != null && !user.phoneNumber.isBlank()) {
+                phoneField.setText(user.phoneNumber);
+            }
+
+            memberNumberField.setText(String.valueOf(user.id));
+            memberNumberField.setEditable(false);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean validateGuestInfo() {
         String firstName = firstNameField.getText().trim();
         String lastName = lastNameField.getText().trim();
         String email = emailField.getText().trim();
@@ -578,17 +632,22 @@ public class CheckoutPage extends JPanel {
         String state = stateField.getText().trim();
         String postalCode = postalCodeField.getText().trim();
 
-        if(!firstName.matches("\\p{L}+") || firstName.isEmpty()){
+        if (!firstName.matches("[\\p{L} '-]+")) {
             JOptionPane.showMessageDialog(null, "Please enter a valid first name.");
             return false;
         }
 
-        if(!lastName.matches("\\p{L}+") || lastName.isEmpty()){
+        if (!lastName.matches("[\\p{L} '-]+")) {
             JOptionPane.showMessageDialog(null, "Please enter a valid last name.");
             return false;
         }
 
-        if(!phone.matches("\\d+") || phone.length() != 10){
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid email address.");
+            return false;
+        }
+
+        if (!phone.matches("[0-9\\-\\s\\+]{7,15}")) {
             JOptionPane.showMessageDialog(null, "Please enter a valid phone number.");
             return false;
         }
@@ -598,46 +657,52 @@ public class CheckoutPage extends JPanel {
             return false;
         }
 
-        if (!email.contains("@") || !email.contains(".")) {
-            JOptionPane.showMessageDialog(null, "Please enter a valid email.");
-            return false;
-        }
-
-        if (city.isEmpty() || !city.matches("[a-zA-Z ]+")) {
+        if (!city.matches("[\\p{L} '-]+")) {
             JOptionPane.showMessageDialog(null, "Please enter a valid city.");
             return false;
         }
 
-        if (state.isEmpty() || !state.matches("[a-zA-Z ]+")) {
+        if (!state.matches("[\\p{L} '-]+")) {
             JOptionPane.showMessageDialog(null, "Please enter a valid state/province.");
             return false;
         }
 
-        if(!postalCode.matches("\\d+") || postalCode.length() != 5){
-            JOptionPane.showMessageDialog(null, "Please enter a valid postal code.");
+        if (!postalCode.matches("\\d{5}")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid 5-digit postal code.");
             return false;
         }
 
         return true;
     }
 
-    private boolean validatePaymentInfo(){
-        String cardNum = cardNumberField.getText().trim();
+    private boolean validatePaymentInfo() {
+        String cardNum = cardNumberField.getText().trim().replace(" ", "");
         String cvv = cvvField.getText().trim();
         String billingZip = billingZipField.getText().trim();
 
-        if(!cardNum.matches("\\d+") || cardNum.length() != 16){
+        if (!cardNum.matches("\\d{13,19}")) {
             JOptionPane.showMessageDialog(null, "Please enter a valid card number.");
             return false;
         }
 
-        if(!cvv.matches("\\d+") || cvv.length() != 3){
-            JOptionPane.showMessageDialog(null, "Please enter a valid cvv.");
+        if (!cvv.matches("\\d{3,4}")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid 3 or 4-digit CVV.");
             return false;
         }
 
-        if(!billingZip.matches("\\d+") || billingZip.length() != 5){
-            JOptionPane.showMessageDialog(null, "Please enter a valid billing zip code.");
+        if (!billingZip.matches("\\d{5}")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid 5-digit billing zip code.");
+            return false;
+        }
+
+        int selectedMonth = Integer.parseInt(monthBox.getSelectedItem().toString());
+        int selectedYear = Integer.parseInt(yearBox.getSelectedItem().toString());
+
+        YearMonth expirationDate = YearMonth.of(selectedYear, selectedMonth);
+        YearMonth currentDate = YearMonth.now();
+
+        if (expirationDate.isBefore(currentDate)) {
+            JOptionPane.showMessageDialog(null, "The card expiration date is invalid.");
             return false;
         }
 
