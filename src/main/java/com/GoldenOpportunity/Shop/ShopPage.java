@@ -85,7 +85,7 @@ public class ShopPage extends JPanel {
 
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up", "🛒"};
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
         Map<String,JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
@@ -109,11 +109,19 @@ public class ShopPage extends JPanel {
         buttonMap.get("Shop").addActionListener(e -> {
             cardLayout.show(mainPanel,"SHOP");
         });
-        buttonMap.get("Sign Up").addActionListener(e -> {
-            cardLayout.show(mainPanel,"SIGNUP");
-        });
         buttonMap.get("🛒").addActionListener(e -> {
             cardLayout.show(mainPanel, "CART");
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                uiState.updateProfilePanel();
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -305,6 +313,7 @@ public class ShopPage extends JPanel {
                 	        product,
                 	        shopController,
                 	        shoppingCart,
+                	        uiState,
                 	        getCurrentGuestID()
                 	);
                     detailsPage.setName(pageName);

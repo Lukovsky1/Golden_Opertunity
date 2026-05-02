@@ -20,17 +20,20 @@ public class ProductDetailsPage extends JPanel {
     private int guestID;
     private int selectedQuantity = 1;
     private JLabel quantityValueLabel;
+    private com.GoldenOpportunity.UIState uiState;
 
     public ProductDetailsPage(CardLayout cardLayout, JPanel mainPanel,
             ProductDescription product,
             ShopController shopController,
             ShoppingCart shoppingCart,
+            com.GoldenOpportunity.UIState uiState,
             int guestID) throws IOException {
 		this.cardLayout = cardLayout;
 		this.mainPanel = mainPanel;
 		this.shopController = shopController;
 		this.shoppingCart = shoppingCart;
 		this.guestID = guestID;
+		this.uiState = uiState;
 		
 		this.product = shopController.viewProductDetails(product.getProductID());
 		
@@ -61,7 +64,7 @@ public class ProductDetailsPage extends JPanel {
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         nav.setBackground(Color.WHITE);
 
-        String[] items = {"Home", "Rooms", "Shop", "Login", "Sign Up", "🛒"};
+        String[] items = {"Home", "Rooms", "Shop", "Login", "🛒","👤"};
         Map<String, JButton> buttonMap = new HashMap<>();
 
         for (String item : items) {
@@ -80,6 +83,17 @@ public class ProductDetailsPage extends JPanel {
         buttonMap.get("Login").addActionListener(e -> cardLayout.show(mainPanel, "LOGIN"));
         buttonMap.get("🛒").addActionListener(e -> {
             cardLayout.show(mainPanel, "CART");
+        });
+        buttonMap.get("👤").addActionListener(e -> {
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                uiState.updateProfilePanel();
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
 
         header.add(logoLabel, BorderLayout.WEST);

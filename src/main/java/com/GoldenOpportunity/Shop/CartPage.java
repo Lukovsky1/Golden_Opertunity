@@ -260,6 +260,7 @@ public class CartPage extends JPanel {
                             product,
                             shopController,
                             shoppingCart,
+                            uiState,
                             getCurrentGuestID()
                     );
 
