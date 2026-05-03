@@ -23,7 +23,6 @@ public class ModifyReservationPage extends JPanel {
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
-    private Guest guest;
     private Reservation reservation;
     private UIState uiState;
     private ClerkHomePage clerkHomePage;
@@ -42,7 +41,6 @@ public class ModifyReservationPage extends JPanel {
         this.clerkHomePage = clerkHomePage;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
-        this.guest = guest;
         this.reservation = reservation;
         this.uiState = uiState;
 
@@ -62,7 +60,6 @@ public class ModifyReservationPage extends JPanel {
         this.profilePage = profilePage;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
-        this.guest = guest;
         this.reservation = reservation;
         this.uiState = uiState;
 
@@ -230,37 +227,47 @@ public class ModifyReservationPage extends JPanel {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(Color.WHITE);
-        sidebar.setBorder(new LineBorder(new Color(190, 205, 218), 2));
-        sidebar.setPreferredSize(new Dimension(230, 0));
+        sidebar.setBorder(new LineBorder(new Color(190, 205, 218), 1));
+        sidebar.setPreferredSize(new Dimension(185, 0));
 
-        sidebar.add(Box.createVerticalStrut(12));
+        JButton addRoomsButton = createSidebarButton("Add Rooms");
+        JButton modifyRoomsButton = createSidebarButton("Modify Rooms");
+        JButton newReservation = createSidebarButton("New Reservation");
 
-        JButton addRoomsButton = createSideButton("Add Rooms");
-        JButton modifyRoomsButton = createSideButton("Modify Rooms");
+        addRoomsButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"ADD_ROOMS");
+        });
+        modifyRoomsButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"MODIFY_ROOMS");
+        });
+        newReservation.addActionListener(e -> {
+            cardLayout.show(mainPanel,"NEW_RESERVATION");
+        });
 
-        addRoomsButton.addActionListener(e -> cardLayout.show(mainPanel, "ADD_ROOM"));
-        modifyRoomsButton.addActionListener(e -> cardLayout.show(mainPanel, "MODIFY_ROOMS"));
-
+        sidebar.add(Box.createVerticalStrut(14));
         sidebar.add(addRoomsButton);
-        sidebar.add(Box.createVerticalStrut(18));
+        sidebar.add(Box.createVerticalStrut(14));
         sidebar.add(modifyRoomsButton);
+        sidebar.add(Box.createVerticalStrut(14));
+        sidebar.add(newReservation);
         sidebar.add(Box.createVerticalGlue());
 
         return sidebar;
     }
 
-    private JButton createSideButton(String text) {
+    private JButton createSidebarButton(String text) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setPreferredSize(new Dimension(185, 52));
-        button.setMaximumSize(new Dimension(185, 52));
+        button.setMaximumSize(new Dimension(145, 42));
+        button.setPreferredSize(new Dimension(145, 42));
         button.setFocusPainted(false);
         button.setBackground(Color.WHITE);
-        button.setForeground(Color.BLACK);
-        button.setFont(new Font("SansSerif", Font.BOLD, 20));
-        button.setBorder(new LineBorder(new Color(150, 150, 150), 2, true));
+        button.setFont(new Font("SansSerif", Font.BOLD, 15));
+        button.setBorder(new LineBorder(new Color(140, 140, 140), 1, true));
+
         button.setOpaque(true);
         button.setContentAreaFilled(true);
+
         return button;
     }
 
@@ -289,8 +296,7 @@ public class ModifyReservationPage extends JPanel {
 
         nameField = createTextField();
 
-        String[] data = guest.getContactInfo().split(",");
-        nameField.setText(data[0]);
+        nameField.setText(reservation.getName());
 
         gbc.gridy = 1;
         gbc.gridx = 0;
@@ -341,7 +347,7 @@ public class ModifyReservationPage extends JPanel {
         panel.add(endDate, gbc);
 
         addRoomBox = new JComboBox<>(new String[]{"Add Rooms"});
-        currentRoomBox = new JComboBox<>(new String[]{"Added Rooms / Delete Rooms"});
+        currentRoomBox = new JComboBox<>(new String[]{"Current Rooms / Delete Rooms"});
 
         Criteria criteria = new Criteria();
         criteria.setDateRange(new DateRange(startDate.getDate(),endDate.getDate()));
@@ -358,27 +364,54 @@ public class ModifyReservationPage extends JPanel {
             currentRoomBox.addItem(String.valueOf(room.getRoomNo()));
         }
 
-        styleRoomComboBox(addRoomBox, 125, 50);
-        styleRoomComboBox(currentRoomBox, 125, 50);
+        styleRoomComboBox(addRoomBox, 150, 50);
+        styleRoomComboBox(currentRoomBox, 300, 50);
 
         gbc.gridy = 3;
 
         gbc.gridx = 0;
         gbc.weightx = 0;
+        gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.EAST;
         panel.add(createLabel("Rooms:"), gbc);
 
-        gbc.gridx = 1;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel.add(addRoomBox, gbc);
+        JPanel roomComboPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        roomComboPanel.setOpaque(false);
 
-        gbc.gridx = 2;
-        gbc.weightx = 0;
-        panel.add(currentRoomBox, gbc);
+        roomComboPanel.add(addRoomBox);
+        roomComboPanel.add(Box.createHorizontalStrut(28));
+        roomComboPanel.add(currentRoomBox);
+
+        gbc.gridx = 1;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(roomComboPanel, gbc);
 
         JButton addRoomButton = createGreenButton("Add Room", 150, 55);
         JButton deleteRoomButton = createRedButton("Delete Room", 170, 55);
+
+        addRoomButton.addActionListener(e -> {
+            if(addRoomBox.getSelectedItem().toString().equals("Add Rooms")){
+                JOptionPane.showMessageDialog(null, "Make a valid room selection.");
+            }
+            else if(comboBoxContains(currentRoomBox,addRoomBox.getSelectedItem().toString())){
+                JOptionPane.showMessageDialog(null, "Room already added.");
+            }
+            else{
+                currentRoomBox.addItem(addRoomBox.getSelectedItem().toString());
+                updateRoomBoxes();
+            }
+        });
+        deleteRoomButton.addActionListener(e -> {
+            if(currentRoomBox.getSelectedItem().toString().equals("Current Rooms / Delete Rooms")){
+                JOptionPane.showMessageDialog(null, "Make a valid room selection.");
+            }
+            else{
+                currentRoomBox.removeItem(currentRoomBox.getSelectedItem());
+                updateRoomBoxes();
+            }
+        });
 
         JPanel roomButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 18, 0));
         roomButtonPanel.setOpaque(false);
@@ -416,70 +449,9 @@ public class ModifyReservationPage extends JPanel {
         JButton saveButton = createBlackButton("Save Reservation", 230, 55);
         JButton cancelButton = createRedButton("Cancel Reservation", 250, 55);
 
-        saveButton.addActionListener(e -> {
-            List<Room> roomList = new ArrayList<>();
+        saveButton.addActionListener(e -> handleSave());
 
-            for (int i = 1; i < currentRoomBox.getItemCount(); i++) {
-                roomList.add(uiState.roomService.findRoom(Integer.parseInt(currentRoomBox.getItemAt(i))));
-            }
-
-            try {
-                uiState.reservationService.modifyReservation(
-                        reservation.getId(),
-                        startDate.getDate(),
-                        endDate.getDate(),
-                        roomList,
-                        nameField.getText()
-                );
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-
-            if (uiState.getCurrentSession().getRole() == Role.CLERK) {
-                clerkHomePage.updatePage();
-                JOptionPane.showMessageDialog(null, "Edit's Saved.");
-                cardLayout.show(mainPanel, "CLERK_HOME");
-            } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
-                try {
-                    profilePage.updateProfilePage();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                JOptionPane.showMessageDialog(null, "Edit's Saved.");
-                cardLayout.show(mainPanel, "PROFILE");
-            }
-        });
-
-        cancelButton.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Are you sure you want to cancel reservation?",
-                    "Cancel",
-                    JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                try {
-                    uiState.reservationService.deleteReservation(reservation.getId());
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                if (uiState.getCurrentSession().getRole() == Role.CLERK) {
-                    JOptionPane.showMessageDialog(null, "Reservation Cancelled.");
-                    clerkHomePage.updatePage();
-                    cardLayout.show(mainPanel, "CLERK_HOME");
-                } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
-                    JOptionPane.showMessageDialog(null, "Reservation Cancelled.");
-                    try {
-                        profilePage.updateProfilePage();
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    cardLayout.show(mainPanel, "PROFILE");
-                }
-            }
-        });
+        cancelButton.addActionListener(e -> handleCancel());
 
         JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
         savePanel.setOpaque(false);
@@ -668,50 +640,112 @@ public class ModifyReservationPage extends JPanel {
         return label;
     }
 */
-    private void changeRoomBoxes(){
-        addRoomBox.removeAllItems();
-        currentRoomBox.removeAllItems();
+    private void handleSave(){
+        List<Room> roomList = new ArrayList<>();
 
-        addRoomBox.addItem("Add Rooms");
-        currentRoomBox.addItem("Added Rooms / Delete Rooms");
+        for (int i = 1; i < currentRoomBox.getItemCount(); i++) {
+            Room room = uiState.roomService.findRoom(Integer.parseInt(currentRoomBox.getItemAt(i)));
 
-        Criteria criteria = new Criteria();
-        criteria.setDateRange(new DateRange(startDate.getDate(),endDate.getDate()));
-
-        try{
-            for(Room room : uiState.searchController.searchAvailableRooms(criteria)){
-                addRoomBox.addItem(String.valueOf(room.getRoomNo()));
+            if (room != null) {
+                roomList.add(room);
             }
-        } catch (SQLException e){
-            e.printStackTrace();
         }
 
-        for (Room room : reservation.getRooms()) {
-            currentRoomBox.addItem(String.valueOf(room.getRoomNo()));
+        try {
+            uiState.reservationService.modifyReservation(
+                    reservation.getId(),
+                    startDate.getDate(),
+                    endDate.getDate(),
+                    roomList,
+                    nameField.getText()
+            );
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+            clerkHomePage.updatePage();
+            JOptionPane.showMessageDialog(null, "Edit's Saved.");
+            cardLayout.show(mainPanel, "CLERK_HOME");
+        } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
+            try {
+                profilePage.updateProfilePage();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            JOptionPane.showMessageDialog(null, "Edit's Saved.");
+            cardLayout.show(mainPanel, "PROFILE");
+        }
+    }
+
+    private void handleCancel(){
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to cancel reservation?",
+                "Cancel",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                uiState.reservationService.deleteReservation(reservation.getId());
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+                JOptionPane.showMessageDialog(null, "Reservation Cancelled.");
+                clerkHomePage.updatePage();
+                cardLayout.show(mainPanel, "CLERK_HOME");
+            } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
+                JOptionPane.showMessageDialog(null, "Reservation Cancelled.");
+                try {
+                    profilePage.updateProfilePage();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                cardLayout.show(mainPanel, "PROFILE");
+            }
+        }
+    }
+
+    private void changeRoomBoxes() {
+        addRoomBox.removeAllItems();
+        addRoomBox.addItem("Add Rooms");
+
+        if (startDate.getDate() == null || endDate.getDate() == null) {
+            return;
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setDateRange(new DateRange(startDate.getDate(), endDate.getDate()));
+
+        try {
+            for (Room room : uiState.searchController.searchAvailableRooms(criteria)) {
+                addRoomBox.addItem(String.valueOf(room.getRoomNo()));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         reservationPanel.revalidate();
         reservationPanel.repaint();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Modify Rooms");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1220, 800);
-            frame.setLocationRelativeTo(null);
+    private void updateRoomBoxes(){
+        currentRoomBox.setSelectedIndex(0);
+        addRoomBox.setSelectedIndex(0);
 
-            CardLayout cardLayout = new CardLayout();
-            JPanel mainPanel = new JPanel(cardLayout);
+        reservationPanel.revalidate();
+        reservationPanel.repaint();
+    }
 
-            ModifyReservationPage clerkReservation = null;
-            //clerkReservation = new ModifyReservationPage(cardLayout, mainPanel,null,null);
-            mainPanel.add(clerkReservation, "MODIFY_ROOMS");
-
-            frame.setContentPane(mainPanel);
-            cardLayout.show(mainPanel, "MODIFY_ROOMS");
-
-            frame.setVisible(true);
-        });
+    public boolean comboBoxContains(JComboBox<String> box, String value) {
+        for (int i = 0; i < box.getItemCount(); i++) {
+            if (box.getItemAt(i).equals(value)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

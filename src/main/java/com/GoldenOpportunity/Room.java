@@ -133,7 +133,7 @@ public class Room {
 
     @Override
     public String toString(){
-        return roomNo + " NumBeds: " + beds + " Quality: " + qLevel + " Type: " + roomType + " Rate: " + rate;
+        return roomNo + ", NumBeds: " + beds + ", Quality: " + qLevel + ", Type: " + roomType + ", Rate: $" + rate;
     }
 }
 

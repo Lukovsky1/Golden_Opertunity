@@ -41,7 +41,7 @@ public class ProfilePage extends JPanel {
     private DbUser dbUser;
     private UserDao userDao;
 
-    public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
+    public ProfilePage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException, SQLException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
         this.uiState = uiState;
@@ -139,14 +139,26 @@ public class ProfilePage extends JPanel {
         outer.setBackground(new Color(245, 245, 245));
         outer.setBorder(new EmptyBorder(14, 14, 14, 14));
 
-        JPanel content = new JPanel(new GridLayout(1, 2, 14, 0));
+        JPanel content = new JPanel(new GridBagLayout());
         content.setBackground(new Color(245, 245, 245));
 
         profilePanel = createProfilePanel();
         reservationPanel = createReservationsPanel();
 
-        content.add(profilePanel);
-        content.add(reservationPanel);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 1.0;
+
+        gbc.gridx = 0;
+        gbc.weightx = 0.70;
+        gbc.insets = new Insets(0, 0, 0, 14);
+        content.add(profilePanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.30;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        content.add(reservationPanel, gbc);
 
         outer.add(content, BorderLayout.NORTH);
 
@@ -172,20 +184,6 @@ public class ProfilePage extends JPanel {
         fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
         fieldsPanel.setOpaque(false);
 
-        //TODO: need to access guest information for this
-        /*
-        String[] data = uiState.getCurrentSession().getUserId().split(",");
-
-        String name = data[0];
-        String email = data[1];
-        String phone = data[2];
-
-        namePanel = createLabelField("Name", name);
-        emailPanel = createLabelField("Email", email);
-        phonePanel = createLabelField("Phone Number", phone);
-        usernamePanel = createLabelField("Username", username);
-        passwordPanel = createLabelField("Password", password);
-*/
         nameField = createTextField("x");
         emailField = createTextField("x");
         phoneField = createTextField("x");
@@ -303,7 +301,7 @@ public class ProfilePage extends JPanel {
     }
 
     // ================= RIGHT PANEL =================
-    private JPanel createReservationsPanel() throws SQLException {
+    private JPanel createReservationsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(243, 243, 243));
@@ -311,17 +309,6 @@ public class ProfilePage extends JPanel {
                 new LineBorder(new Color(190, 200, 210), 2),
                 new EmptyBorder(14, 14, 14, 14)
         ));
-
-        try{
-            if(dbUser != null){
-                for(Reservation reservation : uiState.reservationService.findReservationName(dbUser.fullName)) {
-                    panel.add(createReservationCard(reservation));
-                    panel.add(Box.createVerticalStrut(14));
-                }
-            }
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
 
         return panel;
     }
@@ -347,21 +334,24 @@ public class ProfilePage extends JPanel {
         JLabel datesLabel = new JLabel(reservation.getDateRange().toString());
         datesLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
 
-        JLabel roomsLabel = new JLabel("Rooms: " + reservation.getRooms());
-        roomsLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
-
         infoPanel.add(Box.createVerticalStrut(10));
         infoPanel.add(reservationLabel);
         infoPanel.add(Box.createVerticalStrut(8));
         infoPanel.add(datesLabel);
-        infoPanel.add(Box.createVerticalStrut(8));
-        infoPanel.add(roomsLabel);
+
+        for(Room room : reservation.getRooms()){
+            JLabel roomsLabel = new JLabel("Rooms: " + room);
+            roomsLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
+
+            infoPanel.add(Box.createVerticalStrut(8));
+            infoPanel.add(roomsLabel);
+        }
 
         // RIGHT SIDE (BUTTON - CENTERED)
         JPanel buttonWrapper = new JPanel(new GridBagLayout()); // this centers vertically
         buttonWrapper.setOpaque(false);
 
-        JButton modifyBtn = createBlackButton("Modify Reservation", 225, 50);
+        JButton modifyBtn = createBlackButton("Modify", 120, 45);
         buttonWrapper.add(modifyBtn); // GridBagLayout centers it automatically
 
         modifyBtn.addActionListener(e -> {
@@ -385,59 +375,6 @@ public class ProfilePage extends JPanel {
         return card;
     }
 
-private JPanel createReservationCard(String dates, String rooms) {
-    JPanel card = new JPanel(new BorderLayout(10, 10));
-    card.setBackground(new Color(243, 243, 243));
-    card.setBorder(BorderFactory.createCompoundBorder(
-            new LineBorder(new Color(190, 200, 210), 2),
-            new EmptyBorder(10, 12, 10, 12)
-    ));
-    card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
-
-    // LEFT SIDE (INFO)
-    JPanel infoPanel = new JPanel();
-    infoPanel.setOpaque(false);
-    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-
-    JLabel reservationLabel = new JLabel("Reservation:");
-    reservationLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
-    reservationLabel.setForeground(new Color(45, 55, 70));
-
-    JLabel datesLabel = new JLabel(dates);
-    datesLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
-
-    JLabel roomsLabel = new JLabel("Rooms: " + rooms);
-    roomsLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
-
-    infoPanel.add(Box.createVerticalStrut(10));
-    infoPanel.add(reservationLabel);
-    infoPanel.add(Box.createVerticalStrut(8));
-    infoPanel.add(datesLabel);
-    infoPanel.add(Box.createVerticalStrut(8));
-    infoPanel.add(roomsLabel);
-
-    // RIGHT SIDE (BUTTON - CENTERED)
-    JPanel buttonWrapper = new JPanel(new GridBagLayout()); // this centers vertically
-    buttonWrapper.setOpaque(false);
-
-    JButton modifyBtn = createBlackButton("Modify Reservation", 225, 50);
-    buttonWrapper.add(modifyBtn); // GridBagLayout centers it automatically
-
-    modifyBtn.addActionListener(e -> {
-        //mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,guest,reservation,uiState), "GUEST_MODIFY_RESERVE");
-
-        mainPanel.revalidate();
-        mainPanel.repaint();
-
-        cardLayout.show(mainPanel,"GUEST_MODIFY_RESERVE");
-    });
-
-    // ADD TO CARD
-    card.add(infoPanel, BorderLayout.CENTER);
-    card.add(buttonWrapper, BorderLayout.EAST);
-
-    return card;
-}
     // ================= BUTTON HELPERS =================
     private JButton createBlackButton(String text, int width, int height) {
         JButton button = new JButton(text);
@@ -559,13 +496,20 @@ private JPanel createReservationCard(String dates, String rooms) {
         profilePanel.repaint();
     }
 
-    private void updateReservationPanel(){
+    private void updateReservationPanel() {
         reservationPanel.removeAll();
-        try{
-            reservationPanel = createReservationsPanel();
-        } catch (SQLException e){
+
+        try {
+            if (dbUser != null) {
+                for (Reservation reservation : uiState.reservationService.findReservationsByUserID(dbUser.id)) {
+                    reservationPanel.add(createReservationCard(reservation));
+                    reservationPanel.add(Box.createVerticalStrut(14));
+                }
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+
         reservationPanel.revalidate();
         reservationPanel.repaint();
     }

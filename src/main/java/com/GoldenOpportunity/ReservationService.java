@@ -75,7 +75,7 @@ public class ReservationService {
      * @param end
      * @param bill
      */
-    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill, String name)  throws SQLException {
+    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill, String name, Integer userID)  throws SQLException {
         //Creates a new reservation ID from the set of all valid reservation ids
         String newResId = createResId();
         if (newResId == null) {
@@ -91,7 +91,7 @@ public class ReservationService {
         //Reservation newRes = new Reservation(newResId, roomList, new DateRange(start, end), bill);
         //reserveList.add(newRes);
         String createReservation = """
-                INSERT INTO Reservations (resId, startDate, endDate, bill, checkedIn, name) VALUES (?,?,?,?,?,?);
+                INSERT INTO Reservations (resId, startDate, endDate, bill, checkedIn, name, userID) VALUES (?,?,?,?,?,?,?);
                 """;
 
         String createReservedRooms = """
@@ -461,43 +461,46 @@ public class ReservationService {
             throw e;
         }
     }
-    //TODO: implement
-    public Reservation findReservationName(String name) throws SQLException {
-        String findRes = """
-                SELECT * FROM Reservations WHERE resId = ?;
-                """;
-        String findResRoom = """
-                SELECT * FROM ReservedRooms WHERE resId = ?;
-                """;
+
+    public List<Reservation> findReservationsByUserID(int userID) throws SQLException {
+        List<Reservation> reservations = new ArrayList<>();
+
+        String sqlReservations = "SELECT * FROM Reservations WHERE userID = ?";
+        String sqlRooms = "SELECT * FROM ReservedRooms WHERE resId = ?";
+
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement resPstmt = conn.prepareStatement(findRes);
-             PreparedStatement resRoomPstmt = conn.prepareStatement(findResRoom)) {
+             PreparedStatement resStmt = conn.prepareStatement(sqlReservations);
+             PreparedStatement roomsStmt = conn.prepareStatement(sqlRooms)) {
+
             conn.setAutoCommit(false);
-            resPstmt.setString(1, reservationId);
-            resRoomPstmt.setString(1, reservationId);
 
+            resStmt.setInt(1, userID);
 
-            ResultSet resRS = resPstmt.executeQuery();
-            ResultSet resRoomRS = resRoomPstmt.executeQuery();
+            ResultSet resRS = resStmt.executeQuery();
 
-            //If there exists a reservation object in both tables
-            if (resRS.isBeforeFirst() && resRoomRS.isBeforeFirst()) {
-                Reservation userReservation = buildReservationFromResultSet(resRS, resRoomRS);
-                return userReservation;
-                // throw new NullPointerException("Reservation not found");
+            while (resRS.next()) {
+                String resId = resRS.getString("resId");
+
+                // Load all rooms for this reservation
+                roomsStmt.setString(1, resId);
+                ResultSet resRoomRS = roomsStmt.executeQuery();
+
+                // Build the reservation using your helper
+                Reservation reservation = buildReservationFromResultSet(resRS, resRoomRS);
+                reservations.add(reservation);
             }
-            //If there doesn't exist a reservation object, then will return null
-            System.out.println("Reservation not found: " + reservationId);
-            return null;
 
+            conn.commit();
+            return reservations;
 
         } catch (SQLException e) {
-            System.err.println("Error finding reservation: " + e.getMessage());
-            DBUtil.getConnection().rollback();
+            System.err.println("Error getting all reservations: " + e.getMessage());
+            try (Connection conn = DBUtil.getConnection()) {
+                conn.rollback();
+            } catch (SQLException ignored) {}
             throw e;
         }
     }
-
 
     /**
      * Given two result sets for both the Reservations and ReservedRooms
