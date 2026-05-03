@@ -231,17 +231,14 @@ public class UserDao {
     }
 
     /** Update a user's full name and phone number together. */
-    public void updateUserProfile(int userId, String newFullName, String newPhoneNumber) throws SQLException {
-        String now = Instant.now().toString();
-        String sql = "UPDATE users SET full_name = ?, phone_number = ?, updated_at = ? WHERE id = ?";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, newFullName);
-            ps.setString(2, newPhoneNumber);
-            ps.setString(3, now);
-            ps.setInt(4, userId);
-            ps.executeUpdate();
+    public void updateUserProfile(int userID,String name,String username,String password,String phone,String email) throws SQLException {
+        updateUsername(userID,username);
+        updateFullName(userID,name);
+        if(!password.isEmpty()){
+            updatePassword(userID,password);
         }
+        updateEmail(userID,email);
+        updatePhoneNumber(userID,phone);
     }
 
     /**

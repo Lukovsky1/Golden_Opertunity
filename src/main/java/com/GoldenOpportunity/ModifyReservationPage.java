@@ -36,6 +36,7 @@ public class ModifyReservationPage extends JPanel {
     JComboBox<String> currentRoomBox;
 
     private JPanel reservationPanel;
+    private JPanel billPanel;
 
     public ModifyReservationPage(ClerkHomePage clerkHomePage, CardLayout cardLayout, JPanel mainPanel, Reservation reservation, UIState uiState) throws IOException {
         this.clerkHomePage = clerkHomePage;
@@ -433,6 +434,45 @@ public class ModifyReservationPage extends JPanel {
             JButton checkOutButton = createRedButton("Check-Out", 150, 55);
             JButton generateBillButton = createBlackButton("Generate Bill", 175, 55);
 
+            checkInButton.addActionListener(e -> {
+                try {
+                    int confirm = JOptionPane.showConfirmDialog(
+                            this,
+                            "Are you sure you want to check-in?",
+                            "Check-In",
+                            JOptionPane.YES_NO_OPTION
+                    );
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        uiState.reservationService.checkIn(reservation.getId());
+                        JOptionPane.showMessageDialog(null, "Guest has been checked-in.");
+                        clerkHomePage.updatePage();
+                        cardLayout.show(mainPanel, "CLERK_HOME");
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+            checkOutButton.addActionListener(e -> {
+                try {
+                    int confirm = JOptionPane.showConfirmDialog(
+                            this,
+                            "Are you sure you want to check-out?",
+                            "Check-Out",
+                            JOptionPane.YES_NO_OPTION
+                    );
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        handleBill();
+                        uiState.reservationService.checkout(reservation.getId());
+                        JOptionPane.showMessageDialog(null, "Guest has been checked-out and bill has been sent.");
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+            generateBillButton.addActionListener(e -> handleBill());
+
             JPanel clerkActionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
             clerkActionPanel.setOpaque(false);
             clerkActionPanel.add(checkInButton);
@@ -446,7 +486,7 @@ public class ModifyReservationPage extends JPanel {
             panel.add(clerkActionPanel, gbc);
         }
 
-        JButton saveButton = createBlackButton("Save Reservation", 230, 55);
+        JButton saveButton = createBlackButton("Save Modifications", 230, 55);
         JButton cancelButton = createRedButton("Cancel Reservation", 250, 55);
 
         saveButton.addActionListener(e -> handleSave());
@@ -526,8 +566,8 @@ public class ModifyReservationPage extends JPanel {
         button.setContentAreaFilled(true);
         return button;
     }
-/*
-    private JPanel createBillSummaryPanel() {
+
+    private JPanel createBillSummaryPanel(Receipt receipt) throws SQLException {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
@@ -536,11 +576,11 @@ public class ModifyReservationPage extends JPanel {
         ));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 12, 10, 12);
+        gbc.insets = new Insets(8, 12, 8, 12);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel title = new JLabel("Bill Summary:");
+        JLabel title = new JLabel("Receipt Summary:");
         title.setFont(new Font("SansSerif", Font.PLAIN, 32));
         title.setForeground(new Color(43, 58, 72));
 
@@ -550,57 +590,60 @@ public class ModifyReservationPage extends JPanel {
         gbc.weightx = 1;
         panel.add(title, gbc);
 
-        JLabel guestNameLabel = createLabel("Guest:");
-        JLabel guestNameValue = createValueLabel(nameField.getText());
-
-        JLabel reservationIdLabel = createLabel("Reservation ID:");
-        JLabel reservationIdValue = createValueLabel(String.valueOf(reservation.getId()));
-
-        JLabel roomsLabel = createLabel("Rooms:");
-        JLabel roomsValue = createValueLabel(getRoomsText());
-
-        JLabel datesLabel = createLabel("Dates:");
-        JLabel datesValue = createValueLabel(
-                reservation.dateRange.startDate() + " - " + reservation.dateRange.endDate()
-        );
-
-        JLabel nightsLabel = createLabel("Nights:");
-        JLabel nightsValue = createValueLabel(String.valueOf(getNumberOfNights()));
-
-        JLabel roomTotalLabel = createLabel("Room Total:");
-        JLabel roomTotalValue = createValueLabel(String.format("$%.2f", calculateRoomTotal()));
-
-        JLabel taxLabel = createLabel("Tax:");
-        JLabel taxValue = createValueLabel(String.format("$%.2f", calculateTax()));
-
-        JLabel totalLabel = createLabel("Total:");
-        totalLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-
-        JLabel totalValue = createValueLabel(String.format("$%.2f", calculateFinalTotal()));
-        totalValue.setFont(new Font("SansSerif", Font.BOLD, 24));
-
         int row = 1;
 
-        addBillRow(panel, gbc, row++, guestNameLabel, guestNameValue);
-        addBillRow(panel, gbc, row++, reservationIdLabel, reservationIdValue);
-        addBillRow(panel, gbc, row++, roomsLabel, roomsValue);
-        addBillRow(panel, gbc, row++, datesLabel, datesValue);
-        addBillRow(panel, gbc, row++, nightsLabel, nightsValue);
-        addBillRow(panel, gbc, row++, roomTotalLabel, roomTotalValue);
-        addBillRow(panel, gbc, row++, taxLabel, taxValue);
+        addBillRow(panel, gbc, row++, createLabel("Guest Name:"), createValueLabel(nameField.getText().toString()));
+        addBillRow(panel, gbc, row++, createLabel("Reservation ID:"), createValueLabel(receipt.getResID()));
+
+        row = addSectionTitle(panel, gbc, row, "Room Charges");
+
+        if (receipt.getRoomBill() == null || receipt.getRoomBill().isEmpty()) {
+            addBillRow(panel, gbc, row++, createLabel("Rooms:"), createValueLabel("None"));
+        } else {
+            for (Map.Entry<Integer, Double> entry : receipt.getRoomBill().entrySet()) {
+                addBillRow(
+                        panel,
+                        gbc,
+                        row++,
+                        createLabel("Room " + entry.getKey() + ":"),
+                        createValueLabel(String.format("$%.2f", entry.getValue()))
+                );
+            }
+        }
+
+        row = addSectionTitle(panel, gbc, row, "Shop Items");
+
+        if (receipt.getShopItemBill() == null || receipt.getShopItemBill().isEmpty()) {
+            addBillRow(panel, gbc, row++, createLabel("Items:"), createValueLabel("None"));
+        } else {
+            for (Map.Entry<String, Double> entry : receipt.getShopItemBill().entrySet()) {
+                addBillRow(
+                        panel,
+                        gbc,
+                        row++,
+                        createLabel(entry.getKey() + ":"),
+                        createValueLabel(String.format("$%.2f", entry.getValue()))
+                );
+            }
+        }
+
+        addBillRow(panel, gbc, row++, createLabel("Penalty:"), createValueLabel(String.format("$%.2f", receipt.getPenalty())));
 
         gbc.gridx = 0;
-        gbc.gridy = row;
+        gbc.gridy = row++;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(16, 12, 16, 12);
         panel.add(new JSeparator(), gbc);
 
-        row++;
+        JLabel totalLabel = createLabel("Total:");
+        totalLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+
+        JLabel totalValue = createValueLabel(String.format("$%.2f", receipt.calculateTotal()));
+        totalValue.setFont(new Font("SansSerif", Font.BOLD, 24));
 
         addBillRow(panel, gbc, row++, totalLabel, totalValue);
 
         JButton closeButton = createBlackButton("Close", 130, 55);
-
         closeButton.addActionListener(e -> {
             clerkHomePage.updatePage();
             cardLayout.show(mainPanel, "CLERK_HOME");
@@ -619,6 +662,22 @@ public class ModifyReservationPage extends JPanel {
         return panel;
     }
 
+    private int addSectionTitle(JPanel panel, GridBagConstraints gbc, int row, String text) {
+        JLabel sectionTitle = new JLabel(text);
+        sectionTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+        sectionTitle.setForeground(new Color(43, 58, 72));
+
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1;
+        gbc.insets = new Insets(18, 12, 8, 12);
+
+        panel.add(sectionTitle, gbc);
+
+        return row + 1;
+    }
+
     private void addBillRow(JPanel panel, GridBagConstraints gbc, int row, JLabel label, JLabel value) {
         gbc.gridy = row;
         gbc.gridwidth = 1;
@@ -634,12 +693,12 @@ public class ModifyReservationPage extends JPanel {
     }
 
     private JLabel createValueLabel(String text) {
-        JLabel label = new JLabel(text);
+        JLabel label = new JLabel(text == null ? "" : text);
         label.setFont(new Font("SansSerif", Font.PLAIN, 20));
         label.setForeground(new Color(43, 58, 72));
         return label;
     }
-*/
+
     private void handleSave(){
         List<Room> roomList = new ArrayList<>();
 
@@ -659,23 +718,19 @@ public class ModifyReservationPage extends JPanel {
                     roomList,
                     nameField.getText()
             );
+
+            if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+                clerkHomePage.updatePage();
+                cardLayout.show(mainPanel, "CLERK_HOME");
+            } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
+                profilePage.updateProfilePage();
+                cardLayout.show(mainPanel, "PROFILE");
+            }
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
 
-        if (uiState.getCurrentSession().getRole() == Role.CLERK) {
-            clerkHomePage.updatePage();
-            JOptionPane.showMessageDialog(null, "Edit's Saved.");
-            cardLayout.show(mainPanel, "CLERK_HOME");
-        } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
-            try {
-                profilePage.updateProfilePage();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            JOptionPane.showMessageDialog(null, "Edit's Saved.");
-            cardLayout.show(mainPanel, "PROFILE");
-        }
+        JOptionPane.showMessageDialog(null, "Edit's Saved.");
     }
 
     private void handleCancel(){
@@ -688,23 +743,31 @@ public class ModifyReservationPage extends JPanel {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                uiState.reservationService.deleteReservation(reservation.getId());
+                Receipt receipt = uiState.reservationService.cancelReservation(reservation.getId());
+
+                if(receipt.getPenalty() == 0.0){
+                    JOptionPane.showMessageDialog(null, "Reservation Cancelled with No Charge.");
+                    if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+                        clerkHomePage.updatePage();
+                        cardLayout.show(mainPanel, "CLERK_HOME");
+                    } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
+                        profilePage.updateProfilePage();
+                        cardLayout.show(mainPanel, "PROFILE");
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Reservation Cancelled with Charge of $" + receipt.getPenalty() + ".");
+                    if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+                        clerkHomePage.updatePage();
+                        cardLayout.show(mainPanel, "CLERK_HOME");
+                    } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
+                        profilePage.updateProfilePage();
+                        cardLayout.show(mainPanel, "PROFILE");
+                    }
+                }
+
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
-            }
-
-            if (uiState.getCurrentSession().getRole() == Role.CLERK) {
-                JOptionPane.showMessageDialog(null, "Reservation Cancelled.");
-                clerkHomePage.updatePage();
-                cardLayout.show(mainPanel, "CLERK_HOME");
-            } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
-                JOptionPane.showMessageDialog(null, "Reservation Cancelled.");
-                try {
-                    profilePage.updateProfilePage();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                cardLayout.show(mainPanel, "PROFILE");
             }
         }
     }
@@ -747,5 +810,23 @@ public class ModifyReservationPage extends JPanel {
             }
         }
         return false;
+    }
+
+    private void handleBill(){
+        try {
+            Receipt receipt = uiState.reservationService.generateBilling(reservation.getId());
+
+            if (billPanel != null) {
+                mainPanel.remove(billPanel);
+            }
+
+            billPanel = createBillSummaryPanel(receipt);
+            mainPanel.add(billPanel, "BILL");
+
+            cardLayout.show(mainPanel, "BILL");
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

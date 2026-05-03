@@ -270,11 +270,28 @@ public class ClerkHomePage extends JPanel {
         datesLabel.setFont(textFont);
         datesLabel.setForeground(new Color(55, 70, 85));
 
-        JLabel checkedInStatus = new JLabel("Check-In: " + (reservation.isCheckedIn() ? "Yes" : "No"));
-        checkedInStatus.setFont(textFont);
-        checkedInStatus.setForeground(new Color(55, 70, 85));
+        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        statusPanel.setOpaque(false);
 
-        JButton detailsButton = new JButton("Modify");
+        JLabel statusLabel = new JLabel("Status: ");
+        statusLabel.setFont(textFont);
+        statusLabel.setForeground(new Color(55, 70, 85));
+
+        JLabel statusValue = new JLabel(
+                reservation.isCheckedIn() ? "Checked-In" : "Not Checked-In"
+        );
+        statusValue.setFont(textFont);
+
+        if (reservation.isCheckedIn()) {
+            statusValue.setForeground(new Color(30, 130, 114)); // green
+        } else {
+            statusValue.setForeground(new Color(214, 65, 88)); // red
+        }
+
+        statusPanel.add(statusLabel);
+        statusPanel.add(statusValue);
+
+        JButton detailsButton = new JButton("Details");
         detailsButton.setFocusPainted(false);
         detailsButton.setForeground(Color.WHITE);
         detailsButton.setBackground(Color.BLACK);
@@ -306,7 +323,6 @@ public class ClerkHomePage extends JPanel {
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         reservationTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         datesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        checkedInStatus.setAlignmentX(Component.LEFT_ALIGNMENT);
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // ===== BUILD CARD =====
@@ -328,7 +344,8 @@ public class ClerkHomePage extends JPanel {
             card.add(Box.createVerticalStrut(5));
         }
 
-        card.add(checkedInStatus);
+        statusPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        card.add(statusPanel);
         card.add(Box.createVerticalStrut(18));
         card.add(buttonPanel);
 

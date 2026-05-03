@@ -421,13 +421,8 @@ public class ProfilePage extends JPanel {
         int id = dbUser.id;
 
         try{
-            userDao.updateFullName(id,nameField.getText().toString());
-            if(!passwordField.getText().isEmpty()){
-                userDao.updatePassword(id,passwordField.getText().toString());
-            }
-            userDao.updateUsername(id,usernameField.getText().toString());
-            userDao.updatePhoneNumber(id,phoneField.getText().toString());
-            userDao.updateEmail(id,emailField.getText().toString());
+            userDao.updateUserProfile(id,nameField.getText().toString(),usernameField.getText().toString(),
+                    passwordField.getText().toString(),phoneField.getText().toString(),emailField.getText().toString());
         } catch(SQLException e){
             e.printStackTrace();
         }

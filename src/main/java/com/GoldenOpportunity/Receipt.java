@@ -14,11 +14,11 @@ public class Receipt {
     private Map<Integer, Double> roomBill;
     private Map<String, Double> shopItemBill;
 
-    Receipt(){
+    Receipt(String resID){
         total = 0.0;
         penalty = 0.0;
         guestID = 0;
-        resID = null;
+        this.resID = resID;
         billingAddress = null;
         roomBill = new HashMap<>();
         shopItemBill = new HashMap<>();

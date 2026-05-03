@@ -595,6 +595,78 @@ public class ReservationService {
         }
     }
 
+    public Receipt cancelReservation(String resID) throws SQLException {
+        SearchController sc = new SearchController(new RoomService(), new ReservationService());
+        Reservation reservation = sc.getResService().findReservation(resID);
+
+        if (reservation == null) return null;
+
+        LocalDate today = LocalDate.now();
+        LocalDate start = reservation.getDateRange().startDate();
+        LocalDate cutoff = start.minusDays(2);
+
+        Receipt receipt = reservation.getReceipt();
+
+        if (!today.isBefore(cutoff)) {
+            double penalty = reservation.getRooms()
+                    .stream()
+                    .mapToDouble(Room::getRate)
+                    .sum() * 0.8;
+
+            receipt.setPenalty(penalty);
+            receipt.addOnTotal(penalty);
+        }
+
+        sc.getResService().deleteReservation(resID);
+        return receipt;
+    }
+
+    public Receipt generateBilling(String resID) throws SQLException {
+        Reservation reservation = findReservation(resID);
+
+        if (reservation == null) return null;
+
+        Receipt receipt = reservation.getReceipt();
+        LocalDate today = LocalDate.now();
+        LocalDate end = reservation.getDateRange().endDate();
+
+        if (today.isBefore(end)) {
+            double penalty = reservation.getRooms()
+                    .stream()
+                    .mapToDouble(Room::getRate)
+                    .sum() * 0.8;
+
+            receipt.setPenalty(penalty);
+        }
+
+        receipt.calculateTotal();
+        return receipt;
+    }
+
+    public boolean checkout(String resID) throws SQLException {
+        if(findReservation(resID).isCheckedIn()){
+            deleteReservation(resID);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkIn(String resID) throws SQLException{
+        String sql = "UPDATE Reservations SET checkedIn=? WHERE resId=?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setBoolean(1, true);
+            stmt.setString(2, resID);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     /**
      * getReservationsForRoom: Will return a list of reservations that a room has
      * TODO: Must be tested

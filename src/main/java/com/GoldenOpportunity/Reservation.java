@@ -11,7 +11,6 @@ public class Reservation {
     final double bill;
     boolean checkedIn;
     private Receipt receipt;
-    boolean checkedIn = false;
     String name;//A reservation is not checked in automatically
 
 
@@ -21,7 +20,7 @@ public class Reservation {
         this.dateRange = dateRange;
         this.bill =  bill;
         this.checkedIn = false;
-        receipt = new Receipt();
+        receipt = new Receipt(resId);
         this.checkedIn = checkedIn;
         this.name = name;
     }
