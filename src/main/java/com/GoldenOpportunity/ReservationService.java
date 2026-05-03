@@ -75,7 +75,7 @@ public class ReservationService {
      * @param end
      * @param bill
      */
-    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill, String name, Integer userID)  throws SQLException {
+    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill, String name, String userID)  throws SQLException {
         //Creates a new reservation ID from the set of all valid reservation ids
         String newResId = createResId();
         if (newResId == null) {
@@ -110,6 +110,7 @@ public class ReservationService {
             //TODO: Ensure works
             reservePstmt.setBoolean(5, false);
             reservePstmt.setString(6,name);
+            reservePstmt.setString(7,userID);
             reservePstmt.executeUpdate();
             conn.commit();
 
@@ -521,6 +522,7 @@ public class ReservationService {
         double bill = resRS.getDouble("bill");
         boolean checkedIn = resRS.getBoolean("checkedIn");
         String name = resRS.getString("name");
+        String userID = resRS.getString("userID");
 
         List<Room> roomList = new ArrayList<>();
 
@@ -538,7 +540,7 @@ public class ReservationService {
             System.err.println("Error building reservation: " + e.getMessage());
             throw e;
         }
-        return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill, checkedIn, name);
+        return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill, checkedIn, name,userID);
     }
 
     //FIXME: Might be depreciated

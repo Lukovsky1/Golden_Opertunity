@@ -2,12 +2,15 @@ package com.GoldenOpportunity;
 
 import com.GoldenOpportunity.Login.enums.Role;
 import com.GoldenOpportunity.Roles.Guest;
+import com.GoldenOpportunity.dbLogin.DbUser;
+import com.GoldenOpportunity.dbLogin.UserDao;
 import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.io.File;
 import java.io.IOException;
@@ -435,22 +438,25 @@ public class ModifyReservationPage extends JPanel {
             JButton generateBillButton = createBlackButton("Generate Bill", 175, 55);
 
             checkInButton.addActionListener(e -> {
-                try {
-                    int confirm = JOptionPane.showConfirmDialog(
-                            this,
-                            "Are you sure you want to check-in?",
-                            "Check-In",
-                            JOptionPane.YES_NO_OPTION
-                    );
+                if(reservation.isCheckedIn()){
+                    JOptionPane.showMessageDialog(null, "Guest has already been checked-in.");
+                }
+                else{
+                    try {
+                        int confirm = JOptionPane.showConfirmDialog(
+                                this,
+                                "Are you sure you want to check-in?",
+                                "Check-In",
+                                JOptionPane.YES_NO_OPTION
+                        );
 
-                    if (confirm == JOptionPane.YES_OPTION) {
-                        uiState.reservationService.checkIn(reservation.getId());
-                        JOptionPane.showMessageDialog(null, "Guest has been checked-in.");
-                        clerkHomePage.updatePage();
-                        cardLayout.show(mainPanel, "CLERK_HOME");
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            uiState.reservationService.checkIn(reservation.getId());
+                            JOptionPane.showMessageDialog(null, "Guest has been checked-in.");
+                        }
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
                     }
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
                 }
             });
             checkOutButton.addActionListener(e -> {
@@ -467,9 +473,10 @@ public class ModifyReservationPage extends JPanel {
                         );
 
                         if (confirm == JOptionPane.YES_OPTION) {
-                            handleBill();
                             uiState.reservationService.checkout(reservation.getId());
-                            JOptionPane.showMessageDialog(null, "Guest has been checked-out and bill has been sent.");
+                            JOptionPane.showMessageDialog(null, "Guest has been checked-out.");
+                            clerkHomePage.updatePage();
+                            cardLayout.show(mainPanel, "CLERK_HOME");
                         }
                     } catch (SQLException ex) {
                         throw new RuntimeException(ex);
@@ -666,8 +673,16 @@ public class ModifyReservationPage extends JPanel {
 
         JButton closeButton = createBlackButton("Close", 130, 55);
         closeButton.addActionListener(e -> {
-            clerkHomePage.updatePage();
-            cardLayout.show(mainPanel, "CLERK_HOME");
+            if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+                cardLayout.show(mainPanel, "CLERK_MODIFY_RESERVE");
+            } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
+                try {
+                    profilePage.updateProfilePage();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                cardLayout.show(mainPanel, "PROFILE");
+            }
         });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -755,18 +770,34 @@ public class ModifyReservationPage extends JPanel {
     }
 
     private void handleCancel(){
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to cancel reservation?",
-                "Cancel",
-                JOptionPane.YES_NO_OPTION
-        );
+        LocalDate today = LocalDate.now();
+        LocalDate start = reservation.getDateRange().startDate();
+        LocalDate cutoff = start.minusDays(2);
+        boolean penalty = false;
+        int confirm = 0;
+
+        if(!today.isBefore(cutoff)){
+            penalty = true;
+            confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure you want to cancel reservation? There will be a charge.",
+                    "Cancel",
+                    JOptionPane.YES_NO_OPTION
+            );
+        }
+        else{
+            confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure you want to cancel reservation?",
+                    "Cancel",
+                    JOptionPane.YES_NO_OPTION
+            );
+        }
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                Receipt receipt = uiState.reservationService.cancelReservation(reservation.getId());
-
-                if(receipt.getPenalty() == 0.0){
+                if(!penalty){
+                    Receipt receipt = uiState.reservationService.cancelReservation(reservation.getId());
                     JOptionPane.showMessageDialog(null, "Reservation Cancelled with No Charge.");
                     if (uiState.getCurrentSession().getRole() == Role.CLERK) {
                         clerkHomePage.updatePage();
@@ -777,14 +808,13 @@ public class ModifyReservationPage extends JPanel {
                     }
                 }
                 else{
-                    JOptionPane.showMessageDialog(null, "Reservation Cancelled with Charge of $" + receipt.getPenalty() + ".");
                     if (uiState.getCurrentSession().getRole() == Role.CLERK) {
-                        clerkHomePage.updatePage();
-                        cardLayout.show(mainPanel, "CLERK_HOME");
+                        handleBill();
                     } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
-                        profilePage.updateProfilePage();
-                        cardLayout.show(mainPanel, "PROFILE");
+                        handleBill();
                     }
+                    Receipt receipt = uiState.reservationService.cancelReservation(reservation.getId());
+                    JOptionPane.showMessageDialog(null, "Reservation Cancelled with Charge of $" + receipt.getPenalty() + ".");
                 }
 
             } catch (SQLException ex) {
@@ -835,16 +865,31 @@ public class ModifyReservationPage extends JPanel {
 
     private void handleBill(){
         try {
-            Receipt receipt = uiState.reservationService.generateBilling(reservation.getId());
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Do you want to generate bill?",
+                    "Generate Bill",
+                    JOptionPane.YES_NO_OPTION
+            );
 
-            if (billPanel != null) {
-                mainPanel.remove(billPanel);
+            if (confirm == JOptionPane.YES_OPTION) {
+                if(reservation.getUserID() == null){
+                    JOptionPane.showMessageDialog(null, "Bill sent to guest's email.");
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Bill sent to corporate email.");
+                }
+                Receipt receipt = uiState.reservationService.generateBilling(reservation.getId());
+
+                if (billPanel != null) {
+                    mainPanel.remove(billPanel);
+                }
+
+                billPanel = createBillSummaryPanel(receipt);
+                mainPanel.add(billPanel, "BILL");
+
+                cardLayout.show(mainPanel, "BILL");
             }
-
-            billPanel = createBillSummaryPanel(receipt);
-            mainPanel.add(billPanel, "BILL");
-
-            cardLayout.show(mainPanel, "BILL");
 
         } catch (SQLException ex) {
             throw new RuntimeException(ex);

@@ -429,7 +429,7 @@ public class CheckoutPage extends JPanel {
             try {
                 if(uiState.isLoggedIn && uiState.getCurrentSession().getRole() == Role.GUEST){
                     uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,
-                            uiState.endDate, finalSum, name, uiState.getCurrentSession().getUserId());
+                            uiState.endDate, finalSum, name,String.valueOf(uiState.getCurrentSession().getUserId()));
                 }
                 else{
                     uiState.reservationService.createReservation(uiState.potentialRooms,uiState.startDate,
