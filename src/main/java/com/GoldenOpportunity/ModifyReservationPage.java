@@ -796,8 +796,9 @@ public class ModifyReservationPage extends JPanel {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
+                Receipt receipt = uiState.reservationService.cancelReservation(reservation.getId());
+
                 if(!penalty){
-                    Receipt receipt = uiState.reservationService.cancelReservation(reservation.getId());
                     JOptionPane.showMessageDialog(null, "Reservation Cancelled with No Charge.");
                     if (uiState.getCurrentSession().getRole() == Role.CLERK) {
                         clerkHomePage.updatePage();
@@ -808,13 +809,15 @@ public class ModifyReservationPage extends JPanel {
                     }
                 }
                 else{
+                    JOptionPane.showMessageDialog(null, "Reservation Cancelled with Charge of $" +
+                            String.format("$%.2f", receipt.getPenalty()) + ".");
                     if (uiState.getCurrentSession().getRole() == Role.CLERK) {
-                        handleBill();
+                        clerkHomePage.updatePage();
+                        cardLayout.show(mainPanel, "CLERK_HOME");
                     } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
-                        handleBill();
+                        profilePage.updateProfilePage();
+                        cardLayout.show(mainPanel, "PROFILE");
                     }
-                    Receipt receipt = uiState.reservationService.cancelReservation(reservation.getId());
-                    JOptionPane.showMessageDialog(null, "Reservation Cancelled with Charge of $" + receipt.getPenalty() + ".");
                 }
 
             } catch (SQLException ex) {
