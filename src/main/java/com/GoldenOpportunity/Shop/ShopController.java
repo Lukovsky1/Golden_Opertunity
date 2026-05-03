@@ -48,7 +48,7 @@ public class ShopController {
         return "Error occurred adding product to cart";
     }
 
-    public String checkout(int guestID, String paymentDetails, ShoppingCart shoppingCart) {
+    public String checkout(int guestID, String paymentDetails, ShoppingCart shoppingCart) throws SQLException {
         return shopService.checkout(guestID, paymentDetails, shoppingCart);
     }
 }

@@ -36,6 +36,14 @@ public class SearchController {
         }
     }
 
+    public RoomService getRoomService() {
+        return roomService;
+    }
+
+    public ReservationService getResService() {
+        return resService;
+    }
+
     public List<Room> searchAvailableRooms(Criteria criteria) throws SQLException {
         List<Room> filteredRooms = roomService.searchRoom(criteria);
         List<Room> availableRooms = new ArrayList<>();
@@ -88,6 +96,7 @@ public class SearchController {
 
         //List<Room> availableRooms = searchController.searchAvailableRooms(criteria);
         //availableRooms.forEach(r -> System.out.println(r.getRoomNo()));
+
 
 
         //searchController.printRoomsAndReservations();

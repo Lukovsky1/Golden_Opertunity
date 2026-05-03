@@ -14,7 +14,7 @@ import java.util.List;
 
 // im seperating the UI from backend js to test my logic
 public class ShopBackendTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         // make sure the db/table/data exist first
         //ShopDBInitializer.initializeDatabase();
         try {

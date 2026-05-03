@@ -62,7 +62,6 @@ public class Room {
     public void setCapacity(int capacity) {this.capacity = capacity;}
     public void setDescription(String description) {this.description = description;}
     public void setImage(String image) {this.image = image;}
-
     //String [] bedTypes = {"King", "Queen", "Twin", "Full"};
 
 
@@ -85,8 +84,7 @@ public class Room {
 
     boolean isRoomAvailable(DateRange range) throws SQLException {
         ReservationService resService = new ReservationService();
-        List<Reservation> allReservations = resService.getAllReservations();
-        for (Reservation r : allReservations) {
+        for (Reservation r : resService.getAllReservations()) {
             if (r.getRooms().contains(this) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
