@@ -454,21 +454,26 @@ public class ModifyReservationPage extends JPanel {
                 }
             });
             checkOutButton.addActionListener(e -> {
-                try {
-                    int confirm = JOptionPane.showConfirmDialog(
-                            this,
-                            "Are you sure you want to check-out?",
-                            "Check-Out",
-                            JOptionPane.YES_NO_OPTION
-                    );
+                if(!reservation.isCheckedIn()){
+                    JOptionPane.showMessageDialog(null, "Guest has not been checked-in.");
+                }
+                else{
+                    try {
+                        int confirm = JOptionPane.showConfirmDialog(
+                                this,
+                                "Are you sure you want to check-out?",
+                                "Check-Out",
+                                JOptionPane.YES_NO_OPTION
+                        );
 
-                    if (confirm == JOptionPane.YES_OPTION) {
-                        handleBill();
-                        uiState.reservationService.checkout(reservation.getId());
-                        JOptionPane.showMessageDialog(null, "Guest has been checked-out and bill has been sent.");
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            handleBill();
+                            uiState.reservationService.checkout(reservation.getId());
+                            JOptionPane.showMessageDialog(null, "Guest has been checked-out and bill has been sent.");
+                        }
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
                     }
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
                 }
             });
             generateBillButton.addActionListener(e -> handleBill());
