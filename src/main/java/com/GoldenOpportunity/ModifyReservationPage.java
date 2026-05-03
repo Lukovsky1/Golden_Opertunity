@@ -491,15 +491,31 @@ public class ModifyReservationPage extends JPanel {
             panel.add(clerkActionPanel, gbc);
         }
 
+        JButton backButton = createBlackButton("Back", 140, 55);
         JButton saveButton = createBlackButton("Save Modifications", 230, 55);
         JButton cancelButton = createRedButton("Cancel Reservation", 250, 55);
 
-        saveButton.addActionListener(e -> handleSave());
+        backButton.addActionListener(e -> {
+            if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+                clerkHomePage.updatePage();
+                cardLayout.show(mainPanel, "CLERK_HOME");
+            } else if (uiState.getCurrentSession().getRole() == Role.GUEST) {
+                try {
+                    profilePage.updateProfilePage();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                cardLayout.show(mainPanel, "PROFILE");
+            }
+        });
 
+        saveButton.addActionListener(e -> handleSave());
         cancelButton.addActionListener(e -> handleCancel());
 
         JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
         savePanel.setOpaque(false);
+
+        savePanel.add(backButton);
         savePanel.add(saveButton);
         savePanel.add(cancelButton);
 
