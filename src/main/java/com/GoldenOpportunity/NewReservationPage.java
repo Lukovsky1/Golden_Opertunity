@@ -314,6 +314,12 @@ public class NewReservationPage extends JPanel{
                     return;
                 }
 
+                /*if (!cardRoom.isRoomAvailable(new DateRange(startDatePicker.getDate(), endDatePicker.getDate()))) {
+                    JOptionPane.showMessageDialog(null, "This room is not available during" +
+                            "your selected dates");
+                    return;
+                } */
+
                 uiState.startDate = startDatePicker.getDate();
                 uiState.endDate = endDatePicker.getDate();
                 uiState.numGuests = 1;

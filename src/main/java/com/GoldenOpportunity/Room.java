@@ -7,6 +7,8 @@ import java.util.Map;
 
 /**
  * Edits: Added floorNum to the class
+ *
+ * Edited logic for the
  */
 //TODO: Add some form of method for a room to check its availability
 //In the roomTestFile, add new column for each range of dates that a room is reserved
@@ -114,10 +116,10 @@ public class Room {
         if (this.beds != other.beds) {
             return false;
         }
-        if (this.qLevel.equals(other.qLevel)) {
+        if (!this.qLevel.equals(other.qLevel)) {
             return false;
         }
-        if (this.roomType.equals(other.roomType)) {
+        if (!this.roomType.equals(other.roomType)) {
             return false;
         }
         if  (this.smoking != other.smoking) {

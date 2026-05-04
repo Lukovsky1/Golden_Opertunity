@@ -38,6 +38,9 @@ public class ClerkHomePage extends JPanel {
             super.setVisible(false);
             return;
         }
+
+        updatePage();
+
         super.setVisible(aFlag);
     }
 

@@ -420,11 +420,13 @@ public class CheckoutPage extends JPanel {
         bookBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         double finalSum = sum;
-        String name = firstNameField.getText().toString() + " " + lastNameField.getText().toString();
+
         bookBtn.addActionListener(e -> {
             if(!validateGuestInfo() || !validatePaymentInfo()){
                 return;
             }
+
+            String name = firstNameField.getText().toString() + " " + lastNameField.getText().toString();
 
             try {
                 if(uiState.isLoggedIn && uiState.getCurrentSession().getRole() == Role.GUEST){
