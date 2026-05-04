@@ -144,7 +144,8 @@ public class DBInitializer {
                       endDate TEXT NOT NULL,
                       bill REAL NOT NULL,
                       checkedIn BOOLEAN NOT NULL,
-                      name TEXT NOT NULL
+                      name TEXT NOT NULL,
+                      userID INTEGER
                   );
                 """;
 

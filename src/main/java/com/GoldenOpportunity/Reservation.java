@@ -9,17 +9,22 @@ public class Reservation {
     private List<Room> rooms;
     final DateRange dateRange;
     final double bill;
-    boolean checkedIn = false;
+    boolean checkedIn;
+    private Receipt receipt;
     String name;//A reservation is not checked in automatically
+    String userID;
 
 
-    Reservation(String resId, List<Room> rooms, DateRange dateRange, double bill, boolean checkedIn, String name) {
+    Reservation(String resId, List<Room> rooms, DateRange dateRange, double bill, boolean checkedIn, String name,String userID) {
         this.resId = resId;
         this.rooms = rooms;
         this.dateRange = dateRange;
         this.bill =  bill;
+        this.checkedIn = false;
+        receipt = new Receipt(resId);
         this.checkedIn = checkedIn;
         this.name = name;
+        this.userID = userID;
     }
     public String getId() {
         return resId;
@@ -36,13 +41,15 @@ public class Reservation {
     public boolean isCheckedIn() {
         return checkedIn;
     }
+    public Receipt getReceipt(){return receipt;}
     public String getName(){return name;}
+    public String getUserID(){return userID;}
 
 
 
     @Override
     public String toString() {
-        return "Reservation: " + resId + " " +  rooms + ", " + dateRange + ", " + bill + "; Checked in: " + checkedIn;
+        return "Reservation: " + resId + " " +  rooms + ", " + dateRange + ", " + bill + "Checked in: " + checkedIn;
     }
 
 }

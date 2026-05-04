@@ -337,7 +337,7 @@ public class ProductDetailsPage extends JPanel {
     private boolean addSelectedQuantityToCart() {
         for (int i = 0; i < selectedQuantity; i++) {
             String result = shopController.addProductToCart(
-                    guestID,
+            		getCurrentGuestID(),
                     product.getProductID(),
                     shoppingCart
             );
@@ -349,6 +349,14 @@ public class ProductDetailsPage extends JPanel {
         }
 
         return true;
+    }
+    
+    private int getCurrentGuestID() {
+        if (uiState != null && uiState.getCurrentSession() != null) {
+            return uiState.getCurrentSession().getUserId();
+        }
+
+        return guestID;
     }
 
     private JPanel createFooter() {

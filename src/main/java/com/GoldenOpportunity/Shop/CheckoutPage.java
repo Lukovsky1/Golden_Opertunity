@@ -186,8 +186,24 @@ public class CheckoutPage extends JPanel {
 
         placeOrderButton.addActionListener(e -> placeOrder());
 
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setBackground(new Color(220, 220, 220));
+        cancelButton.setForeground(Color.BLACK);
+        cancelButton.setFocusPainted(false);
+        cancelButton.setBorderPainted(false);
+        cancelButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        cancelButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        cancelButton.addActionListener(e -> {
+            cardLayout.show(mainPanel, "CART");
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        });
+
         panel.add(Box.createVerticalStrut(20));
         panel.add(placeOrderButton);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(cancelButton);
 
         return panel;
     }
