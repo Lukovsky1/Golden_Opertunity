@@ -1,26 +1,13 @@
 package com.GoldenOpportunity.Shop;
 
-import com.GoldenOpportunity.AuthenticationController;
-import com.GoldenOpportunity.ReservationService;
-import com.GoldenOpportunity.dbLogin.UserDao;
-
-import java.sql.SQLException;
 import java.util.List;
 
 // js recieves events, delegates all to shopservice
 public class ShopController {
     private ShopService shopService;
-    private AuthenticationController authenticationController;
-    private ReservationService reservationService;
-    private UserDao userDao;
 
-    public ShopController(ShopService shopService,
-                          AuthenticationController authenticationController,
-                          ReservationService reservationService, UserDao userDao) {
+    public ShopController(ShopService shopService) {
         this.shopService = shopService;
-        this.authenticationController = authenticationController;
-        this.reservationService = reservationService;
-        this.userDao = userDao;
     }
 
     public List<ProductDescription> viewStore() {
@@ -33,7 +20,7 @@ public class ShopController {
     }
 
 
-    public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart)  {
+    /*public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart)  {
         try {
             if (!userDao.isAuthenticated(guestID)) {
                 return "guest is not authenticated";
@@ -48,6 +35,9 @@ public class ShopController {
             System.err.println("Error from reading from database" + e.getMessage());
         }
         return "Error occurred adding product to cart";
+    }*/
+    public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart) {
+        return shopService.addProductToCart(guestID, productID, shoppingCart);
     }
 
     public String checkout(int guestID, PaymentDetails paymentDetails, ShoppingCart shoppingCart) {

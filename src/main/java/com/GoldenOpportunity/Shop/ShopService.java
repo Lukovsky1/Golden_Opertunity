@@ -1,9 +1,11 @@
 package com.GoldenOpportunity.Shop;
 
 import com.GoldenOpportunity.PaymentMethod;
+import com.GoldenOpportunity.ReservationService;
 import com.GoldenOpportunity.Roles.Clerk;
+import com.GoldenOpportunity.dbLogin.UserDao;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ShopService {
@@ -11,11 +13,16 @@ public class ShopService {
     private PaymentMethod paymentMethod;
     private Clerk clerk;
     private Order lastOrder;
+    private ReservationService reservationService;
+    private UserDao userDao;
 
-    public ShopService(Shop shop, PaymentMethod paymentMethod, Clerk clerk) {
+    public ShopService(Shop shop, PaymentMethod paymentMethod, Clerk clerk,
+                       ReservationService reservationService, UserDao userDao) {
         this.shop = shop;
         this.paymentMethod = paymentMethod;
         this.clerk = clerk;
+        this.reservationService = reservationService;
+        this.userDao = userDao;
     }
 
     // views all available products, the main store page
@@ -28,8 +35,42 @@ public class ShopService {
         return shop.findProduct(productID);
     }
 
-    // adds a product to cart, assumes controller already handled auth and reservation checks
+    /*public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart) {
+        ProductDescription productDescription = shop.findProduct(productID);
+
+        if (productDescription == null) {
+            return "product not found";
+        }
+
+        int stock = shop.getStock(productID);
+        int quantityInCart = shoppingCart.getQuantity(productID);
+
+        if (stock <= 0) {
+            return "product is out of stock";
+        }
+
+        if (quantityInCart >= stock) {
+            return "not enough stock";
+        }
+
+        shoppingCart.addProductToCart(productDescription);
+        return "updatedCart";
+    }*/
+    // adds a product to cart after checking authentication, reservation, product, and stock
     public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart) {
+        try {
+            if (!userDao.isAuthenticated(guestID)) {
+                return "guest is not authenticated";
+            }
+
+            if (!reservationService.hasValidReservation(guestID)) {
+                return "guest does not have a valid reservation";
+            }
+        } catch (SQLException e) {
+            System.err.println("Error from reading from database" + e.getMessage());
+            return "Error occurred adding product to cart";
+        }
+
         ProductDescription productDescription = shop.findProduct(productID);
 
         if (productDescription == null) {
@@ -50,6 +91,7 @@ public class ShopService {
         shoppingCart.addProductToCart(productDescription);
         return "updatedCart";
     }
+
 
     // simple checkout
     public String checkout(int guestID, PaymentDetails paymentDetails, ShoppingCart shoppingCart) {
