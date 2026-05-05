@@ -34,28 +34,7 @@ public class ShopService {
     public ProductDescription viewProductDetails(int productID) {
         return shop.findProduct(productID);
     }
-
-    /*public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart) {
-        ProductDescription productDescription = shop.findProduct(productID);
-
-        if (productDescription == null) {
-            return "product not found";
-        }
-
-        int stock = shop.getStock(productID);
-        int quantityInCart = shoppingCart.getQuantity(productID);
-
-        if (stock <= 0) {
-            return "product is out of stock";
-        }
-
-        if (quantityInCart >= stock) {
-            return "not enough stock";
-        }
-
-        shoppingCart.addProductToCart(productDescription);
-        return "updatedCart";
-    }*/
+    
     // adds a product to cart after checking authentication, reservation, product, and stock
     public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart) {
         try {

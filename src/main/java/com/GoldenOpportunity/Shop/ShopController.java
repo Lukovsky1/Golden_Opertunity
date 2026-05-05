@@ -19,23 +19,6 @@ public class ShopController {
         return shopService.viewProductDetails(productID);
     }
 
-
-    /*public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart)  {
-        try {
-            if (!userDao.isAuthenticated(guestID)) {
-                return "guest is not authenticated";
-            }
-
-            if (!reservationService.hasValidReservation(guestID)) {
-                return "guest does not have a valid reservation";
-            }
-
-            return shopService.addProductToCart(guestID, productID, shoppingCart);
-        } catch (SQLException e) {
-            System.err.println("Error from reading from database" + e.getMessage());
-        }
-        return "Error occurred adding product to cart";
-    }*/
     public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart) {
         return shopService.addProductToCart(guestID, productID, shoppingCart);
     }
