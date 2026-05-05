@@ -809,7 +809,7 @@ public class ModifyReservationPage extends JPanel {
                     }
                 }
                 else{
-                    JOptionPane.showMessageDialog(null, "Reservation Cancelled with Charge of $" +
+                    JOptionPane.showMessageDialog(null, "Reservation Cancelled with Charge of " +
                             String.format("$%.2f", receipt.getPenalty()) + ".");
                     if (uiState.getCurrentSession().getRole() == Role.CLERK) {
                         clerkHomePage.updatePage();

@@ -45,6 +45,8 @@ public class CheckoutPage extends JPanel {
     private JTextField cvvField;
     private JTextField billingZipField;
 
+    private double finalSum;
+
     public CheckoutPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
@@ -419,12 +421,13 @@ public class CheckoutPage extends JPanel {
         bookBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         bookBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        double finalSum = sum;
-        String name = firstNameField.getText().toString() + " " + lastNameField.getText().toString();
+        finalSum = sum;
         bookBtn.addActionListener(e -> {
             if(!validateGuestInfo() || !validatePaymentInfo()){
                 return;
             }
+
+            String name = firstNameField.getText() + " " + lastNameField.getText();
 
             try {
                 if(uiState.isLoggedIn && uiState.getCurrentSession().getRole() == Role.GUEST){

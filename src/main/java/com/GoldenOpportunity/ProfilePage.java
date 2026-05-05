@@ -320,18 +320,23 @@ public class ProfilePage extends JPanel {
                 new LineBorder(new Color(190, 200, 210), 2),
                 new EmptyBorder(10, 12, 10, 12)
         ));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
 
-        // LEFT SIDE (INFO)
+        // BoxLayout uses maximum size, so this controls the card height
+        card.setPreferredSize(new Dimension(600, 240));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 240));
+
         JPanel infoPanel = new JPanel();
         infoPanel.setOpaque(false);
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setPreferredSize(new Dimension(450, 220));
 
         JLabel reservationLabel = new JLabel("Reservation:");
         reservationLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
         reservationLabel.setForeground(new Color(45, 55, 70));
 
-        JLabel datesLabel = new JLabel(reservation.getDateRange().toString());
+        JLabel datesLabel = new JLabel(
+                "Dates: " + reservation.getDateRange().toString()
+        );
         datesLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
 
         infoPanel.add(Box.createVerticalStrut(10));
@@ -339,25 +344,32 @@ public class ProfilePage extends JPanel {
         infoPanel.add(Box.createVerticalStrut(8));
         infoPanel.add(datesLabel);
 
-        for(Room room : reservation.getRooms()){
-            JLabel roomsLabel = new JLabel("Rooms: " + room);
-            roomsLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
+        for (Room room : reservation.getRooms()) {
+            JLabel roomLabel = new JLabel("Room: " + room);
+            roomLabel.setFont(new Font("SansSerif", Font.PLAIN, 17));
 
             infoPanel.add(Box.createVerticalStrut(8));
-            infoPanel.add(roomsLabel);
+            infoPanel.add(roomLabel);
         }
 
-        // RIGHT SIDE (BUTTON - CENTERED)
-        JPanel buttonWrapper = new JPanel(new GridBagLayout()); // this centers vertically
+        JPanel buttonWrapper = new JPanel(new GridBagLayout());
         buttonWrapper.setOpaque(false);
 
         JButton modifyBtn = createBlackButton("Modify", 120, 45);
-        buttonWrapper.add(modifyBtn); // GridBagLayout centers it automatically
+        buttonWrapper.add(modifyBtn);
 
         modifyBtn.addActionListener(e -> {
             try {
-                mainPanel.add(new ModifyReservationPage(this,cardLayout, mainPanel,reservation,
-                        uiState), "GUEST_MODIFY_RESERVE");
+                mainPanel.add(
+                        new ModifyReservationPage(
+                                this,
+                                cardLayout,
+                                mainPanel,
+                                reservation,
+                                uiState
+                        ),
+                        "GUEST_MODIFY_RESERVE"
+                );
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -365,10 +377,9 @@ public class ProfilePage extends JPanel {
             mainPanel.revalidate();
             mainPanel.repaint();
 
-            cardLayout.show(mainPanel,"GUEST_MODIFY_RESERVE");
+            cardLayout.show(mainPanel, "GUEST_MODIFY_RESERVE");
         });
 
-        // ADD TO CARD
         card.add(infoPanel, BorderLayout.CENTER);
         card.add(buttonWrapper, BorderLayout.EAST);
 

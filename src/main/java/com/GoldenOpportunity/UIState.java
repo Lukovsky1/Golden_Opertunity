@@ -38,10 +38,12 @@ public class UIState {
     public List<String> searchBedTypes = new ArrayList<>();
 
     private ProfilePage profilePage;
+    private ClerkHomePage clerkHomePage;
 
     public void setProfilePage(ProfilePage profilePage){
         this.profilePage = profilePage;
     }
+    public void setClerkHomePage(ClerkHomePage clerkHomePage){this.clerkHomePage = clerkHomePage;}
 
     public void registerLoginButton(JButton loginButton) {
         if (loginButton == null) {
@@ -107,5 +109,9 @@ public class UIState {
         } catch(SQLException e){
             e.printStackTrace();
         }
+    }
+
+    public void updateClerkHomePanel() {
+        clerkHomePage.updatePage();
     }
 }

@@ -57,6 +57,7 @@ public class MainUIFrame extends JFrame {
         newReservationPage = new NewReservationPage(cardLayout,mainPanel,uiState);
 
         uiState.setProfilePage(profilePage);
+        uiState.setClerkHomePage(clerkHomePage);
 
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
