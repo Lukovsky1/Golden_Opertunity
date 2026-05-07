@@ -60,7 +60,14 @@ public class RoomDetailsPage extends JPanel {
 
         setLayout(new BorderLayout());
 
-        add(createHeader(), BorderLayout.NORTH);
+        if(uiState.isLoggedIn){
+            if(uiState.getCurrentSession().getRole() == Role.GUEST){
+                add(createGuestHeader(), BorderLayout.NORTH);
+            }
+            else if(uiState.getCurrentSession().getRole() == Role.CLERK){
+                add(createClerkHeader(),BorderLayout.NORTH);
+            }
+        }
 
         JScrollPane scrollPane = new JScrollPane(createMainContent());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -72,10 +79,65 @@ public class RoomDetailsPage extends JPanel {
         add(createFooter(), BorderLayout.SOUTH);
     }
 
+    private JPanel createClerkHeader() throws IOException {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBorder(new EmptyBorder(15, 20, 15, 20));
+        header.setBackground(Color.WHITE);
+
+        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+
+        int originalWidth = logo.getWidth(null);
+        int originalHeight = logo.getHeight(null);
+
+        int newHeight = 70;
+        int newWidth = (originalWidth * newHeight) / originalHeight;
+
+        Image scaledLogo = logo.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(scaledLogo));
+        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+
+        JPanel nav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        nav.setBackground(Color.WHITE);
+        String profileIcon = "👤";
+
+        JButton homeButton = new JButton("Home");
+        homeButton.setFocusPainted(false);
+        homeButton.setBackground(Color.WHITE);
+        homeButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        homeButton.setPreferredSize(new Dimension(90, 35));
+        nav.add(homeButton);
+
+        JButton profileButton = new JButton(profileIcon);
+        profileButton.setFocusPainted(false);
+        profileButton.setBackground(Color.WHITE);
+        profileButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        profileButton.setPreferredSize(new Dimension(90, 35));
+        nav.add(profileButton);
+
+        profileButton.addActionListener(e -> {
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                uiState.updateProfilePanel();
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
+        });
+        homeButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"CLERK_HOME");
+        });
+
+        header.add(logoLabel, BorderLayout.WEST);
+        header.add(nav, BorderLayout.EAST);
+        return header;
+    }
+
     /**
      * Creates the header with logo and navigation buttons
      */
-    private JPanel createHeader() throws IOException {
+    private JPanel createGuestHeader() throws IOException {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
