@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -345,15 +346,27 @@ public class RoomDetailsPage extends JPanel {
         proceedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                uiState.potentialRooms.add(uiState.room);
-                JOptionPane.showMessageDialog(null, "Room was successfully added");
 
-                if(uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK){
-                    cardLayout.show(mainPanel,"NEW_RESERVATION");
+                try {
+                    if (!uiState.room.isRoomAvailable(new DateRange(uiState.startDate, uiState.endDate))) {
+                        JOptionPane.showMessageDialog(null, "Room is not available for this" +
+                                " date range.");
+                    }
+                    else {
+                        uiState.potentialRooms.add(uiState.room);
+                        JOptionPane.showMessageDialog(null, "Room was successfully added");
+
+                        if (uiState.getCurrentSession() != null && uiState.getCurrentSession().getRole() == Role.CLERK) {
+                            cardLayout.show(mainPanel, "NEW_RESERVATION");
+                        } else {
+                            cardLayout.show(mainPanel, "ROOMS");
+                        }
+                    }
+                } catch (SQLException ex) {
+                    System.err.println(ex.getMessage());
                 }
-                else{
-                    cardLayout.show(mainPanel,"ROOMS");
-                }
+
+
             }
         });
 

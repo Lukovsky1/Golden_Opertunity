@@ -23,13 +23,15 @@ public class ShopController {
         this.userDao = userDao;
     }
 
-    public List<String> viewStore() {
+    public List<ProductDescription> viewStore() {
         return shopService.viewStore();
     }
 
-    public String viewProductDetails(int productID) {
+
+    public ProductDescription viewProductDetails(int productID) {
         return shopService.viewProductDetails(productID);
     }
+
 
     public String addProductToCart(int guestID, int productID, ShoppingCart shoppingCart)  {
         try {
@@ -48,7 +50,23 @@ public class ShopController {
         return "Error occurred adding product to cart";
     }
 
-    public String checkout(int guestID, String paymentDetails, ShoppingCart shoppingCart) throws SQLException {
+    public String checkout(int guestID, PaymentDetails paymentDetails, ShoppingCart shoppingCart) {
         return shopService.checkout(guestID, paymentDetails, shoppingCart);
+    }
+
+    public String getAvailability (int productID) {
+        return shopService.getAvailability(productID);
+    }
+
+    public int getStock(int productID) {
+        return shopService.getStock(productID);
+    }
+
+    public Order getLastOrder() {
+        return shopService.getLastOrder();
+    }
+
+    public String removeProductFromCart(int productID, ShoppingCart shoppingCart) {
+        return shopService.removeProductFromCart(productID, shoppingCart);
     }
 }

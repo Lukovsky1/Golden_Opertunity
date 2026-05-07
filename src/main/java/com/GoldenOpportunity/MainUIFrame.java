@@ -4,7 +4,10 @@ package com.GoldenOpportunity;
 import com.GoldenOpportunity.Shop.ShopPage;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 //import com.GoldenOpportunity.Shop.ShopPage;
-import com.GoldenOpportunity.Shop.ShopDBInitializer;
+//import com.GoldenOpportunity.Shop.ShopDBInitializer;
+import com.GoldenOpportunity.Shop.*;
+import com.GoldenOpportunity.Roles.Clerk;
+import com.GoldenOpportunity.dbLogin.UserDao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,6 +28,8 @@ public class MainUIFrame extends JFrame {
     private ModifyRoomsPage modifyRoomsPage;
     private NewReservationPage newReservationPage;
     private AdminPage adminPage;
+    private CartPage cartPage;
+    private com.GoldenOpportunity.Shop.CheckoutPage checkoutPage;
 
     //Must load database before all other operations
     static {
@@ -48,7 +53,6 @@ public class MainUIFrame extends JFrame {
         hotelHomePageUI = new HotelHomePageUI(cardLayout,mainPanel,uiState);
         hotelBookingUI = hotelHomePageUI.hotelBookingUI;
         loginPage = new LoginPage(cardLayout,mainPanel,uiState);
-        shopPage = new ShopPage(cardLayout,mainPanel,uiState);
         profilePage = new ProfilePage(cardLayout, mainPanel,uiState);
         adminPage = new AdminPage(cardLayout, mainPanel, uiState);
         clerkHomePage = new ClerkHomePage(cardLayout, mainPanel, uiState);
@@ -59,6 +63,32 @@ public class MainUIFrame extends JFrame {
         uiState.setProfilePage(profilePage);
         uiState.setClerkHomePage(clerkHomePage);
 
+     // Shop backend setup
+        ProductRepo productRepo = new ProductRepo();
+        Shop shop = new Shop(productRepo);
+        PaymentMethod paymentMethod = new PaymentMethod();
+        Clerk clerk = new Clerk(2, "clerk1", "clerkpass", "clerk@golden.com");
+
+        ShopService shopService = new ShopService(shop, paymentMethod, clerk);
+        AuthenticationController authenticationController = new AuthenticationController();
+        ReservationService reservationService = new ReservationService();
+        UserDao userDao = new UserDao();
+
+        ShopController shopController = new ShopController(
+                shopService,
+                authenticationController,
+                reservationService,
+                userDao
+        );
+
+        ShoppingCart shoppingCart = new ShoppingCart();
+
+        int guestID = -1; // fallback only; real ID comes from uiState after login
+
+        shopPage = new ShopPage(cardLayout, mainPanel, shopController, shoppingCart, guestID, uiState);
+        cartPage = new CartPage(cardLayout, mainPanel, shopController, shoppingCart, guestID, uiState);
+        checkoutPage = new com.GoldenOpportunity.Shop.CheckoutPage(cardLayout, mainPanel, shopController, shoppingCart, guestID, uiState);
+        
         mainPanel.add(hotelHomePageUI, "HOME");
         mainPanel.add(hotelBookingUI, "ROOMS");
         mainPanel.add(loginPage,"LOGIN");
@@ -69,6 +99,8 @@ public class MainUIFrame extends JFrame {
         mainPanel.add(modifyRoomsPage, "MODIFY_ROOMS");
         mainPanel.add(newReservationPage, "NEW_RESERVATION");
         mainPanel.add(adminPage, "ADMIN");
+        mainPanel.add(cartPage, "CART");
+        mainPanel.add(checkoutPage, "CHECKOUT");
 
         add(mainPanel);
 

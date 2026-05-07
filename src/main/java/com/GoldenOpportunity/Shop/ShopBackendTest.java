@@ -1,4 +1,4 @@
-package com.GoldenOpportunity.Shop;
+/*package com.GoldenOpportunity.Shop;
 
 import com.GoldenOpportunity.AuthenticationController;
 import com.GoldenOpportunity.DatabaseTools.DBInitializer;
@@ -8,7 +8,6 @@ import com.GoldenOpportunity.Roles.Clerk;
 import com.GoldenOpportunity.dbLogin.UserDao;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import java.util.List;
 public class ShopBackendTest {
     public static void main(String[] args) throws SQLException {
         // make sure the db/table/data exist first
-        //ShopDBInitializer.initializeDatabase();
         try {
             DBInitializer.initialize();
         } catch (SQLException e) {
@@ -67,10 +65,10 @@ public class ShopBackendTest {
         ShoppingCart shoppingCart = new ShoppingCart();
 
         System.out.println("view store:");
-        List<String> storeView = shopController.viewStore();
-        for (String item : storeView) {
-            System.out.println(item);
-        }
+        //List<String> storeView = shopController.viewStore();
+        //for (String item : storeView) {
+        //    System.out.println(item);
+        //}
 
         System.out.println();
         System.out.println("view product details for product 1:");
@@ -90,4 +88,4 @@ public class ShopBackendTest {
         System.out.println("cart total after checkout:");
         System.out.println(shoppingCart.calculateTotal());
     }
-}
+}*/

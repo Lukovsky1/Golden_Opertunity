@@ -335,14 +335,7 @@ public class UserDao {
      * @throws SQLException
      */
     public boolean isAuthenticated(int guestID) throws SQLException {
-        try {
-            DbUser guest = findById(guestID);
-            if (guest == null) return false;
-            if (guest.accountStatus.equals(ACTIVE)) return true;
-            return false;
-        } catch (SQLException e) {
-            System.err.println("Error checking authentication from guest database");
-            throw e;
-        }
+        DbUser guest = findById(guestID);
+        return isActive(guest);
     }
 }

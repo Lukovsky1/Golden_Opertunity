@@ -26,13 +26,15 @@ public class SearchBarPanel extends JPanel{
 
     private UIState uiState;
 
+    private boolean compactMode;
+
     public SearchBarPanel(UIState uiState){
         this.uiState = uiState;
 
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         setBackground(Color.WHITE);
-        setMaximumSize(new Dimension(Integer.MAX_VALUE, 170));
+        //setMaximumSize(new Dimension(Integer.MAX_VALUE, 170));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 10, 8, 10);
@@ -151,9 +153,13 @@ public class SearchBarPanel extends JPanel{
         gbc.gridwidth = 1;
 
         // ================= SEARCH BUTTON =================
+        /*gbc.gridx = 6;
+        gbc.gridy = 1;
+        gbc.gridheight = 3; */
         gbc.gridx = 6;
         gbc.gridy = 1;
-        gbc.gridheight = 3;
+        gbc.gridheight = 1;
+        gbc.anchor = GridBagConstraints.NORTH;
 
         searchBtn = new JButton("Search");
         searchBtn.setBackground(new Color(50, 100, 230));
@@ -166,7 +172,7 @@ public class SearchBarPanel extends JPanel{
 
         add(searchBtn, gbc);
 
-        gbc.gridheight = 1;
+        //gbc.gridheight = 1;
     }
 
     public Criteria search(){

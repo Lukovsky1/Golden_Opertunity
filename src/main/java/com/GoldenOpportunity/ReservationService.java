@@ -258,7 +258,7 @@ public class ReservationService {
 
 
     //TODO: Must implement (Only need to get the date range and the checked in status)
-    public boolean hasValidReservation(int guestID) throws SQLException {
+    /*public boolean hasValidReservation(int guestID) throws SQLException {
         String checked = "SELECT checkedIn, startDate, endDate FROM Reservations WHERE resId = ?;";
 
         GuestReservationDao guestReservationDao = new GuestReservationDao();
@@ -276,12 +276,44 @@ public class ReservationService {
                     LocalDate startDate = rs.getDate("startDate").toLocalDate();
                     LocalDate endDate = rs.getDate("endDate").toLocalDate();
 
-                    if (validRes && (startDate.isAfter(LocalDate.now()) && endDate.isBefore(LocalDate.now()))) {
+                    LocalDate today = LocalDate.now();
+
+                    if (validRes && !today.isBefore(startDate) && !today.isAfter(endDate)) {
                         return true;
                     }
                 }
             }
         }
+        return false;
+    }*/
+    
+    public boolean hasValidReservation(int guestID) throws SQLException {
+        String sql = """
+            SELECT checkedIn, startDate, endDate
+            FROM Reservations
+            WHERE userID = ?;
+        """;
+
+        LocalDate today = LocalDate.now();
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, String.valueOf(guestID));
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    boolean checkedIn = rs.getBoolean("checkedIn");
+                    LocalDate startDate = LocalDate.parse(rs.getString("startDate"));
+                    LocalDate endDate = LocalDate.parse(rs.getString("endDate"));
+
+                    if (checkedIn && !today.isBefore(startDate) && !today.isAfter(endDate)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
