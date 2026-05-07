@@ -1,7 +1,17 @@
 package com.GoldenOpportunity.Roles;
 
-import com.GoldenOpportunity.User;
+import com.GoldenOpportunity.*;
+import com.GoldenOpportunity.DatabaseTools.DBUtil;
+import com.GoldenOpportunity.Shop.Order;
 import com.GoldenOpportunity.Login.enums.Role;
+
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Concrete user type representing a front-desk clerk.
@@ -18,5 +28,73 @@ public class Clerk extends User {
      */
     public Clerk(int id, String username, String password, String contactInfo) {
         super(id, username, password, contactInfo, Role.CLERK);
+    }
+
+
+    public boolean modifyInfo(int id, String username, String password, String contactInfo){
+        String sql = "UPDATE users SET username=?, password=?, contact_info=?, updated_at=? WHERE id=?";
+
+        Clerk clerk = findClerk(id);
+        if (clerk == null) return false;
+
+        if (username.isBlank()) username = clerk.getUsername();
+        if (password.isBlank()) password = clerk.getPassword();
+        if (contactInfo.isBlank()) contactInfo = clerk.getContactInfo();
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.setString(3, contactInfo);
+            stmt.setString(4, LocalDate.now().toString());
+            stmt.setInt(5, id);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+
+    // used for valid store purchase use case, minimal for now
+    public void notifyOrder(Order order) {
+        System.out.println("Clerk notified for order #" + order.getOrderID());
+    }
+
+    public void modifyRoom(Criteria criteria){
+        SearchController searchController = new SearchController(new RoomService(),
+                new ReservationService());
+        searchController.getRoomService().modifyRoom(criteria);
+    }
+
+    public Clerk findClerk(int id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return buildClerkFromResultSet(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private Clerk buildClerkFromResultSet(ResultSet rs) throws SQLException{
+        int id = rs.getInt("id");
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        String contactInfo = rs.getString("contact_info");
+
+        return new Clerk(id, username, password, contactInfo);
     }
 }
