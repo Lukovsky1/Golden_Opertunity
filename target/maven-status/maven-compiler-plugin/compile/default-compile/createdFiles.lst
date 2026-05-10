@@ -1,4 +1,3 @@
-com/GoldenOpportunity/Shop/ProductDetailsPage$1.class
 com/GoldenOpportunity/Roles/Admin.class
 com/GoldenOpportunity/PaymentMethod.class
 com/GoldenOpportunity/ReservationLoader.class
@@ -8,7 +7,6 @@ com/GoldenOpportunity/dbLogin/DbSeeder.class
 com/GoldenOpportunity/Roles/RolePermissions.class
 com/GoldenOpportunity/LoginPage.class
 com/GoldenOpportunity/Shop/ProductRepo.class
-com/GoldenOpportunity/Shop/ShopBackendTest.class
 com/GoldenOpportunity/Shop/ShopService.class
 com/GoldenOpportunity/Shop/ProductInventory.class
 com/GoldenOpportunity/Shop/ProductDescription.class
@@ -21,7 +19,6 @@ com/GoldenOpportunity/Shop/ShoppingCart.class
 com/GoldenOpportunity/Shop/ShopPage.class
 com/GoldenOpportunity/Login/LoginResult.class
 com/GoldenOpportunity/Login/enums/AccountStatus.class
-com/GoldenOpportunity/Shop/ShopDBInitializer.class
 com/GoldenOpportunity/SignUpPage.class
 com/GoldenOpportunity/dbLogin/PasswordHasher.class
 com/GoldenOpportunity/Login/AuthResult.class

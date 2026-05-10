@@ -81,8 +81,7 @@ public class Guest extends User {
             reservations.add(resService.findReservation(reserveIDs));
         }
 
-        //TODO: Need to add corporate check inside of the guest database
-        return new Guest(id, dbUser.username, dbUser.passwordHash, dbUser.contactInfo, false,
+        return new Guest(id, dbUser.username, dbUser.passwordHash, dbUser.contactInfo, dbUser.corporate,
                 reservations);
     }
 

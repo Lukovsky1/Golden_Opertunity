@@ -24,10 +24,12 @@ public class DbUser {
     public final String fullName;
     /** Phone number for the user. */
     public final String phoneNumber;
+    /** Whether the user belongs to a corporate account. */
+    public final boolean corporate;
 
     public DbUser(int id, String username, String passwordHash, String role,
                   String accountStatus, int failedLoginCount, String contactInfo,
-                  String fullName, String phoneNumber) {
+                  String fullName, String phoneNumber, boolean corporate) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -37,5 +39,6 @@ public class DbUser {
         this.contactInfo = contactInfo;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
+        this.corporate = corporate;
     }
 }

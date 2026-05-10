@@ -33,6 +33,11 @@ public class AuthenticationController {
         return authService.signUp(username, email, password, fullName, phoneNumber);
     }
 
+    public AuthResult signUp(String username, String email, String password, String fullName,
+                             String phoneNumber, boolean corporate) {
+        return authService.signUp(username, email, password, fullName, phoneNumber, corporate);
+    }
+
     public AuthResult createPrivilegedUser(String username, String email, String password,
                                            String fullName, String phoneNumber, String role) {
         return authService.createPrivilegedUser(username, email, password, fullName, phoneNumber, role);

@@ -27,6 +27,7 @@
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/NewReservationPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/PaymentMethod.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/ProfilePage.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Receipt.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Reservation.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/ReservationLoader.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/ReservationService.java
@@ -41,7 +42,10 @@
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/RoomUpdate.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/SearchBarPanel.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/SearchController.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/CartPage.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/CheckoutPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/Order.java
+/Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/PaymentDetails.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/ProductDescription.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/ProductDetailsPage.java
 /Users/ownersupreme/Documents/Spring 2026/SoftwareEng/Project/gitRepo/Golden_Opertunity/src/main/java/com/GoldenOpportunity/Shop/ProductInventory.java

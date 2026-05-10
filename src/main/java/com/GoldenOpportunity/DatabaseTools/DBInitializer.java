@@ -110,6 +110,7 @@ public class DBInitializer {
                 contact_info TEXT,
                 full_name TEXT NOT NULL DEFAULT '',
                 phone_number TEXT NOT NULL DEFAULT '',
+                corporate INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
@@ -199,6 +200,7 @@ public class DBInitializer {
                 st.execute(createUsers);
                 ensureUsersFullNameColumn(conn, st);
                 ensureUsersPhoneNumberColumn(conn, st);
+                ensureUsersCorporateColumn(conn, st);
                 st.execute(createUniqueEmailIndex);
                 st.execute(createRooms);
                 st.execute(createReservations);
@@ -245,6 +247,14 @@ public class DBInitializer {
         try (ResultSet rs = conn.getMetaData().getColumns(null, null, "users", "phone_number")) {
             if (!rs.next()) {
                 st.execute("ALTER TABLE users ADD COLUMN phone_number TEXT NOT NULL DEFAULT ''");
+            }
+        }
+    }
+
+    private static void ensureUsersCorporateColumn(Connection conn, Statement st) throws SQLException {
+        try (ResultSet rs = conn.getMetaData().getColumns(null, null, "users", "corporate")) {
+            if (!rs.next()) {
+                st.execute("ALTER TABLE users ADD COLUMN corporate INTEGER NOT NULL DEFAULT 0");
             }
         }
     }

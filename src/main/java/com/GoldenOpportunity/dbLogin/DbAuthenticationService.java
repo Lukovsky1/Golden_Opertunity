@@ -76,12 +76,18 @@ public class DbAuthenticationService {
     }
 
     public AuthResult signUp(String username, String email, String password, String fullName, String phoneNumber) {
+        return signUp(username, email, password, fullName, phoneNumber, false);
+    }
+
+    public AuthResult signUp(String username, String email, String password, String fullName,
+                             String phoneNumber, boolean corporate) {
         return createUserWithRole(
                 username,
                 email,
                 password,
                 fullName,
                 phoneNumber,
+                corporate,
                 "GUEST",
                 "Account created successfully. Please log in."
         );
@@ -100,6 +106,7 @@ public class DbAuthenticationService {
                 password,
                 fullName,
                 phoneNumber,
+                false,
                 normalizedRole,
                 normalizedRole + " account created successfully."
         );
@@ -107,7 +114,7 @@ public class DbAuthenticationService {
 
     private AuthResult createUserWithRole(String username, String email, String password,
                                           String fullName, String phoneNumber,
-                                          String role, String successMessage) {
+                                          boolean corporate, String role, String successMessage) {
         String normalizedUsername = username == null ? "" : username.trim();
         String normalizedEmail = email == null ? "" : email.trim().toLowerCase();
         String normalizedFullName = fullName == null ? "" : fullName.trim();
@@ -136,7 +143,8 @@ public class DbAuthenticationService {
                     role,
                     normalizedEmail,
                     normalizedFullName,
-                    normalizedPhoneNumber
+                    normalizedPhoneNumber,
+                    corporate
             );
             if (userId < 0) {
                 return new AuthResult(false, "Unable to create account.");
