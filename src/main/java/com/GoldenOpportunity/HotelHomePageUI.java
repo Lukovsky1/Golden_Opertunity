@@ -60,7 +60,7 @@ public class HotelHomePageUI extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -186,7 +186,7 @@ public class HotelHomePageUI extends JPanel {
         hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
 
         try {
-            Image heroImage = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/lobby.jpg"));
+            Image heroImage = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/lobby.jpg");
             Image scaledHero = heroImage.getScaledInstance(884, 360, Image.SCALE_SMOOTH);
 
             JLabel imageLabel = new JLabel(new ImageIcon(scaledHero));
@@ -223,7 +223,7 @@ public class HotelHomePageUI extends JPanel {
         card.setPreferredSize(new Dimension(280, 280));
         card.setBackground(Color.WHITE);
 
-        Image roomImage = ImageIO.read(new File(cardRoom.getImage()));
+        Image roomImage = com.GoldenOpportunity.AppResources.readImage(cardRoom.getImage());
         Image scaledRoom = roomImage.getScaledInstance(260, 120, Image.SCALE_SMOOTH);
 
         JLabel image = new JLabel(new ImageIcon(scaledRoom));

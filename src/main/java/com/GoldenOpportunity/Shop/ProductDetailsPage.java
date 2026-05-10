@@ -50,7 +50,7 @@ public class ProductDetailsPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -131,7 +131,7 @@ public class ProductDetailsPage extends JPanel {
         imageSection.setLayout(new BoxLayout(imageSection, BoxLayout.Y_AXIS));
         imageSection.setBackground(Color.WHITE);
 
-        Image productImage = ImageIO.read(new File(product.getImage()));
+        Image productImage = com.GoldenOpportunity.AppResources.readImage(product.getImage());
         Image bigImage = productImage.getScaledInstance(250, 250, Image.SCALE_SMOOTH);
 
         JLabel mainImageLabel = new JLabel(new ImageIcon(bigImage));

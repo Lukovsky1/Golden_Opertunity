@@ -71,7 +71,7 @@ public class ShopPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -253,7 +253,7 @@ public class ShopPage extends JPanel {
         card.setPreferredSize(new Dimension(280, 320));
 
         // Image placeholder
-        Image productImage = ImageIO.read(new File(product.getImage()));
+        Image productImage = com.GoldenOpportunity.AppResources.readImage(product.getImage());
         Image scaledRoom = productImage.getScaledInstance(180, 200, Image.SCALE_SMOOTH);
 
         JLabel image = new JLabel(new ImageIcon(scaledRoom));

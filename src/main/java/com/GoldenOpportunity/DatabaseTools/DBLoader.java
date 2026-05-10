@@ -1,8 +1,8 @@
 package com.GoldenOpportunity.DatabaseTools;
 
+import com.GoldenOpportunity.AppResources;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,7 +21,7 @@ public class DBLoader {
      * @param filePath  Path to the .sql file
      */
     public static void loadData(Connection conn, String filePath, String table) throws SQLException, IOException {
-        String load = Files.readString(Path.of(filePath));
+        String load = AppResources.readText(filePath);
 
 
         conn.setAutoCommit(false);

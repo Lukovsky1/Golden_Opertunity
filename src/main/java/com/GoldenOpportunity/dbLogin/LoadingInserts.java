@@ -1,8 +1,8 @@
 package com.GoldenOpportunity.dbLogin;
 
+import com.GoldenOpportunity.AppResources;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,7 +18,7 @@ public class LoadingInserts {
         con.setAutoCommit(false);
         Statement st = con.createStatement();
         try {
-            st.executeUpdate(Files.readString(Path.of(roomFile)));
+            st.executeUpdate(AppResources.readText(roomFile));
             con.commit();
         } catch (SQLException ex) {
             System.err.println("Error loading rooms");
@@ -38,7 +38,7 @@ public class LoadingInserts {
         con.setAutoCommit(false);
         Statement st = con.createStatement();
         try {
-            st.executeUpdate(Files.readString(Path.of(reservationFile)));
+            st.executeUpdate(AppResources.readText(reservationFile));
             con.commit();
         } catch (SQLException ex) {
             System.err.println("Error loading reservation insert file");
@@ -52,7 +52,7 @@ public class LoadingInserts {
         con.setAutoCommit(false);
         Statement st = con.createStatement();
         try {
-            st.executeUpdate(Files.readString(Path.of(reservedRoomsFile)));
+            st.executeUpdate(AppResources.readText(reservedRoomsFile));
             con.commit();
         } catch (SQLException ex) {
             System.err.println("Error loading reservedRooms insert file");

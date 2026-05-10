@@ -84,7 +84,7 @@ public class ModifyReservationPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -139,7 +139,7 @@ public class ModifyReservationPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);

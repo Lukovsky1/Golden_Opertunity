@@ -84,7 +84,7 @@ public class RoomDetailsPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -142,7 +142,7 @@ public class RoomDetailsPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -264,7 +264,7 @@ public class RoomDetailsPage extends JPanel {
         pageTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Room image
-        Image roomImage = ImageIO.read(new File(uiState.room.getImage()));
+        Image roomImage = com.GoldenOpportunity.AppResources.readImage(uiState.room.getImage());
         Image scaledRoom = roomImage.getScaledInstance(500, 280, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledRoom));
         imageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);

@@ -79,7 +79,7 @@ public class CheckoutPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -135,7 +135,7 @@ public class CheckoutPage extends JPanel {
         header.setBorder(new EmptyBorder(15, 20, 15, 20));
         header.setBackground(Color.WHITE);
 
-        Image logo = ImageIO.read(new File("src/main/java/com/GoldenOpportunity/Images/logo.png"));
+        Image logo = com.GoldenOpportunity.AppResources.readImage("src/main/java/com/GoldenOpportunity/Images/logo.png");
 
         int originalWidth = logo.getWidth(null);
         int originalHeight = logo.getHeight(null);
@@ -564,7 +564,7 @@ public class CheckoutPage extends JPanel {
         imgPanel.setBackground(Color.WHITE);
 
         try {
-            Image img = ImageIO.read(new File(path));
+            Image img = com.GoldenOpportunity.AppResources.readImage(path);
             Image scaled = img.getScaledInstance(300, 140, Image.SCALE_SMOOTH);
 
             JLabel label = new JLabel(new ImageIcon(scaled));

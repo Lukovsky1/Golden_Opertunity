@@ -15,9 +15,9 @@ public class ProductRepo {
     public List<ProductDescription> getAllProductDescriptions() {
         List<ProductDescription> productDescriptions = new ArrayList<>();
 
-        String sql = "SELECT productID, name, price, image, description FROM products";
+        String sql = "SELECT productID, name, price, image, description FROM ProductDescriptions";
 
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/shop.db");
+        try (Connection connection = DBUtil.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 
@@ -43,9 +43,9 @@ public class ProductRepo {
     public List<ProductInventory> getAllProductInventory() {
         List<ProductInventory> inventoryList = new ArrayList<>();
 
-        String sql = "SELECT productID, stock FROM products";
+        String sql = "SELECT productID, stock FROM ProductDescriptions";
 
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/shop.db");
+        try (Connection connection = DBUtil.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 

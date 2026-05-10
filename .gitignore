@@ -1,4 +1,5 @@
 /target/
+/dist/
 
 # Test code and test-only data
 /src/test/

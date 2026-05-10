@@ -1,5 +1,7 @@
 package com.GoldenOpportunity.DatabaseTools;
 
+import com.GoldenOpportunity.AppResources;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,11 +12,8 @@ import java.util.Objects;
 //TODO: Must be implemented
 
 public class DBUtil {
-    private static final String DB_DIR = "src/main/resources"; //TODO: This was edited from /data
     /** Database filename. The full path will be {@code data/golden.db}. */
     private static final String DB_FILE = "golden.db";
-    /** JDBC URL for the SQLite driver. */
-    private static final String JDBC_URL = "jdbc:sqlite:" + DB_DIR + "/" + DB_FILE;
 
     private static String testDbDirOverride = null;
 
@@ -33,7 +32,7 @@ public class DBUtil {
         if (testDbDirOverride != null && !testDbDirOverride.isBlank()) {
             return "jdbc:sqlite:" + testDbDirOverride + "/" + DB_FILE;
         }
-        return JDBC_URL;
+        return AppResources.toJdbcUrl(DB_FILE);
     }
 
     //private static String url = "jdbc:sqlite:src/main/resources/golden.db";
@@ -60,7 +59,7 @@ public class DBUtil {
     /** Create the data folder and an empty DB file path if needed. */
     public static void ensureDbFolder() {
         try {
-            Path dir = Paths.get(DB_DIR);
+            Path dir = AppResources.getAppDataDirectory();
             if (!Files.exists(dir)) {
                 Files.createDirectories(dir);
             }

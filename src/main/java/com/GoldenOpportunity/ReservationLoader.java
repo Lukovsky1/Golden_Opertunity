@@ -3,8 +3,6 @@ package com.GoldenOpportunity;
 import com.GoldenOpportunity.DatabaseTools.DBUtil;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,8 +53,8 @@ public class ReservationLoader extends Loader{
     public void loadData() {
         try (Connection conn = DBUtil.getConnection();
              Statement stmt = conn.createStatement()) {
-            String reserveSql = Files.readString(Path.of("src/main/resources/reservation_insert.sql"));
-            String reservedRoomsSql = Files.readString(Path.of("src/main/resources/reservedRooms_insert.sql"));
+            String reserveSql = AppResources.readText("src/main/resources/reservation_insert.sql");
+            String reservedRoomsSql = AppResources.readText("src/main/resources/reservedRooms_insert.sql");
             stmt.executeUpdate(reserveSql);
             stmt.executeUpdate(reservedRoomsSql);
         } catch (SQLException e) {
