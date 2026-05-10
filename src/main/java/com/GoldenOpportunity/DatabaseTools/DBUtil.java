@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
+import java.util.Objects;
 //TODO: Must be implemented
 
 public class DBUtil {
@@ -15,10 +16,31 @@ public class DBUtil {
     /** JDBC URL for the SQLite driver. */
     private static final String JDBC_URL = "jdbc:sqlite:" + DB_DIR + "/" + DB_FILE;
 
+    private static String testDbDirOverride = null;
+
+    /**
+     * Allows tests to override the database directory without modifying final constants.
+     * Pass null to disable the override.
+     */
+    public static void setTestDbDirectory(String newDir) {
+        testDbDirOverride = newDir;
+    }
+
+    /**
+     * Returns the active JDBC URL, using the override if present.
+     */
+    private static String getActiveJdbcUrl() {
+        if (testDbDirOverride != null && !testDbDirOverride.isBlank()) {
+            return "jdbc:sqlite:" + testDbDirOverride + "/" + DB_FILE;
+        }
+        return JDBC_URL;
+    }
+
     //private static String url = "jdbc:sqlite:src/main/resources/golden.db";
 
     public DBUtil() {
     }
+
 
     /**
      * Opens a connection to the SQLite database.
@@ -28,7 +50,7 @@ public class DBUtil {
      * - Callers are responsible for closing the returned connection.
      */
     public static Connection getConnection() throws SQLException {
-        Connection conn = DriverManager.getConnection(JDBC_URL);
+        Connection conn = DriverManager.getConnection(getActiveJdbcUrl());
         try (Statement st = conn.createStatement()) {
             st.execute("PRAGMA foreign_keys = ON");
         }
@@ -84,6 +106,33 @@ public class DBUtil {
             System.err.println("Error getting count of table: " + tableName + e.getMessage());
         }
         return 0;
+    }
+
+    public static boolean deleteDatabase(String dbPath) {
+        Objects.requireNonNull(dbPath, "Database path cannot be null");
+
+        Path path = Paths.get(dbPath);
+
+        // Ensure the file exists before attempting deletion
+        if (!Files.exists(path)) {
+            System.err.println("Database file does not exist: " + dbPath);
+            return false;
+        }
+
+        try {
+            // SQLite requires all connections to be closed before deletion
+            // Your calling code must ensure no active JDBC connections remain.
+            DBUtil.getConnection().close();
+            Files.delete(path);
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Error closing database connection: " + e.getMessage());
+            return false;
+        } catch (IOException e) {
+            System.err.println("Failed to delete database: " + e.getMessage());
+            return false;
+        }
     }
 
 }

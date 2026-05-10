@@ -7,6 +7,8 @@ import java.util.Map;
 
 /**
  * Edits: Added floorNum to the class
+ *
+ * Edited logic for the
  */
 //TODO: Add some form of method for a room to check its availability
 //In the roomTestFile, add new column for each range of dates that a room is reserved
@@ -62,7 +64,6 @@ public class Room {
     public void setCapacity(int capacity) {this.capacity = capacity;}
     public void setDescription(String description) {this.description = description;}
     public void setImage(String image) {this.image = image;}
-
     //String [] bedTypes = {"King", "Queen", "Twin", "Full"};
 
 
@@ -85,8 +86,7 @@ public class Room {
 
     boolean isRoomAvailable(DateRange range) throws SQLException {
         ReservationService resService = new ReservationService();
-        List<Reservation> allReservations = resService.getAllReservations();
-        for (Reservation r : allReservations) {
+        for (Reservation r : resService.getAllReservations()) {
             if (r.getRooms().contains(this) &&
                     r.getDateRange().overlaps(range)) {
                 return false;
@@ -116,10 +116,10 @@ public class Room {
         if (this.beds != other.beds) {
             return false;
         }
-        if (this.qLevel.equals(other.qLevel)) {
+        if (!this.qLevel.equals(other.qLevel)) {
             return false;
         }
-        if (this.roomType.equals(other.roomType)) {
+        if (!this.roomType.equals(other.roomType)) {
             return false;
         }
         if  (this.smoking != other.smoking) {
@@ -133,7 +133,7 @@ public class Room {
 
     @Override
     public String toString(){
-        return roomNo + " NumBeds: " + beds + " Quality: " + qLevel + " Type: " + roomType + " Rate: " + rate;
+        return roomNo + ", NumBeds: " + beds + ", Quality: " + qLevel + ", Type: " + roomType + ", Rate: $" + rate;
     }
 }
 

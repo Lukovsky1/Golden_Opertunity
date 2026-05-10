@@ -38,6 +38,9 @@ public class ClerkHomePage extends JPanel {
             super.setVisible(false);
             return;
         }
+
+        updatePage();
+
         super.setVisible(aFlag);
     }
 
@@ -198,7 +201,6 @@ public class ClerkHomePage extends JPanel {
                 new LineBorder(new Color(200, 210, 220), 1, true),
                 new EmptyBorder(0, 14, 0, 14)
         ));
-        searchField.setText("Search");
         searchField.setForeground(new Color(170, 180, 190));
 
         JButton searchButton = new JButton("Search");
@@ -271,15 +273,28 @@ public class ClerkHomePage extends JPanel {
         datesLabel.setFont(textFont);
         datesLabel.setForeground(new Color(55, 70, 85));
 
-        JLabel roomsLabel = new JLabel("Rooms: " + reservation.getRooms());
-        roomsLabel.setFont(textFont);
-        roomsLabel.setForeground(new Color(55, 70, 85));
+        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        statusPanel.setOpaque(false);
 
-        JLabel checkedInStatus = new JLabel("Check-In: " + (reservation.isCheckedIn() ? "Yes" : "No"));
-        checkedInStatus.setFont(textFont);
-        checkedInStatus.setForeground(new Color(55, 70, 85));
+        JLabel statusLabel = new JLabel("Status: ");
+        statusLabel.setFont(textFont);
+        statusLabel.setForeground(new Color(55, 70, 85));
 
-        JButton detailsButton = new JButton("Modify Reservation");
+        JLabel statusValue = new JLabel(
+                reservation.isCheckedIn() ? "Checked-In" : "Not Checked-In"
+        );
+        statusValue.setFont(textFont);
+
+        if (reservation.isCheckedIn()) {
+            statusValue.setForeground(new Color(30, 130, 114)); // green
+        } else {
+            statusValue.setForeground(new Color(214, 65, 88)); // red
+        }
+
+        statusPanel.add(statusLabel);
+        statusPanel.add(statusValue);
+
+        JButton detailsButton = new JButton("Details");
         detailsButton.setFocusPainted(false);
         detailsButton.setForeground(Color.WHITE);
         detailsButton.setBackground(Color.BLACK);
@@ -311,8 +326,6 @@ public class ClerkHomePage extends JPanel {
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         reservationTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         datesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        roomsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        checkedInStatus.setAlignmentX(Component.LEFT_ALIGNMENT);
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // ===== BUILD CARD =====
@@ -323,51 +336,45 @@ public class ClerkHomePage extends JPanel {
         card.add(Box.createVerticalStrut(8));
         card.add(datesLabel);
         card.add(Box.createVerticalStrut(5));
-        card.add(roomsLabel);
-        card.add(Box.createVerticalStrut(5));
-        card.add(checkedInStatus);
+
+        for(Room room : reservation.getRooms()){
+            JLabel roomsLabel = new JLabel("Rooms: " + room);
+            roomsLabel.setFont(textFont);
+            roomsLabel.setForeground(new Color(55, 70, 85));
+            roomsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            card.add(roomsLabel);
+            card.add(Box.createVerticalStrut(5));
+        }
+
+        statusPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        card.add(statusPanel);
         card.add(Box.createVerticalStrut(18));
         card.add(buttonPanel);
 
         return card;
     }
 
-    private void updateReservationPanel(){
-        scrollPane.removeAll();
-        scrollPane = createScrollableCards();
+    private void updateReservationPanel() {
+        JPanel cardsPanel = new JPanel(new GridLayout(0, 2, 18, 18));
+        cardsPanel.setOpaque(false);
+        cardsPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
+
+        try {
+            for (Reservation reservation : uiState.reservationService.getAllReservations()) {
+                cardsPanel.add(createReservationCard(reservation));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        scrollPane.setViewportView(cardsPanel);
+
         scrollPane.revalidate();
         scrollPane.repaint();
     }
 
     public void updatePage(){
         updateReservationPanel();
-    }
-
-    // =========================
-    // TEST MAIN
-    // =========================
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Reservation Manager");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(860, 860);
-            frame.setLocationRelativeTo(null);
-
-            CardLayout cardLayout = new CardLayout();
-            JPanel mainPanel = new JPanel(cardLayout);
-
-            ClerkHomePage page = null;
-            try {
-                page = new ClerkHomePage(cardLayout, mainPanel, new UIState());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            mainPanel.add(page, "RESERVATIONS");
-
-            frame.setContentPane(mainPanel);
-            cardLayout.show(mainPanel, "RESERVATIONS");
-
-            frame.setVisible(true);
-        });
     }
 }

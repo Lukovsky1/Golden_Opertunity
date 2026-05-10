@@ -294,6 +294,7 @@ public class LoginPage extends JPanel {
         }
 
         if (role == Role.CLERK) {
+            uiState.updateClerkHomePanel();
             cardLayout.show(mainPanel, "CLERK_HOME");
             return;
         }

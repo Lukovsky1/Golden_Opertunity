@@ -1,40 +1,42 @@
 package com.GoldenOpportunity.Shop;
 
-import com.GoldenOpportunity.CheckoutPage;
-import com.GoldenOpportunity.UIState;
+import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ShopPage extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private Shop shop;
+    private ShopController shopController;
     private ShoppingCart shoppingCart;
-    private UIState uiState;
     private JPanel productGridPanel;
     private JTextField searchTextField;
     private java.util.List<ProductDescription> allProducts;
+    private int guestID;
+    private com.GoldenOpportunity.UIState uiState;
+    
 
-
-    public ShopPage(CardLayout cardLayout, JPanel mainPanel, UIState uiState) throws IOException {
-        this.cardLayout = cardLayout;
-        this.mainPanel = mainPanel;
-        this.uiState = uiState;
-
-        //shop = new Shop("src/main/resources/testProductData.csv");
-        // this is only to get it to run, im not touching anything else here
-        ProductRepo productRepo = new ProductRepo();
-        shop = new Shop(productRepo);
-        shoppingCart = new ShoppingCart();
-        allProducts = shop.getAvailableProducts();
+    public ShopPage(CardLayout cardLayout, JPanel mainPanel, ShopController shopController,
+            ShoppingCart shoppingCart, int guestID, com.GoldenOpportunity.UIState uiState) throws IOException {
+		this.cardLayout = cardLayout;
+		this.mainPanel = mainPanel;
+		this.shopController = shopController;
+		this.shoppingCart = shoppingCart;
+		this.guestID = guestID;
+		this.uiState = uiState;
+		
+		allProducts = shopController.viewStore();
 
         setLayout(new BorderLayout(10, 10));
 
@@ -53,13 +55,13 @@ public class ShopPage extends JPanel {
         displayProducts(allProducts);
 
         JScrollPane scrollPane = new JScrollPane(productGridPanel);
-
+        
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         centerPanel.add(scrollPane, BorderLayout.CENTER);
-
+        
         add(centerPanel, BorderLayout.CENTER);
         add(createFooter(), BorderLayout.SOUTH);
     }
@@ -95,8 +97,6 @@ public class ShopPage extends JPanel {
             nav.add(buttonMap.get(item));
         }
 
-        uiState.registerLoginButton(buttonMap.get("Login"));
-
         buttonMap.get("Home").addActionListener(e -> {
             cardLayout.show(mainPanel,"HOME");
         });
@@ -110,24 +110,18 @@ public class ShopPage extends JPanel {
             cardLayout.show(mainPanel,"SHOP");
         });
         buttonMap.get("🛒").addActionListener(e -> {
-            if(uiState.potentialRooms.isEmpty()){
-                JOptionPane.showMessageDialog(this, "Please add a room first.");
-            }
-            else{
-                try {
-                    mainPanel.add(new CheckoutPage(cardLayout, mainPanel,uiState), "CHECKOUT");
-
-                    mainPanel.revalidate();
-                    mainPanel.repaint();
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Error processing booking");
-                }
-                cardLayout.show(mainPanel,"CHECKOUT");
-            }
+            cardLayout.show(mainPanel, "CART");
         });
         buttonMap.get("👤").addActionListener(e -> {
-            cardLayout.show(mainPanel,"PROFILE");
+            if(!uiState.isLoggedIn){
+                cardLayout.show(mainPanel,"LOGIN");
+            }
+            else{
+                uiState.updateProfilePanel();
+                cardLayout.show(mainPanel,"PROFILE");
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
         });
 
         header.add(logoLabel, BorderLayout.WEST);
@@ -150,10 +144,37 @@ public class ShopPage extends JPanel {
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;   // important: text field expands
-        searchTextField = new JTextField();
-        searchTextField.setPreferredSize(new Dimension(400, 30));
-        search.add(searchTextField, gbc);
+        JPanel inputWrapper = new JPanel(new BorderLayout());
+        inputWrapper.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        inputWrapper.setBackground(Color.WHITE);
 
+        searchTextField = new JTextField();
+        searchTextField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JButton clearBtn = new JButton("X");
+        clearBtn.setBorder(BorderFactory.createEmptyBorder());
+        clearBtn.setFocusPainted(false);
+        clearBtn.setContentAreaFilled(false);
+        clearBtn.setForeground(Color.GRAY);
+        clearBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        clearBtn.addActionListener(e -> {
+            searchTextField.setText("");
+            displayProducts(allProducts);
+        });
+
+        inputWrapper.add(searchTextField, BorderLayout.CENTER);
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.setOpaque(false);
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 8)); // <-- pushes it left
+
+        rightPanel.add(clearBtn, BorderLayout.CENTER);
+
+        inputWrapper.add(rightPanel, BorderLayout.EAST);
+
+        // add wrapper instead of text field
+        search.add(inputWrapper, gbc);
+        
         gbc.gridx = 2;
         gbc.weightx = 0;
         JButton searchBtn = new JButton("Search");
@@ -163,7 +184,7 @@ public class ShopPage extends JPanel {
         searchBtn.setPreferredSize(new Dimension(100, 30));
 
         search.add(searchBtn, gbc);
-
+        
         searchBtn.addActionListener(e -> {
             String text = searchTextField.getText().trim().toLowerCase();
 
@@ -174,9 +195,9 @@ public class ShopPage extends JPanel {
 
             java.util.List<ProductDescription> filteredProducts = new java.util.ArrayList<>();
 
-            for (ProductDescription productDescription : allProducts) {
-                if (productDescription.getName().toLowerCase().contains(text)) {
-                    filteredProducts.add(productDescription);
+            for (ProductDescription product : allProducts) {
+                if (product.getName().toLowerCase().contains(text)) {
+                    filteredProducts.add(product);
                 }
             }
 
@@ -186,6 +207,7 @@ public class ShopPage extends JPanel {
                 JOptionPane.showMessageDialog(this, "No products matched your search.");
             }
         });
+        
 
         return search;
     }
@@ -208,12 +230,12 @@ public class ShopPage extends JPanel {
         return topSection;
     }
 
-    private void displayProducts(java.util.List<ProductDescription> products) {
+    private void displayProducts(List<ProductDescription> products) {
         productGridPanel.removeAll();
 
-        for (ProductDescription productDescription : products) {
+        for (ProductDescription product : products) {
             try {
-                productGridPanel.add(createProductCard(productDescription));
+                productGridPanel.add(createProductCard(product));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -223,7 +245,7 @@ public class ShopPage extends JPanel {
         productGridPanel.repaint();
     }
 
-    private JPanel createProductCard(ProductDescription productDescription) throws IOException {
+    private JPanel createProductCard(ProductDescription product) throws IOException {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
         card.setBackground(Color.WHITE);
@@ -231,7 +253,7 @@ public class ShopPage extends JPanel {
         card.setPreferredSize(new Dimension(280, 320));
 
         // Image placeholder
-        Image productImage = ImageIO.read(new File(productDescription.getImage()));
+        Image productImage = ImageIO.read(new File(product.getImage()));
         Image scaledRoom = productImage.getScaledInstance(180, 200, Image.SCALE_SMOOTH);
 
         JLabel image = new JLabel(new ImageIcon(scaledRoom));
@@ -242,12 +264,12 @@ public class ShopPage extends JPanel {
         info.setBackground(Color.WHITE);
         info.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JLabel name = new JLabel(productDescription.getName());
+        JLabel name = new JLabel(product.getName());
         name.setFont(new Font("Arial", Font.BOLD, 14));
 
-        JLabel price = new JLabel("Price: $" + String.format("%.2f", productDescription.getPrice()));
+        JLabel price = new JLabel("Price: $" + String.format("%.2f",product.getPrice()));
 
-        JLabel stock = new JLabel("Stock: " + shop.findInventory(productDescription.getProductID()).getStock());
+        JLabel stock = new JLabel("Stock: In Stock");
 
         JButton addButton = new JButton("Add to Cart");
         addButton.setBackground(new Color(255, 204, 0));
@@ -259,12 +281,22 @@ public class ShopPage extends JPanel {
         detailsButton.setFocusPainted(false);
 
         addButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, productDescription.getName() + " added to cart.");
-        });
+            String result = shopController.addProductToCart(
+                    getCurrentGuestID(),
+                    product.getProductID(),
+                    shoppingCart
+            );
 
+            if (result.equals("updatedCart")) {
+                JOptionPane.showMessageDialog(this, product.getName() + " added to cart.");
+            } else {
+                JOptionPane.showMessageDialog(this, result);
+            }
+        });
+        
         detailsButton.addActionListener(e -> {
             try {
-                String pageName = "PRODUCT_DETAILS_" + productDescription.getProductID();
+                String pageName = "PRODUCT_DETAILS_" + product.getProductID();
 
                 boolean pageExists = false;
                 for (Component component : mainPanel.getComponents()) {
@@ -275,7 +307,15 @@ public class ShopPage extends JPanel {
                 }
 
                 if (!pageExists) {
-                    ProductDetailsPage detailsPage = new ProductDetailsPage(cardLayout, mainPanel, productDescription, shop);
+                	ProductDetailsPage detailsPage = new ProductDetailsPage(
+                	        cardLayout,
+                	        mainPanel,
+                	        product,
+                	        shopController,
+                	        shoppingCart,
+                	        uiState,
+                	        getCurrentGuestID()
+                	);
                     detailsPage.setName(pageName);
                     mainPanel.add(detailsPage, pageName);
                 }
@@ -289,7 +329,7 @@ public class ShopPage extends JPanel {
                 JOptionPane.showMessageDialog(this, "Error opening product details.");
             }
         });
-
+        
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -304,7 +344,7 @@ public class ShopPage extends JPanel {
         info.add(stock);
         info.add(Box.createVerticalStrut(10));
         info.add(buttonPanel);
-
+        
         addButton.setPreferredSize(new Dimension(120, 35));
         detailsButton.setPreferredSize(new Dimension(120, 35));
 
@@ -312,6 +352,14 @@ public class ShopPage extends JPanel {
         card.add(info, BorderLayout.CENTER);
 
         return card;
+    }
+    
+    private int getCurrentGuestID() {
+        if (uiState != null && uiState.getCurrentSession() != null) {
+            return uiState.getCurrentSession().getUserId();
+        }
+
+        return guestID;
     }
 
     private JPanel createFooter() {

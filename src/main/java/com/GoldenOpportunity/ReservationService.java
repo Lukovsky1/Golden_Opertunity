@@ -8,11 +8,6 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
 
-//TODO: Add checkedIn checking for the database
-//TODO: Add getAllReservations();
-//TODO: Make reservation take a randomly generated id, a string seems too extra and
-//TODO: unnecessary
-
 public class ReservationService {
     //TODO: Remove
     //private List<Reservation> reserveList = new ArrayList<>();
@@ -75,7 +70,7 @@ public class ReservationService {
      * @param end
      * @param bill
      */
-    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill, String name)  throws SQLException {
+    public String createReservation(List<Room> roomList , LocalDate start, LocalDate end, double bill, String name, String userID)  throws SQLException {
         //Creates a new reservation ID from the set of all valid reservation ids
         String newResId = createResId();
         if (newResId == null) {
@@ -91,7 +86,7 @@ public class ReservationService {
         //Reservation newRes = new Reservation(newResId, roomList, new DateRange(start, end), bill);
         //reserveList.add(newRes);
         String createReservation = """
-                INSERT INTO Reservations (resId, startDate, endDate, bill, checkedIn, name) VALUES (?,?,?,?,?,?);
+                INSERT INTO Reservations (resId, startDate, endDate, bill, checkedIn, name, userID) VALUES (?,?,?,?,?,?,?);
                 """;
 
         String createReservedRooms = """
@@ -110,6 +105,7 @@ public class ReservationService {
             //TODO: Ensure works
             reservePstmt.setBoolean(5, false);
             reservePstmt.setString(6,name);
+            reservePstmt.setString(7,userID);
             reservePstmt.executeUpdate();
             conn.commit();
 
@@ -257,7 +253,7 @@ public class ReservationService {
 
 
     //TODO: Must implement (Only need to get the date range and the checked in status)
-    public boolean hasValidReservation(int guestID) throws SQLException {
+    /*public boolean hasValidReservation(int guestID) throws SQLException {
         String checked = "SELECT checkedIn, startDate, endDate FROM Reservations WHERE resId = ?;";
 
         GuestReservationDao guestReservationDao = new GuestReservationDao();
@@ -275,12 +271,44 @@ public class ReservationService {
                     LocalDate startDate = rs.getDate("startDate").toLocalDate();
                     LocalDate endDate = rs.getDate("endDate").toLocalDate();
 
-                    if (validRes && (startDate.isAfter(LocalDate.now()) && endDate.isBefore(LocalDate.now()))) {
+                    LocalDate today = LocalDate.now();
+
+                    if (validRes && !today.isBefore(startDate) && !today.isAfter(endDate)) {
                         return true;
                     }
                 }
             }
         }
+        return false;
+    }*/
+    
+    public boolean hasValidReservation(int guestID) throws SQLException {
+        String sql = """
+            SELECT checkedIn, startDate, endDate
+            FROM Reservations
+            WHERE userID = ?;
+        """;
+
+        LocalDate today = LocalDate.now();
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, String.valueOf(guestID));
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    boolean checkedIn = rs.getBoolean("checkedIn");
+                    LocalDate startDate = LocalDate.parse(rs.getString("startDate"));
+                    LocalDate endDate = LocalDate.parse(rs.getString("endDate"));
+
+                    if (checkedIn && !today.isBefore(startDate) && !today.isAfter(endDate)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
@@ -461,6 +489,47 @@ public class ReservationService {
             throw e;
         }
     }
+
+    public List<Reservation> findReservationsByUserID(int userID) throws SQLException {
+        List<Reservation> reservations = new ArrayList<>();
+
+        String sqlReservations = "SELECT * FROM Reservations WHERE userID = ?";
+        String sqlRooms = "SELECT * FROM ReservedRooms WHERE resId = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement resStmt = conn.prepareStatement(sqlReservations);
+             PreparedStatement roomsStmt = conn.prepareStatement(sqlRooms)) {
+
+            conn.setAutoCommit(false);
+
+            resStmt.setInt(1, userID);
+
+            ResultSet resRS = resStmt.executeQuery();
+
+            while (resRS.next()) {
+                String resId = resRS.getString("resId");
+
+                // Load all rooms for this reservation
+                roomsStmt.setString(1, resId);
+                ResultSet resRoomRS = roomsStmt.executeQuery();
+
+                // Build the reservation using your helper
+                Reservation reservation = buildReservationFromResultSet(resRS, resRoomRS);
+                reservations.add(reservation);
+            }
+
+            conn.commit();
+            return reservations;
+
+        } catch (SQLException e) {
+            System.err.println("Error getting all reservations: " + e.getMessage());
+            try (Connection conn = DBUtil.getConnection()) {
+                conn.rollback();
+            } catch (SQLException ignored) {}
+            throw e;
+        }
+    }
+
     /**
      * Given two result sets for both the Reservations and ReservedRooms
      * databases, this function will use them both to create a reservation
@@ -480,6 +549,7 @@ public class ReservationService {
         double bill = resRS.getDouble("bill");
         boolean checkedIn = resRS.getBoolean("checkedIn");
         String name = resRS.getString("name");
+        String userID = resRS.getString("userID");
 
         List<Room> roomList = new ArrayList<>();
 
@@ -497,7 +567,7 @@ public class ReservationService {
             System.err.println("Error building reservation: " + e.getMessage());
             throw e;
         }
-        return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill, checkedIn, name);
+        return new Reservation(resId, roomList, new DateRange(startDate, endDate), bill, checkedIn, name,userID);
     }
 
     //FIXME: Might be depreciated
@@ -552,6 +622,78 @@ public class ReservationService {
             } catch (SQLException ignored) {}
             throw e;
         }
+    }
+
+    public Receipt cancelReservation(String resID) throws SQLException {
+        SearchController sc = new SearchController(new RoomService(), new ReservationService());
+        Reservation reservation = sc.getResService().findReservation(resID);
+
+        if (reservation == null) return null;
+
+        LocalDate today = LocalDate.now();
+        LocalDate start = reservation.getDateRange().startDate();
+        LocalDate cutoff = start.minusDays(2);
+
+        Receipt receipt = reservation.getReceipt();
+
+        if (!today.isBefore(cutoff)) {
+            double penalty = reservation.getRooms()
+                    .stream()
+                    .mapToDouble(Room::getRate)
+                    .sum() * 0.8;
+
+            receipt.setPenalty(penalty);
+            receipt.addOnTotal(penalty);
+        }
+
+        sc.getResService().deleteReservation(resID);
+        return receipt;
+    }
+
+    public Receipt generateBilling(String resID) throws SQLException {
+        Reservation reservation = findReservation(resID);
+
+        if (reservation == null) return null;
+
+        Receipt receipt = reservation.getReceipt();
+        LocalDate today = LocalDate.now();
+        LocalDate end = reservation.getDateRange().endDate();
+
+        if (today.isBefore(end)) {
+            double penalty = reservation.getRooms()
+                    .stream()
+                    .mapToDouble(Room::getRate)
+                    .sum() * 0.8;
+
+            receipt.setPenalty(penalty);
+        }
+
+        receipt.calculateTotal();
+        return receipt;
+    }
+
+    public boolean checkout(String resID) throws SQLException {
+        if(findReservation(resID).isCheckedIn()){
+            deleteReservation(resID);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkIn(String resID) throws SQLException{
+        String sql = "UPDATE Reservations SET checkedIn=? WHERE resId=?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setBoolean(1, true);
+            stmt.setString(2, resID);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     /**

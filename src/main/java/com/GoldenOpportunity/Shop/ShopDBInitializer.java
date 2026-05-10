@@ -1,4 +1,5 @@
-package com.GoldenOpportunity.Shop;
+// deprecated now that Aubrey has centalized our databases, will leave this here for now
+/*package com.GoldenOpportunity.Shop;
 
 import com.GoldenOpportunity.DatabaseTools.DBUtil;
 
@@ -76,4 +77,4 @@ public class ShopDBInitializer {
             throw new RuntimeException("failed to seed shop database", e);
         }
     }
-}
+}*/

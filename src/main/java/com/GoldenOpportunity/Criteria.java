@@ -20,7 +20,7 @@ public class Criteria {
     String image;
 
 
-    Criteria() {
+    public Criteria() {
         floorNum = 0;
         roomNum = 0;
         roomType = "";

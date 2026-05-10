@@ -1,8 +1,10 @@
 package com.GoldenOpportunity.Shop;
 
-import com.GoldenOpportunity.PaymentMethod;
+import com.GoldenOpportunity.*;
 import com.GoldenOpportunity.Roles.Clerk;
+import com.GoldenOpportunity.dbLogin.GuestReservationDao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,7 @@ public class ShopService {
     private Shop shop;
     private PaymentMethod paymentMethod;
     private Clerk clerk;
+    private Order lastOrder;
 
     public ShopService(Shop shop, PaymentMethod paymentMethod, Clerk clerk) {
         this.shop = shop;
@@ -18,27 +21,13 @@ public class ShopService {
     }
 
     // views all available products, the main store page
-    public List<String> viewStore() {
-        List<ProductDescription> availableProductDescriptions = shop.getAvailableProducts();
-        List<String> productSummaryList = new ArrayList<>();
-
-        for (ProductDescription productDescription : availableProductDescriptions) {
-            productSummaryList.add(productDescription.getSummary());
-        }
-
-        return productSummaryList;
+    public List<ProductDescription> viewStore() {
+        return shop.getAvailableProducts();
     }
 
     // more in depth
-    public String viewProductDetails(int productID) {
-        ProductDescription productDescription = shop.findProduct(productID);
-
-        if (productDescription == null) {
-            return "product not found";
-        }
-
-        String availability = shop.getAvailability(productID);
-        return productDescription.getDetails() + ", Availability: " + availability;
+    public ProductDescription viewProductDetails(int productID) {
+        return shop.findProduct(productID);
     }
 
     // adds a product to cart, assumes controller already handled auth and reservation checks
@@ -49,8 +38,15 @@ public class ShopService {
             return "product not found";
         }
 
-        if (!shop.isInStock(productID)) {
+        int stock = shop.getStock(productID);
+        int quantityInCart = shoppingCart.getQuantity(productID);
+
+        if (stock <= 0) {
             return "product is out of stock";
+        }
+
+        if (quantityInCart >= stock) {
+            return "not enough stock";
         }
 
         shoppingCart.addProductToCart(productDescription);
@@ -58,11 +54,22 @@ public class ShopService {
     }
 
     // simple checkout
-    public String checkout(int guestID, String paymentDetails, ShoppingCart shoppingCart) {
+    public String checkout(int guestID, PaymentDetails paymentDetails, ShoppingCart shoppingCart) {
         double total = shoppingCart.calculateTotal();
 
         if (total <= 0) {
             return "cart is empty";
+        }
+
+        List<ProductDescription> uniqueItems = shoppingCart.getUniqueCartItems();
+
+        for (ProductDescription productDescription : uniqueItems) {
+            int productID = productDescription.getProductID();
+            int quantity = shoppingCart.getQuantity(productID);
+
+            if (shop.getStock(productID) < quantity) {
+                return "not enough stock";
+            }
         }
 
         boolean paymentApproved = paymentMethod.submitPayment(guestID, paymentDetails);
@@ -74,9 +81,44 @@ public class ShopService {
         Order order = new Order();
         order.createOrder(shoppingCart.getCartItems(), guestID, total);
 
+        for (ProductDescription productDescription : uniqueItems) {
+            int productID = productDescription.getProductID();
+            int quantity = shoppingCart.getQuantity(productID);
+
+            boolean stockReduced = shop.reduceStock(productID, quantity);
+
+            if (!stockReduced) {
+                return "not enough stock";
+            }
+        }
+
+        lastOrder = order;
+
         shoppingCart.clearCart();
         clerk.notifyOrder(order);
 
         return "receipt";
+    }
+
+    public String getAvailability(int productID) {
+        return shop.getAvailability(productID);
+    }
+
+    public int getStock(int productID) {
+        return shop.getStock(productID);
+    }
+
+    public Order getLastOrder() {
+        return lastOrder;
+    }
+
+    public String removeProductFromCart(int productID, ShoppingCart shoppingCart) {
+        boolean removed = shoppingCart.removeProductByID(productID);
+
+        if (removed) {
+            return "updatedCart";
+        }
+
+        return "product not found in cart";
     }
 }
