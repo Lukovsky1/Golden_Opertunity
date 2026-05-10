@@ -32,6 +32,7 @@ public class ProfilePage extends JPanel {
     private JPanel fieldsPanel;
     private JPanel profilePanel;
     private JPanel reservationPanel;
+    private JPanel headerPanel;
 
     private JTextField nameField;
     private JTextField emailField;
@@ -51,14 +52,8 @@ public class ProfilePage extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
 
-        if(uiState.isLoggedIn){
-            if(uiState.getCurrentSession().getRole() == Role.GUEST){
-                add(createGuestHeader(), BorderLayout.NORTH);
-            }
-            else if(uiState.getCurrentSession().getRole() == Role.CLERK){
-                add(createClerkHeader(),BorderLayout.NORTH);
-            }
-        }
+        headerPanel = new JPanel(new BorderLayout());
+        add(headerPanel, BorderLayout.NORTH);
         add(createScrollableContent(), BorderLayout.CENTER);
     }
 
@@ -588,7 +583,28 @@ public class ProfilePage extends JPanel {
         cardLayout.show(mainPanel, "HOME");
     }
 
+    private void refreshHeader() {
+        headerPanel.removeAll();
+
+        try {
+            if (uiState.isLoggedIn && uiState.getCurrentSession() != null) {
+                if (uiState.getCurrentSession().getRole() == Role.GUEST) {
+                    headerPanel.add(createGuestHeader(), BorderLayout.CENTER);
+                } else if (uiState.getCurrentSession().getRole() == Role.CLERK) {
+                    headerPanel.add(createClerkHeader(), BorderLayout.CENTER);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        headerPanel.revalidate();
+        headerPanel.repaint();
+    }
+
     public void updateProfilePage() throws SQLException {
+        refreshHeader();
+
         dbUser = userDao.findById(uiState.getCurrentSession().getUserId());
 
         nameField = createTextField(dbUser.fullName);
