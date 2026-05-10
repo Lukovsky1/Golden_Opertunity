@@ -5,7 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a51a6a0-fb01-441d-ba73-6c7ff6722732" name="Changes" comment="Last Changes">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ProfilePage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ProfilePage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/ReservationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/SearchControllerTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Criteria.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/Criteria.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/DatabaseTools/DBUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/ReservationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Criteria.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Criteria.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/DatabaseTools/DBUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Floor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Floor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/LoginResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/LoginResult.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/Session.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/Session.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/enums/AccountStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/enums/AccountStatus.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/enums/LoginOutcome.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/enums/LoginOutcome.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/enums/Role.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Login/enums/Role.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ReservationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/ReservationService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Roles/Admin.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/Roles/Admin.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomUpdate.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/GoldenOpportunity/RoomUpdate.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/golden.db" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/golden.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,8 +104,13 @@
     "Application.ModifyReservationPage.executor": "Run",
     "Application.ModifyRoomsPage.executor": "Run",
     "Application.RoomDetailsPage.executor": "Run",
-    "Application.SearchController.executor": "Run",
+    "Application.SearchController.executor": "Debug",
     "Application.testDBMain.executor": "Run",
+    "JUnit.ReservationTests.executor": "Run",
+    "JUnit.ReservationTests.findInvalidReservation.executor": "Run",
+    "JUnit.ReservationTests.findValidReservation.executor": "Run",
+    "JUnit.ReservationTests.modifyExistingReservation.executor": "Run",
+    "JUnit.SearchControllerTests.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -100,7 +122,7 @@
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/andre/OneDrive/Documentos/Baylor_University/Software_Engineering_I/Repo/src/main/resources",
+    "last_opened_file_path": "/Users/Blaze/Documents/Software_Eng_1/Golden_Opertunity",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
@@ -153,21 +175,51 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="ReservationTests.findInvalidReservation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Golden_Opertunity" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ReservationTests" />
+      <option name="METHOD_NAME" value="findInvalidReservation" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ReservationTests.findValidReservation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Golden_Opertunity" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ReservationTests" />
+      <option name="METHOD_NAME" value="findValidReservation" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ReservationTests.modifyExistingReservation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Golden_Opertunity" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ReservationTests" />
+      <option name="METHOD_NAME" value="modifyExistingReservation" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.ReservationTests.modifyExistingReservation" />
+        <item itemvalue="JUnit.ReservationTests.findInvalidReservation" />
+        <item itemvalue="JUnit.ReservationTests.findValidReservation" />
         <item itemvalue="Application.HotelHomePageUI" />
         <item itemvalue="Application.HotelBookingUI" />
-        <item itemvalue="Application.HotelHomePageUI" />
-        <item itemvalue="Application.HotelBookingUI" />
-        <item itemvalue="Application.HotelHomePageUI" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.240" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.29346.240" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
       </set>
     </attachedChunks>
   </component>
@@ -190,6 +242,7 @@
       <workItem from="1777996494257" duration="473000" />
       <workItem from="1778175128584" duration="1899000" />
       <workItem from="1778187646790" duration="340000" />
+      <workItem from="1778204555342" duration="11915000" />
     </task>
     <task id="LOCAL-00001" summary="UI Booking and Home class">
       <option name="closed" value="true" />
@@ -588,6 +641,21 @@
           <properties class="java.lang.NoClassDefFoundError" package="java.lang" />
           <option name="timeStamp" value="8" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/ReservationTests.java</url>
+          <line>94</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/GoldenOpportunity/SearchController.java</url>
+          <line>51</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/SearchControllerTests.java</url>
+          <line>53</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

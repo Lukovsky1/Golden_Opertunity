@@ -8,11 +8,6 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
 
-//TODO: Add checkedIn checking for the database
-//TODO: Add getAllReservations();
-//TODO: Make reservation take a randomly generated id, a string seems too extra and
-//TODO: unnecessary
-
 public class ReservationService {
     //TODO: Remove
     //private List<Reservation> reserveList = new ArrayList<>();
