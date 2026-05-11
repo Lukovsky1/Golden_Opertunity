@@ -1,7 +1,5 @@
 package com.GoldenOpportunity.dbLogin;
 
-import com.GoldenOpportunity.DatabaseTools.DBUtil;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -13,6 +11,11 @@ import java.sql.SQLException;
 //TODO: Need to separate the seeding logic from the loadingInsertStatements
 public class DbSeeder {
     public static void main(String[] args) throws SQLException, IOException {
+        ensureSeedData();
+        System.out.println("SQLite database initialized and sample users ensured.");
+    }
+
+    public static void ensureSeedData() throws SQLException, IOException {
         UserDao dao = new UserDao();
         dao.initializeSchema(); // Create DB + tables on first run
 
@@ -37,9 +40,6 @@ public class DbSeeder {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         } */
-
-
-        System.out.println("SQLite database initialized and sample users ensured.");
     }
 
     private static void seedIfMissing(UserDao dao, String username, String password, String role,

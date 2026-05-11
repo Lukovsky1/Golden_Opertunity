@@ -65,9 +65,9 @@ public class DBInitializer {
          * Intended to be called once at application startup.
          */
         public static void initialize() throws SQLException, IOException {
+            DBUtil.ensureDbFolder();
             // Opening a connection will also create the file on first use.
             try (Connection conn = getConnection()) {
-                DBUtil.ensureDbFolder();
                 createSchema(conn);
                 loadData(conn);
             } catch (SQLException ex) {

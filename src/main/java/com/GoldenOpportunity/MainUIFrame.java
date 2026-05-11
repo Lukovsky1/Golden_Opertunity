@@ -7,6 +7,7 @@ import com.GoldenOpportunity.DatabaseTools.DBInitializer;
 //import com.GoldenOpportunity.Shop.ShopDBInitializer;
 import com.GoldenOpportunity.Shop.*;
 import com.GoldenOpportunity.Roles.Clerk;
+import com.GoldenOpportunity.dbLogin.DbSeeder;
 import com.GoldenOpportunity.dbLogin.UserDao;
 
 import javax.swing.*;
@@ -35,11 +36,12 @@ public class MainUIFrame extends JFrame {
     static {
         try {
             DBInitializer.initialize();
+            DbSeeder.ensureSeedData();
         } catch (SQLException e) {
             System.err.println("Error initializing DB, exiting program");
             System.exit(1);
         } catch (IOException e) {
-            System.err.println("Error reading DB Files, exiting program");
+            System.err.println("Error initializing DB seed data, exiting program");
             throw new RuntimeException(e);
         }
     }

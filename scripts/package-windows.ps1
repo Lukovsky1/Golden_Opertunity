@@ -8,7 +8,15 @@ $dest = Join-Path $root "dist/windows"
 
 Set-Location $root
 
-mvn -DskipTests package
+$jarPath = Join-Path $root "target/$jarName"
+$maven = Get-Command mvn -ErrorAction SilentlyContinue
+
+if ($maven) {
+  & $maven.Source -DskipTests package
+} elseif (-not (Test-Path $jarPath)) {
+  throw "Maven is not installed and $jarPath was not found. Install Maven or build the JAR first."
+}
+
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 
 jpackage `

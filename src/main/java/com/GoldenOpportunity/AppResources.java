@@ -11,7 +11,7 @@ import java.util.Locale;
 
 public final class AppResources {
     private static final String APP_DIR_NAME = "GoldenOpportunity";
-    private static final String MAC_APP_SUPPORT = "Library/Application Support";
+    private static final String DATA_DIR_PROPERTY = "goldenopportunity.data.dir";
 
     private AppResources() {
     }
@@ -43,11 +43,16 @@ public final class AppResources {
     }
 
     public static Path getAppDataDirectory() {
+        String override = System.getProperty(DATA_DIR_PROPERTY);
+        if (override != null && !override.isBlank()) {
+            return Path.of(override);
+        }
+
         String osName = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
         Path home = Path.of(System.getProperty("user.home"));
 
         if (osName.contains("mac")) {
-            return home.resolve(MAC_APP_SUPPORT).resolve(APP_DIR_NAME);
+            return home.resolve("." + APP_DIR_NAME.toLowerCase(Locale.ROOT));
         }
         if (osName.contains("win")) {
             String appData = System.getenv("APPDATA");
